@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Sarpras Diklat</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-5">
+
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
+        <h2 class="text-2xl font-bold mb-6">Test Koneksi & Simpan Data</h2>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium">Judul Acara</label>
+                <input type="text" id="judul_acara" class="w-full border p-2 rounded">
+            </div>
+            
+            <button onclick="simpanData()" id="btnSimpan" class="bg-blue-600 text-white px-4 py-2 rounded">
+                Test Simpan Peminjaman
+            </button>
+        </div>
+        
+        <div id="status" class="mt-4 text-sm"></div>
+    </div>
+
+    <script>
+        // 1. KONFIGURASI (Ganti dengan milik Anda)
+        const SB_URL = "URL_SUPABASE_ANDA";
+        const SB_KEY = "KEY_ANON_SUPABASE_ANDA";
+        const supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        // 2. FUNGSI SIMPAN DATA (Sederhana)
+        async function simpanData() {
+            const judul = document.getElementById('judul_acara').value;
+            const btn = document.getElementById('btnSimpan');
+            const statusDiv = document.getElementById('status');
+
+            if(!judul) return alert("Isi judul dulu");
+
+            btn.disabled = true;
+            btn.innerText = "Mengirim...";
+            
+            // Mencoba insert data minimalis dulu untuk tes koneksi
+            const { data, error } = await supabase
+                .from('peminjaman_ruangan')
+                .insert([
+                    { 
+                        judul_acara: judul,
+                        unit_peminjam: 'Karyawan', // Default tes
+                        nama: 'User Test',
+                        identitas: '12345',
+                        nama_ruangan: 'Aula 1',
+                        tanggal: ['2026-05-01'], // Format array sesuai SQL tadi
+                        jam_mulai: '08:00',
+                        jam_selesai: '10:00',
+                        status: 'Request'
+                    }
+                ]);
+
+            if (error) {
+                statusDiv.innerHTML = `<span class="text-red-500">Error: ${error.message}</span>`;
+            } else {
+                statusDiv.innerHTML = `<span class="text-green-500">Berhasil! Cek Table Editor di Supabase.</span>`;
+                document.getElementById('judul_acara').value = "";
+            }
+            
+            btn.disabled = false;
+            btn.innerText = "Test Simpan Peminjaman";
+        }
+    </script>
+</body>
+</html>
