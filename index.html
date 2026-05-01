@@ -5,70 +5,276 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Sarpras Diklat</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
-<body class="bg-gray-100 p-5">
+<body class="bg-gray-50 text-gray-800" x-data="app()">
 
-    <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-md">
-        <h2 class="text-2xl font-bold mb-6">Test Koneksi & Simpan Data</h2>
-        
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium">Judul Acara</label>
-                <input type="text" id="judul_acara" class="w-full border p-2 rounded">
-            </div>
-            
-            <button onclick="simpanData()" id="btnSimpan" class="bg-blue-600 text-white px-4 py-2 rounded">
-                Test Simpan Peminjaman
+    <div x-show="view === 'menu'" x-cloak class="min-h-screen flex flex-col items-center justify-center p-6">
+        <h1 class="text-3xl font-bold mb-10 text-blue-900 text-center">Sistem Informasi Sarpras Diklat</h1>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl w-full">
+            <button @click="openPeminjaman()" class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all border border-gray-100 flex flex-col items-center group">
+                <div class="bg-blue-500 w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fa fa-door-open"></i>
+                </div>
+                <span class="font-semibold text-center">Peminjaman Ruangan</span>
+            </button>
+            <button class="bg-white p-8 rounded-2xl shadow-sm opacity-60 cursor-not-allowed flex flex-col items-center">
+                <div class="bg-orange-500 w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl mb-4">
+                    <i class="fa fa-key"></i>
+                </div>
+                <span class="font-semibold">Peminjaman Kunci</span>
+            </button>
+            <button class="bg-white p-8 rounded-2xl shadow-sm opacity-60 cursor-not-allowed flex flex-col items-center">
+                <div class="bg-purple-500 w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl mb-4">
+                    <i class="fa fa-box"></i>
+                </div>
+                <span class="font-semibold">Peminjaman Barang</span>
+            </button>
+            <button class="bg-white p-8 rounded-2xl shadow-sm opacity-60 cursor-not-allowed flex flex-col items-center">
+                <div class="bg-teal-500 w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl mb-4">
+                    <i class="fa fa-database"></i>
+                </div>
+                <span class="font-semibold">Data Sarpras</span>
+            </button>
+        </div>
+    </div>
+
+    <div x-show="view === 'list_ruangan'" x-cloak class="p-6 max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <button @click="view = 'menu'" class="text-blue-600 font-semibold"><i class="fa fa-arrow-left"></i> Kembali</button>
+            <h2 class="text-2xl font-bold">Daftar Peminjaman Ruangan</h2>
+            <button @click="view = 'form_ruangan'" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700">
+                <i class="fa fa-plus mr-2"></i> Add
             </button>
         </div>
         
-        <div id="status" class="mt-4 text-sm"></div>
+        <div class="bg-white rounded-xl shadow-sm overflow-x-auto border border-gray-200">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-bold border-b">
+                    <tr>
+                        <th class="p-4">Acara</th>
+                        <th class="p-4">Ruangan</th>
+                        <th class="p-4">Tanggal</th>
+                        <th class="p-4">Peminjam</th>
+                        <th class="p-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="item in dataList" :key="item.id">
+                        <tr class="border-b hover:bg-gray-50 transition-colors">
+                            <td class="p-4 font-medium" x-text="item.judul_acara"></td>
+                            <td class="p-4" x-text="item.nama_ruangan"></td>
+                            <td class="p-4 text-sm" x-text="item.tanggal.join(', ')"></td>
+                            <td class="p-4 text-sm" x-text="item.nama"></td>
+                            <td class="p-4">
+                                <span :class="getStatusColor(item.status)" class="px-3 py-1 rounded-full text-xs font-bold" x-text="item.status"></span>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div x-show="view === 'form_ruangan'" x-cloak class="p-6 max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Form Input Peminjaman</h2>
+                <button @click="view = 'list_ruangan'" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+
+            <form @submit.prevent="submitData" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-gray-600">Unit Peminjam</label>
+                        <select x-model="form.unit_peminjam" class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                            <option value="Karyawan">Karyawan</option>
+                            <option value="Peserta Didik">Peserta Didik</option>
+                            <option value="Instansi Luar">Instansi Luar</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-gray-600">Nama Ruangan</label>
+                        <select x-model="form.nama_ruangan" class="w-full border rounded-xl p-3 outline-none">
+                            <option>Request..</option>
+                            <option>Aula 1</option>
+                            <option>Aula 2</option>
+                            <option>Aula 3</option>
+                            <option>LT. 3 Ruang Belajar</option>
+                            <option>Lantai 8, 801</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold mb-2 text-gray-600">Judul Acara</label>
+                        <input type="text" x-model="form.judul_acara" required class="w-full border rounded-xl p-3 outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-gray-600">Jumlah Peserta</label>
+                        <input type="number" x-model="form.jumlah_peserta" class="w-full border rounded-xl p-3 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-gray-600">Pilih Tanggal (Bisa banyak)</label>
+                        <input type="date" @change="addDate($event.target.value)" class="w-full border rounded-xl p-3 outline-none">
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <template x-for="(d, i) in form.tanggal" :key="i">
+                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold flex items-center">
+                                    <span x-text="d"></span>
+                                    <button type="button" @click="form.tanggal.splice(i,1)" class="ml-2 text-red-500">&times;</button>
+                                </span>
+                            </template>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs font-bold text-gray-500">Jam Mulai</label>
+                                <input type="time" x-model="form.jam_mulai" @change="calcDuration" class="w-full border rounded-xl p-3 outline-none">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-500">Jam Selesai</label>
+                                <input type="time" x-model="form.jam_selesai" @change="calcDuration" class="w-full border rounded-xl p-3 outline-none">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-gray-600">Durasi</label>
+                        <input type="text" x-model="form.durasi" readonly class="w-full bg-gray-50 border rounded-xl p-3 font-mono text-blue-600">
+                    </div>
+
+                    <div class="md:col-span-2 bg-blue-50 p-6 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2 font-bold text-blue-900 border-b border-blue-100 pb-2">Informasi Peminjam</div>
+                        <div>
+                            <label class="text-sm font-semibold text-gray-600">Nama</label>
+                            <input type="text" x-model="form.nama" class="w-full border rounded-xl p-3 outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="text-sm font-semibold text-gray-600" x-text="form.unit_peminjam === 'Peserta Didik' ? 'NIM' : 'NIP/NIK'"></label>
+                            <input type="text" x-model="form.identitas" class="w-full border rounded-xl p-3 outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="text-sm font-semibold text-gray-600" x-text="form.unit_peminjam === 'Karyawan' ? 'Nama Perusahaan' : 'Institusi'"></label>
+                            <input type="text" x-model="form.institusi" :disabled="form.unit_peminjam === 'Karyawan'" class="w-full border rounded-xl p-3 outline-none bg-white disabled:bg-gray-100">
+                        </div>
+                        <div>
+                            <label class="text-sm font-semibold text-gray-600" x-text="form.unit_peminjam === 'Peserta Didik' ? 'Jurusan' : 'Divisi/Instalasi'"></label>
+                            <input type="text" x-model="form.jurusan_divisi" class="w-full border rounded-xl p-3 outline-none bg-white">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="text-sm font-semibold text-gray-600">No. Telepon (WhatsApp)</label>
+                            <input type="text" x-model="form.no_telepon" class="w-full border rounded-xl p-3 outline-none bg-white">
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold mb-2 text-gray-600">Status Peminjaman</label>
+                        <select x-model="form.status" class="w-full border rounded-xl p-3 outline-none">
+                            <option>Request</option>
+                            <option>Booking</option>
+                            <option>Sedang Di Pinjam</option>
+                            <option>Selesai</option>
+                            <option>Cancel</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-6">
+                    <button type="submit" class="w-full md:w-auto bg-green-600 text-white px-12 py-4 rounded-2xl font-bold shadow-lg hover:bg-green-700 transition-all">
+                        SUBMIT PEMINJAMAN
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
-        // 1. KONFIGURASI (Ganti dengan milik Anda)
-        const SB_URL = "https://gyiucoognxykakksrulo.supabase.co/";
+        // MASUKKAN KREDENSI ANDA DISINI
+        const SB_URL = "https://gyiucoognxykakksrulo.supabase.co";
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aXVjb29nbnh5a2Fra3NydWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjQ0MDQsImV4cCI6MjA5Mjg0MDQwNH0.Ht_yQbty5AaWYZWPp7sLWwIRDrmNs-LPot0NnVi3VIU";
-        const supabase = supabase.createClient(SB_URL, SB_KEY);
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        // 2. FUNGSI SIMPAN DATA (Sederhana)
-        async function simpanData() {
-            const judul = document.getElementById('judul_acara').value;
-            const btn = document.getElementById('btnSimpan');
-            const statusDiv = document.getElementById('status');
+        function app() {
+            return {
+                view: 'menu',
+                dataList: [],
+                form: {
+                    unit_peminjam: 'Karyawan',
+                    nama_ruangan: 'Request..',
+                    judul_acara: '',
+                    jumlah_peserta: '',
+                    tanggal: [],
+                    jam_mulai: '',
+                    jam_selesai: '',
+                    durasi: '',
+                    nama: '',
+                    identitas: '',
+                    institusi: 'RSUDBK',
+                    jurusan_divisi: '',
+                    no_telepon: '',
+                    status: 'Request'
+                },
 
-            if(!judul) return alert("Isi judul dulu");
+                async openPeminjaman() {
+                    this.view = 'list_ruangan';
+                    await this.fetchData();
+                },
 
-            btn.disabled = true;
-            btn.innerText = "Mengirim...";
-            
-            // Mencoba insert data minimalis dulu untuk tes koneksi
-            const { data, error } = await supabase
-                .from('peminjaman_ruangan')
-                .insert([
-                    { 
-                        judul_acara: judul,
-                        unit_peminjam: 'Karyawan', // Default tes
-                        nama: 'User Test',
-                        identitas: '12345',
-                        nama_ruangan: 'Aula 1',
-                        tanggal: ['2026-05-01'], // Format array sesuai SQL tadi
-                        jam_mulai: '08:00',
-                        jam_selesai: '10:00',
-                        status: 'Request'
+                async fetchData() {
+                    const { data, error } = await _supabase.from('peminjaman_ruangan').select('*').order('id', { ascending: false });
+                    if (!error) this.dataList = data;
+                },
+
+                addDate(val) {
+                    if (val && !this.form.tanggal.includes(val)) {
+                        this.form.tanggal.push(val);
                     }
-                ]);
+                },
 
-            if (error) {
-                statusDiv.innerHTML = `<span class="text-red-500">Error: ${error.message}</span>`;
-            } else {
-                statusDiv.innerHTML = `<span class="text-green-500">Berhasil! Cek Table Editor di Supabase.</span>`;
-                document.getElementById('judul_acara').value = "";
+                calcDuration() {
+                    if (this.form.jam_mulai && this.form.jam_selesai) {
+                        const start = new Date(`2026-01-01 ${this.form.jam_mulai}`);
+                        const end = new Date(`2026-01-01 ${this.form.jam_selesai}`);
+                        let diff = (end - start) / 1000 / 60;
+                        if (diff < 0) diff += 1440;
+                        const h = Math.floor(diff / 60);
+                        const m = diff % 60;
+                        this.form.durasi = `${h} Jam ${m} Menit`;
+                    }
+                },
+
+                getStatusColor(status) {
+                    return {
+                        'Request': 'bg-yellow-100 text-yellow-700',
+                        'Booking': 'bg-blue-100 text-blue-700',
+                        'Sedang Di Pinjam': 'bg-purple-100 text-purple-700',
+                        'Selesai': 'bg-green-100 text-green-700',
+                        'Cancel': 'bg-red-100 text-red-700'
+                    }[status] || 'bg-gray-100 text-gray-700';
+                },
+
+                async submitData() {
+                    if (this.form.tanggal.length === 0) return alert("Pilih minimal satu tanggal!");
+                    
+                    const { error } = await _supabase.from('peminjaman_ruangan').insert([this.form]);
+                    if (error) {
+                        alert("Error: " + error.message);
+                    } else {
+                        alert("Data Berhasil Disimpan!");
+                        this.openPeminjaman();
+                        // Reset Form
+                        this.form.judul_acara = '';
+                        this.form.tanggal = [];
+                    }
+                }
             }
-            
-            btn.disabled = false;
-            btn.innerText = "Test Simpan Peminjaman";
         }
     </script>
 </body>
