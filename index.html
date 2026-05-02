@@ -195,106 +195,153 @@
     </div>
 
     <script>
-        const SB_URL = "https://gyiucoognxykakksrulo.supabase.co";
-        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aXVjb29nbnh5a2Fra3NydWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjQ0MDQsImV4cCI6MjA5Mjg0MDQwNH0.Ht_yQbty5AaWYZWPp7sLWwIRDrmNs-LPot0NnVi3VIU";
-        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+          <template x-if="showPassModal">
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <h3 class="text-lg font-bold mb-4" x-text="modalTitle"></h3>
+            
+            <template x-if="modalType === 'password'">
+                <div>
+                    <input type="password" x-model="passInput" placeholder="Masukkan Password" class="w-full border p-3 rounded-xl mb-4 outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="flex space-x-2">
+                        <button @click="showPassModal = false" class="flex-1 py-2 bg-gray-200 rounded-lg">Batal</button>
+                        <button @click="verifyAction()" class="flex-1 py-2 bg-blue-600 text-white rounded-lg font-bold">Konfirmasi</button>
+                    </div>
+                </div>
+            </template>
 
-        function app() {
-            return {
-                view: 'menu',
-                dataList: [],
-                form: {
-                    unit_peminjam: 'Karyawan',
-                    nama_ruangan: 'Request..',
-                    judul_acara: '',
-                    jumlah_peserta: '',
-                    tanggal: [],
-                    jam_mulai: '',
-                    jam_selesai: '',
-                    durasi: '',
-                    nama: '',
-                    identitas: '',
-                    institusi: 'RSUDBK',
-                    jurusan_divisi: '',
-                    no_telepon: '',
-                    status: 'Request' // Default status
-                },
+            <template x-if="modalType === 'upload'">
+                <div>
+                    <input type="file" accept="image/*" capture="environment" @change="handleFileUpload($event)" class="w-full mb-4">
+                    <div x-show="isUploading" class="text-sm text-blue-600 mb-2">Mengunggah foto...</div>
+                    <button @click="showPassModal = false" class="w-full py-2 bg-gray-200 rounded-lg">Tutup</button>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>
 
-                changeView(newView) {
-                    this.view = newView;
-                    if(newView === 'list_ruangan') this.fetchData();
-                },
+<td class="p-4 text-center">
+    <div class="flex justify-center space-x-2">
+        <template x-if="item.status === 'Request'">
+            <div class="flex space-x-2">
+                <button @click="askPass(item.id, 'Booking', 'Approve Peminjaman')" class="bg-green-100 text-green-600 px-3 py-1 rounded-lg text-xs font-bold uppercase hover:bg-green-200">Approve</button>
+                <button @click="askPass(item.id, 'Cancel', 'Reject Peminjaman')" class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs font-bold uppercase hover:bg-red-200">Reject</button>
+            </div>
+        </template>
 
-                async fetchData() {
-                    const { data, error } = await _supabase.from('peminjaman_ruangan').select('*').order('id', { ascending: false });
-                    if (!error) this.dataList = data;
-                },
+        <template x-if="item.status === 'Booking'">
+            <div class="flex space-x-2">
+                <button @click="openUpload(item.id)" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-bold uppercase hover:bg-blue-700">Bukti Foto</button>
+                <button @click="updateStatus(item.id, 'Cancel')" class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-bold uppercase hover:bg-gray-200">Cancel</button>
+            </div>
+        </template>
 
-                addDate(val) {
-                    if (val && !this.form.tanggal.includes(val)) this.form.tanggal.push(val);
-                },
+        <template x-if="item.status === 'Sedang Di Pinjam'">
+            <button @click="updateStatus(item.id, 'Selesai')" class="bg-teal-600 text-white px-4 py-1 rounded-lg text-xs font-bold uppercase hover:bg-teal-700">Confirm Selesai</button>
+        </template>
+    </div>
+</td>
 
-                calcDuration() {
-                    if (this.form.jam_mulai && this.form.jam_selesai) {
-                        const start = new Date(`2026-01-01 ${this.form.jam_mulai}`);
-                        const end = new Date(`2026-01-01 ${this.form.jam_selesai}`);
-                        let diff = (end - start) / 1000 / 60;
-                        if (diff < 0) diff += 1440;
-                        this.form.durasi = `${Math.floor(diff / 60)} Jam ${diff % 60} Menit`;
-                    }
-                },
+<script>
+    const SB_URL = "https://gyiucoognxykakksrulo.supabase.co";
+    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aXVjb29nbnh5a2Fra3NydWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjQ0MDQsImV4cCI6MjA5Mjg0MDQwNH0.Ht_yQbty5AaWYZWPp7sLWwIRDrmNs-LPot0NnVi3VIU";
+    const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-                getStatusColor(status) {
-                    return {
-                        'Request': 'bg-yellow-100 text-yellow-700',
-                        'Booking': 'bg-blue-600 text-white',
-                        'Sedang Di Pinjam': 'bg-purple-100 text-purple-700',
-                        'Selesai': 'bg-green-100 text-green-700',
-                        'Cancel': 'bg-red-100 text-red-700'
-                    }[status] || 'bg-gray-100 text-gray-700';
-                },
+    function app() {
+        return {
+            view: 'menu',
+            dataList: [],
+            // Password & Modal Logic
+            showPassModal: false,
+            modalType: '',
+            modalTitle: '',
+            passInput: '',
+            activeId: null,
+            targetStatus: '',
+            isUploading: false,
+            adminPass: "123456", // Ganti password Anda di sini
 
-                async updateStatus(id, newStatus) {
-                    const { error } = await _supabase.from('peminjaman_ruangan').update({ status: newStatus }).eq('id', id);
-                    if (!error) {
-                        alert(`Status diperbarui menjadi ${newStatus}`);
+            // ... (fungsi form dan fetch yang lama tetap ada) ...
+
+            // Fungsi untuk memicu modal password
+            askPass(id, status, title) {
+                this.activeId = id;
+                this.targetStatus = status;
+                this.modalTitle = title;
+                this.modalType = 'password';
+                this.passInput = '';
+                this.showPassModal = true;
+            },
+
+            // Verifikasi Password
+            async verifyAction() {
+                if (this.passInput === this.adminPass) {
+                    await this.updateStatus(this.activeId, this.targetStatus);
+                    this.showPassModal = false;
+                } else {
+                    alert("Password Salah!");
+                }
+            },
+
+            // Fungsi Update Status Umum
+            async updateStatus(id, newStatus) {
+                const { error } = await _supabase.from('peminjaman_ruangan').update({ status: newStatus }).eq('id', id);
+                if (!error) {
+                    this.fetchData();
+                    if(newStatus === 'Booking') alert("Status diset ke Booking!");
+                }
+            },
+
+            // Buka Modal Upload
+            openUpload(id) {
+                this.activeId = id;
+                this.modalTitle = "Upload Bukti Foto";
+                this.modalType = 'upload';
+                this.showPassModal = true;
+            },
+
+            // Handle Upload Foto ke Supabase Storage
+            async handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                this.isUploading = true;
+                const fileName = `${Date.now()}-${file.name}`;
+                
+                // 1. Upload ke Storage
+                const { data, error } = await _supabase.storage
+                    .from('bukti-foto')
+                    .upload(fileName, file);
+
+                if (error) {
+                    alert("Gagal upload: " + error.message);
+                } else {
+                    // 2. Ambil URL Publik
+                    const { data: urlData } = _supabase.storage.from('bukti-foto').getPublicUrl(fileName);
+                    
+                    // 3. Update Status di Tabel ke 'Sedang Di Pinjam'
+                    const { error: updateErr } = await _supabase.from('peminjaman_ruangan')
+                        .update({ 
+                            status: 'Sedang Di Pinjam',
+                            foto_url: urlData.publicUrl 
+                        })
+                        .eq('id', this.activeId);
+
+                    if (!updateErr) {
+                        alert("Foto berhasil diunggah. Ruangan sedang digunakan.");
+                        this.showPassModal = false;
                         this.fetchData();
                     }
-                },
-
-                resetForm() {
-                    this.form = {
-                        unit_peminjam: 'Karyawan',
-                        nama_ruangan: 'Request..',
-                        judul_acara: '',
-                        jumlah_peserta: '',
-                        tanggal: [],
-                        jam_mulai: '',
-                        jam_selesai: '',
-                        durasi: '',
-                        nama: '',
-                        identitas: '',
-                        institusi: 'RSUDBK',
-                        jurusan_divisi: '',
-                        no_telepon: '',
-                        status: 'Request'
-                    };
-                },
-
-                async submitData() {
-                    if (this.form.tanggal.length === 0) return alert("Pilih minimal satu tanggal!");
-                    
-                    const { error } = await _supabase.from('peminjaman_ruangan').insert([this.form]);
-                    if (error) {
-                        alert("Gagal menyimpan: " + error.message);
-                    } else {
-                        alert("Data Berhasil Disimpan!");
-                        this.resetForm(); // Form dikosongkan setelah sukses
-                        this.changeView('list_ruangan'); // Kembali ke list
-                    }
                 }
-            }
+                this.isUploading = false;
+            },
+            
+            // ... (lanjutkan fungsi fetch dan submitData dari kode sebelumnya) ...
         }
+    }
+</script>
+
     </script>
 </body>
 </html>
