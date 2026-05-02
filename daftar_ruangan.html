@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Peminjaman Ruangan</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 p-6" x-data="roomList()" x-init="fetchData()">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <a href="index.html" class="text-blue-600 font-bold"><i class="fa fa-arrow-left"></i> Kembali</a>
+            <h2 class="text-2xl font-bold">Daftar Peminjam Ruangan</h2>
+            <a href="input_ruangan.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700">+ Add</a>
+        </div>
+
+        <div class="bg-white rounded-xl shadow border overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-gray-100 font-bold text-xs">
+                    <tr>
+                        <th class="p-4 text-center">No</th>
+                        <th class="p-4">Acara</th>
+                        <th class="p-4">Tanggal</th>
+                        <th class="p-4">Peminjam</th>
+                        <th class="p-4 text-center">Status</th>
+                        <th class="p-4 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    <template x-for="(item, i) in list" :key="item.id">
+                        <tr class="border-b">
+                            <td class="p-4 text-center" x-text="i+1"></td>
+                            <td class="p-4">
+                                <b x-text="item.judul_acara"></b><br>
+                                <span class="text-blue-500 text-xs uppercase" x-text="item.nama_ruangan"></span>
+                            </td>
+                            <td class="p-4" x-text="item.tanggal.join(', ')"></td>
+                            <td class="p-4" x-text="item.nama"></td>
+                            <td class="p-4 text-center">
+                                <span :class="colors[item.status]" class="px-2 py-1 rounded-full text-[10px] font-bold uppercase" x-text="item.status"></span>
+                            </td>
+                            <td class="p-4 text-center">
+                                <template x-if="item.status === 'Request'">
+                                    <div class="flex gap-1 justify-center">
+                                        <button @click="openModal('pass', item.id, 'Booking')" class="bg-green-500 text-white px-2 py-1 rounded text-[10px]">Approve</button>
+                                        <button @click="openModal('pass', item.id, 'Cancel')" class="bg-red-500 text-white px-2 py-1 rounded text-[10px]">Reject</button>
+                                    </div>
+                                </template>
+                                <template x-if="item.status === 'Booking'">
+                                    <div class="flex gap-1 justify-center">
+                                        <button @click="openModal('upload', item.id)" class="bg-blue-500 text-white px-2 py-1 rounded text-[10px]">Bukti Foto</button>
+                                        <button @click="updateStatus(item.id, 'Cancel')" class="bg-gray-400 text-white px-2 py-1 rounded text-[10px]">Cancel</button>
+                                    </div>
+                                </template>
+                                <template x-if="item.status === 'Sedang Di Pinjam'">
+                                    <button @click="updateStatus(item.id, 'Selesai')" class="bg-teal-500 text-white px-2 py-1 rounded text-[10px]">Selesai</button>
+                                </template>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div x-show="modal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4" x-cloak>
+        <div class="bg-white p-6 rounded-xl max-w-sm w-full">
+            <h3 class="font-bold mb-4" x-text="modalType === 'pass' ? 'Konfirmasi Password' : 'Ambil Foto Bukti'"></h3>
+            <template x-if="modalType === 'pass'">
+                <input type="password" x-model="password" class="w-full border p-2 rounded mb-4" placeholder="Password Admin">
+            </template>
+            <template x-if="modalType === 'upload'">
+                <input type="file" capture="environment" accept="image/*" @change="uploadPhoto" class="w-full border p-2 rounded mb-4">
+            </template>
+            <div class="flex gap-2">
+                <button @click="modal = false" class="flex-1 border py-2 rounded">Batal</button>
+                <button x-show="modalType==='pass'" @click="confirmPass()" class="flex-1 bg-blue-600 text-white py-2 rounded">Kirim</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SB_URL = "https://gyiucoognxykakksrulo.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aXVjb29nbnh5a2Fra3NydWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjQ0MDQsImV4cCI6MjA5Mjg0MDQwNH0.Ht_yQbty5AaWYZWPp7sLWwIRDrmNs-LPot0NnVi3VIU";
+        const _sb = supabase.createClient(SB_URL, SB_KEY);
+
+        function roomList() {
+            return {
+                list: [],
+                modal: false,
+                modalType: '',
+                activeId: null,
+                nextStatus: '',
+                password: '',
+                colors: {
+                    'Request': 'bg-yellow-100 text-yellow-700',
+                    'Booking': 'bg-blue-600 text-white',
+                    'Sedang Di Pinjam': 'bg-purple-600 text-white',
+                    'Selesai': 'bg-green-600 text-white',
+                    'Cancel': 'bg-red-600 text-white'
+                },
+                async fetchData() {
+                    const { data } = await _sb.from('peminjaman_ruangan').select('*').order('id', {ascending: false});
+                    this.list = data || [];
+                },
+                openModal(type, id, status = '') {
+                    this.modal = true; this.modalType = type;
+                    this.activeId = id; this.nextStatus = status;
+                    this.password = '';
+                },
+                async confirmPass() {
+                    if(this.password === '123456') { // Ganti password di sini
+                        await this.updateStatus(this.activeId, this.nextStatus);
+                        this.modal = false;
+                    } else { alert('Password Salah'); }
+                },
+                async updateStatus(id, status, extra = {}) {
+                    const { error } = await _sb.from('peminjaman_ruangan').update({ status, ...extra }).eq('id', id);
+                    if(error) alert(error.message);
+                    this.fetchData();
+                },
+                async uploadPhoto(e) {
+                    const file = e.target.files[0];
+                    const name = `${Date.now()}.jpg`;
+                    const { data, error } = await _sb.storage.from('bukti-foto').upload(name, file);
+                    if(!error) {
+                        const { data: { publicUrl } } = _sb.storage.from('bukti-foto').getPublicUrl(name);
+                        await this.updateStatus(this.activeId, 'Sedang Di Pinjam', { foto_url: publicUrl });
+                        this.modal = false;
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
