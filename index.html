@@ -14,24 +14,24 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800" x-data="app()">
+<body class="bg-gray-50 text-gray-800" x-data="app()" x-init="init()">
 
-    <div x-show="view === 'menu'" x-cloak class="min-h-screen flex flex-col items-center justify-center p-6">
-        <h1 class="text-3xl font-bold mb-10 text-blue-900 text-center text-uppercase">Manajemen Sarpras Diklat</h1>
+    <div x-show="view === 'menu'" x-cloak class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+        <h1 class="text-3xl font-bold mb-10 text-blue-900 uppercase tracking-wider">Manajemen Sarpras Diklat</h1>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl w-full">
             <button @click="changeView('list_ruangan')" class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all border border-gray-100 flex flex-col items-center group">
                 <div class="bg-blue-500 w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl mb-4 group-hover:scale-110 transition-transform">
                     <i class="fa fa-door-open"></i>
                 </div>
-                <span class="font-semibold text-center">Peminjaman Ruangan</span>
+                <span class="font-semibold">Peminjaman Ruangan</span>
             </button>
-            <button @click="alert('Fitur Peminjaman Kunci Segera Hadir')" class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all border border-gray-100 flex flex-col items-center group">
+            <button @click="alert('Peminjaman Kunci Loker Segera Hadir')" class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all border border-gray-100 flex flex-col items-center group">
                 <div class="bg-orange-500 w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl mb-4 group-hover:scale-110 transition-transform">
                     <i class="fa fa-key"></i>
                 </div>
-                <span class="font-semibold">Peminjaman Kunci Loker</span>
+                <span class="font-semibold">Kunci Loker</span>
             </button>
-            <button @click="alert('Fitur Peminjaman Barang Segera Hadir')" class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all border border-gray-100 flex flex-col items-center group">
+            <button @click="alert('Peminjaman Barang Segera Hadir')" class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all border border-gray-100 flex flex-col items-center group">
                 <div class="bg-purple-500 w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl mb-4 group-hover:scale-110 transition-transform">
                     <i class="fa fa-box"></i>
                 </div>
@@ -47,8 +47,8 @@
     </div>
 
     <div x-show="view === 'list_ruangan'" x-cloak class="p-6 max-w-7xl mx-auto">
-        <div class="flex justify-between items-center mb-6">
-            <button @click="view = 'menu'" class="text-blue-600 font-semibold"><i class="fa fa-arrow-left"></i> Kembali ke Menu</button>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <button @click="view = 'menu'" class="text-blue-600 font-semibold"><i class="fa fa-arrow-left"></i> Kembali</button>
             <h2 class="text-2xl font-bold">Daftar Peminjam Ruangan</h2>
             <button @click="view = 'form_ruangan'" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700">
                 <i class="fa fa-plus mr-2"></i> Add Peminjam
@@ -57,14 +57,14 @@
         
         <div class="bg-white rounded-xl shadow-sm overflow-x-auto border border-gray-200">
             <table class="w-full text-left border-collapse">
-                <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold border-b">
+                <thead class="bg-gray-100 text-gray-700 uppercase text-xs font-bold border-b text-center">
                     <tr>
-                        <th class="p-4 text-center w-12">No</th>
-                        <th class="p-4">Acara / Ruangan</th>
-                        <th class="p-4">Tanggal</th>
-                        <th class="p-4">Peminjam</th>
+                        <th class="p-4 w-12 text-center">No</th>
+                        <th class="p-4 text-left">Acara / Ruangan</th>
+                        <th class="p-4 text-left">Tanggal</th>
+                        <th class="p-4 text-left">Peminjam</th>
                         <th class="p-4">Status</th>
-                        <th class="p-4 text-center">Aksi</th>
+                        <th class="p-4">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,17 +73,33 @@
                             <td class="p-4 text-center text-sm" x-text="index + 1"></td>
                             <td class="p-4">
                                 <div class="font-bold text-gray-800" x-text="item.judul_acara"></div>
-                                <div class="text-xs text-blue-600" x-text="item.nama_ruangan"></div>
+                                <div class="text-xs text-blue-600 uppercase font-semibold" x-text="item.nama_ruangan"></div>
                             </td>
-                            <td class="p-4 text-sm" x-text="item.tanggal.join(', ')"></td>
-                            <td class="p-4 text-sm" x-text="item.nama"></td>
+                            <td class="p-4 text-sm" x-text="item.tanggal ? item.tanggal.join(', ') : '-'"></td>
                             <td class="p-4">
-                                <span :class="getStatusColor(item.status)" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase" x-text="item.status"></span>
+                                <div class="text-sm font-medium" x-text="item.nama"></div>
+                                <div class="text-[10px] text-gray-500" x-text="item.identitas"></div>
                             </td>
                             <td class="p-4 text-center">
-                                <div class="flex justify-center space-x-2">
-                                    <button @click="updateStatus(item.id, 'Booking')" title="Approve" class="text-green-600 hover:bg-green-100 w-8 h-8 rounded-full"><i class="fa fa-check"></i></button>
-                                    <button @click="updateStatus(item.id, 'Cancel')" title="Reject" class="text-red-600 hover:bg-red-100 w-8 h-8 rounded-full"><i class="fa fa-times"></i></button>
+                                <span :class="getStatusColor(item.status)" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase" x-text="item.status"></span>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex justify-center gap-2">
+                                    <template x-if="item.status === 'Request'">
+                                        <div class="flex gap-1">
+                                            <button @click="askPass(item.id, 'Booking', 'Approve Peminjaman')" class="bg-green-100 text-green-600 px-3 py-1 rounded text-[10px] font-bold hover:bg-green-200">APPROVE</button>
+                                            <button @click="askPass(item.id, 'Cancel', 'Reject Peminjaman')" class="bg-red-100 text-red-600 px-3 py-1 rounded text-[10px] font-bold hover:bg-red-200">REJECT</button>
+                                        </div>
+                                    </template>
+                                    <template x-if="item.status === 'Booking'">
+                                        <div class="flex gap-1">
+                                            <button @click="openUpload(item.id)" class="bg-blue-600 text-white px-3 py-1 rounded text-[10px] font-bold hover:bg-blue-700">FOTO BUKTI</button>
+                                            <button @click="updateStatus(item.id, 'Cancel')" class="bg-gray-100 text-gray-600 px-3 py-1 rounded text-[10px] font-bold hover:bg-gray-200">CANCEL</button>
+                                        </div>
+                                    </template>
+                                    <template x-if="item.status === 'Sedang Di Pinjam'">
+                                        <button @click="updateStatus(item.id, 'Selesai')" class="bg-teal-600 text-white px-4 py-1 rounded text-[10px] font-bold hover:bg-teal-700">SELESAI</button>
+                                    </template>
                                 </div>
                             </td>
                         </tr>
@@ -96,26 +112,23 @@
     <div x-show="view === 'form_ruangan'" x-cloak class="p-6 max-w-4xl mx-auto">
         <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
             <div class="flex justify-between items-center mb-8 border-b pb-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Form Peminjaman Baru</h2>
-                    <p class="text-sm text-gray-500 italic">*Status otomatis diset ke 'Request'</p>
-                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Form Peminjaman Baru</h2>
                 <button @click="view = 'list_ruangan'" class="text-gray-400 hover:text-gray-600 text-3xl">&times;</button>
             </div>
 
             <form @submit.prevent="submitData" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-semibold mb-2 text-gray-600">Unit Peminjam</label>
-                        <select x-model="form.unit_peminjam" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-200">
+                        <label class="block text-sm font-semibold mb-2">Unit Peminjam</label>
+                        <select x-model="form.unit_peminjam" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="Karyawan">Karyawan</option>
                             <option value="Peserta Didik">Peserta Didik</option>
                             <option value="Instansi Luar">Instansi Luar</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-2 text-gray-600">Nama Ruangan</label>
-                        <select x-model="form.nama_ruangan" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-200">
+                        <label class="block text-sm font-semibold mb-2">Nama Ruangan</label>
+                        <select x-model="form.nama_ruangan" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500">
                             <option>Request..</option>
                             <option>Aula 1</option>
                             <option>Aula 2</option>
@@ -124,15 +137,13 @@
                             <option>Lantai 8, 801</option>
                         </select>
                     </div>
-
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold mb-2 text-gray-600">Judul Acara</label>
-                        <input type="text" x-model="form.judul_acara" required class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-200">
+                        <label class="block text-sm font-semibold mb-2">Judul Acara</label>
+                        <input type="text" x-model="form.judul_acara" required class="w-full border rounded-xl p-3 outline-none">
                     </div>
-
                     <div>
                         <label class="block text-sm font-semibold mb-2 text-gray-600">Pilih Tanggal</label>
-                        <input type="date" @change="addDate($event.target.value)" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-200">
+                        <input type="date" @change="addDate($event.target.value)" class="w-full border rounded-xl p-3 outline-none">
                         <div class="flex flex-wrap gap-2 mt-2">
                             <template x-for="(d, i) in form.tanggal" :key="i">
                                 <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold flex items-center">
@@ -142,206 +153,232 @@
                             </template>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-xs font-bold text-gray-500">Jam Mulai</label>
-                            <input type="time" x-model="form.jam_mulai" @change="calcDuration" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-200">
+                            <label class="text-xs font-bold">Jam Mulai</label>
+                            <input type="time" x-model="form.jam_mulai" @change="calcDuration" class="w-full border rounded-xl p-3 outline-none">
                         </div>
                         <div>
-                            <label class="text-xs font-bold text-gray-500">Jam Selesai</label>
-                            <input type="time" x-model="form.jam_selesai" @change="calcDuration" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-200">
+                            <label class="text-xs font-bold">Jam Selesai</label>
+                            <input type="time" x-model="form.jam_selesai" @change="calcDuration" class="w-full border rounded-xl p-3 outline-none">
                         </div>
                     </div>
-
                     <div>
-                        <label class="block text-sm font-semibold mb-2 text-gray-600">Durasi</label>
+                        <label class="block text-sm font-semibold mb-2">Durasi</label>
                         <input type="text" x-model="form.durasi" readonly class="w-full bg-gray-50 border rounded-xl p-3 font-mono text-blue-600">
                     </div>
-
                     <div>
-                        <label class="block text-sm font-semibold mb-2 text-gray-600">Jumlah Peserta</label>
-                        <input type="number" x-model="form.jumlah_peserta" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-200">
+                        <label class="block text-sm font-semibold mb-2">Jumlah Peserta</label>
+                        <input type="number" x-model="form.jumlah_peserta" class="w-full border rounded-xl p-3 outline-none">
                     </div>
-
                     <div class="md:col-span-2 bg-gray-50 p-6 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-4 border border-dashed border-gray-300">
-                        <div class="md:col-span-2 font-bold text-gray-700 border-b pb-2">Detail Peminjam</div>
+                        <div class="md:col-span-2 font-bold text-gray-700 border-b pb-2 uppercase text-xs">Data Peminjam</div>
                         <div>
-                            <label class="text-sm font-semibold text-gray-600">Nama</label>
-                            <input type="text" x-model="form.nama" class="w-full border rounded-xl p-3 outline-none bg-white">
+                            <label class="text-xs font-semibold">Nama Lengkap</label>
+                            <input type="text" x-model="form.nama" required class="w-full border rounded-lg p-2 outline-none">
                         </div>
                         <div>
-                            <label class="text-sm font-semibold text-gray-600" x-text="form.unit_peminjam === 'Peserta Didik' ? 'NIM' : 'NIP/NIK'"></label>
-                            <input type="text" x-model="form.identitas" class="w-full border rounded-xl p-3 outline-none bg-white">
+                            <label class="text-xs font-semibold" x-text="form.unit_peminjam === 'Peserta Didik' ? 'NIM' : 'NIP/NIK'"></label>
+                            <input type="text" x-model="form.identitas" class="w-full border rounded-lg p-2 outline-none">
                         </div>
                         <div>
-                            <label class="text-sm font-semibold text-gray-600" x-text="form.unit_peminjam === 'Karyawan' ? 'Nama Perusahaan' : 'Institusi'"></label>
-                            <input type="text" x-model="form.institusi" :disabled="form.unit_peminjam === 'Karyawan'" class="w-full border rounded-xl p-3 outline-none bg-white disabled:bg-gray-200">
+                            <label class="text-xs font-semibold" x-text="form.unit_peminjam === 'Karyawan' ? 'Nama Perusahaan' : 'Institusi'"></label>
+                            <input type="text" x-model="form.institusi" :disabled="form.unit_peminjam === 'Karyawan'" class="w-full border rounded-lg p-2 outline-none disabled:bg-gray-200">
                         </div>
                         <div>
-                            <label class="text-sm font-semibold text-gray-600" x-text="form.unit_peminjam === 'Peserta Didik' ? 'Jurusan' : 'Divisi/Instalasi'"></label>
-                            <input type="text" x-model="form.jurusan_divisi" class="w-full border rounded-xl p-3 outline-none bg-white">
+                            <label class="text-xs font-semibold" x-text="form.unit_peminjam === 'Peserta Didik' ? 'Jurusan' : 'Divisi/Instalasi'"></label>
+                            <input type="text" x-model="form.jurusan_divisi" class="w-full border rounded-lg p-2 outline-none">
                         </div>
                     </div>
                 </div>
-
-                <div class="flex justify-end pt-6">
-                    <button type="submit" class="bg-green-600 text-white px-12 py-3 rounded-xl font-bold shadow-lg hover:bg-green-700 transition-all">
-                        SIMPAN PEMINJAMAN
-                    </button>
-                </div>
+                <button type="submit" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition-all">SIMPAN DATA</button>
             </form>
         </div>
     </div>
 
-    <script>
-          <template x-if="showPassModal">
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div x-show="showPassModal" x-cloak class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 class="text-lg font-bold mb-4" x-text="modalTitle"></h3>
+            <h3 class="text-lg font-bold mb-4 text-center" x-text="modalTitle"></h3>
             
             <template x-if="modalType === 'password'">
-                <div>
-                    <input type="password" x-model="passInput" placeholder="Masukkan Password" class="w-full border p-3 rounded-xl mb-4 outline-none focus:ring-2 focus:ring-blue-500">
-                    <div class="flex space-x-2">
-                        <button @click="showPassModal = false" class="flex-1 py-2 bg-gray-200 rounded-lg">Batal</button>
-                        <button @click="verifyAction()" class="flex-1 py-2 bg-blue-600 text-white rounded-lg font-bold">Konfirmasi</button>
+                <div class="space-y-4">
+                    <input type="password" x-model="passInput" placeholder="Password Admin" class="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-center text-lg">
+                    <div class="flex gap-2">
+                        <button @click="showPassModal = false" class="flex-1 py-3 bg-gray-100 rounded-xl font-semibold">Batal</button>
+                        <button @click="verifyAction()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Lanjutkan</button>
                     </div>
                 </div>
             </template>
 
             <template x-if="modalType === 'upload'">
-                <div>
-                    <input type="file" accept="image/*" capture="environment" @change="handleFileUpload($event)" class="w-full mb-4">
-                    <div x-show="isUploading" class="text-sm text-blue-600 mb-2">Mengunggah foto...</div>
-                    <button @click="showPassModal = false" class="w-full py-2 bg-gray-200 rounded-lg">Tutup</button>
+                <div class="space-y-4">
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
+                        <input type="file" accept="image/*" capture="environment" @change="handleFileUpload($event)" class="hidden" id="fileInput">
+                        <label for="fileInput" class="cursor-pointer">
+                            <i class="fa fa-camera text-4xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-500">Klik untuk Ambil Foto Bukti</p>
+                        </label>
+                    </div>
+                    <div x-show="isUploading" class="text-center py-2">
+                        <div class="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full"></div>
+                        <p class="text-xs text-blue-600 mt-1">Sedang Mengupload...</p>
+                    </div>
+                    <button @click="showPassModal = false" class="w-full py-3 bg-gray-100 rounded-xl font-semibold">Tutup</button>
                 </div>
             </template>
         </div>
     </div>
-</template>
 
-<td class="p-4 text-center">
-    <div class="flex justify-center space-x-2">
-        <template x-if="item.status === 'Request'">
-            <div class="flex space-x-2">
-                <button @click="askPass(item.id, 'Booking', 'Approve Peminjaman')" class="bg-green-100 text-green-600 px-3 py-1 rounded-lg text-xs font-bold uppercase hover:bg-green-200">Approve</button>
-                <button @click="askPass(item.id, 'Cancel', 'Reject Peminjaman')" class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs font-bold uppercase hover:bg-red-200">Reject</button>
-            </div>
-        </template>
+    <script>
+        const SB_URL = "https://gyiucoognxykakksrulo.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aXVjb29nbnh5a2Fra3NydWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjQ0MDQsImV4cCI6MjA5Mjg0MDQwNH0.Ht_yQbty5AaWYZWPp7sLWwIRDrmNs-LPot0NnVi3VIU";
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        <template x-if="item.status === 'Booking'">
-            <div class="flex space-x-2">
-                <button @click="openUpload(item.id)" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-bold uppercase hover:bg-blue-700">Bukti Foto</button>
-                <button @click="updateStatus(item.id, 'Cancel')" class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-bold uppercase hover:bg-gray-200">Cancel</button>
-            </div>
-        </template>
+        function app() {
+            return {
+                view: 'menu',
+                dataList: [],
+                showPassModal: false,
+                modalType: '',
+                modalTitle: '',
+                passInput: '',
+                activeId: null,
+                targetStatus: '',
+                isUploading: false,
+                adminPass: "123456", // GANTI PASSWORD DISINI
 
-        <template x-if="item.status === 'Sedang Di Pinjam'">
-            <button @click="updateStatus(item.id, 'Selesai')" class="bg-teal-600 text-white px-4 py-1 rounded-lg text-xs font-bold uppercase hover:bg-teal-700">Confirm Selesai</button>
-        </template>
-    </div>
-</td>
+                form: {
+                    unit_peminjam: 'Karyawan',
+                    nama_ruangan: 'Request..',
+                    judul_acara: '',
+                    jumlah_peserta: '',
+                    tanggal: [],
+                    jam_mulai: '',
+                    jam_selesai: '',
+                    durasi: '',
+                    nama: '',
+                    identitas: '',
+                    institusi: 'RSUDBK',
+                    jurusan_divisi: '',
+                    status: 'Request'
+                },
 
-<script>
-    const SB_URL = "https://gyiucoognxykakksrulo.supabase.co";
-    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aXVjb29nbnh5a2Fra3NydWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjQ0MDQsImV4cCI6MjA5Mjg0MDQwNH0.Ht_yQbty5AaWYZWPp7sLWwIRDrmNs-LPot0NnVi3VIU";
-    const _supabase = supabase.createClient(SB_URL, SB_KEY);
-
-    function app() {
-        return {
-            view: 'menu',
-            dataList: [],
-            // Password & Modal Logic
-            showPassModal: false,
-            modalType: '',
-            modalTitle: '',
-            passInput: '',
-            activeId: null,
-            targetStatus: '',
-            isUploading: false,
-            adminPass: "123456", // Ganti password Anda di sini
-
-            // ... (fungsi form dan fetch yang lama tetap ada) ...
-
-            // Fungsi untuk memicu modal password
-            askPass(id, status, title) {
-                this.activeId = id;
-                this.targetStatus = status;
-                this.modalTitle = title;
-                this.modalType = 'password';
-                this.passInput = '';
-                this.showPassModal = true;
-            },
-
-            // Verifikasi Password
-            async verifyAction() {
-                if (this.passInput === this.adminPass) {
-                    await this.updateStatus(this.activeId, this.targetStatus);
-                    this.showPassModal = false;
-                } else {
-                    alert("Password Salah!");
-                }
-            },
-
-            // Fungsi Update Status Umum
-            async updateStatus(id, newStatus) {
-                const { error } = await _supabase.from('peminjaman_ruangan').update({ status: newStatus }).eq('id', id);
-                if (!error) {
+                init() {
                     this.fetchData();
-                    if(newStatus === 'Booking') alert("Status diset ke Booking!");
-                }
-            },
+                },
 
-            // Buka Modal Upload
-            openUpload(id) {
-                this.activeId = id;
-                this.modalTitle = "Upload Bukti Foto";
-                this.modalType = 'upload';
-                this.showPassModal = true;
-            },
+                changeView(newView) {
+                    this.view = newView;
+                    if(newView === 'list_ruangan') this.fetchData();
+                },
 
-            // Handle Upload Foto ke Supabase Storage
-            async handleFileUpload(event) {
-                const file = event.target.files[0];
-                if (!file) return;
+                async fetchData() {
+                    const { data, error } = await _supabase.from('peminjaman_ruangan').select('*').order('id', { ascending: false });
+                    if (!error) this.dataList = data;
+                },
 
-                this.isUploading = true;
-                const fileName = `${Date.now()}-${file.name}`;
-                
-                // 1. Upload ke Storage
-                const { data, error } = await _supabase.storage
-                    .from('bukti-foto')
-                    .upload(fileName, file);
+                addDate(val) {
+                    if (val && !this.form.tanggal.includes(val)) this.form.tanggal.push(val);
+                },
 
-                if (error) {
-                    alert("Gagal upload: " + error.message);
-                } else {
-                    // 2. Ambil URL Publik
-                    const { data: urlData } = _supabase.storage.from('bukti-foto').getPublicUrl(fileName);
+                calcDuration() {
+                    if (this.form.jam_mulai && this.form.jam_selesai) {
+                        const start = new Date(`2026-01-01 ${this.form.jam_mulai}`);
+                        const end = new Date(`2026-01-01 ${this.form.jam_selesai}`);
+                        let diff = (end - start) / 1000 / 60;
+                        if (diff < 0) diff += 1440;
+                        this.form.durasi = `${Math.floor(diff / 60)} Jam ${diff % 60} Menit`;
+                    }
+                },
+
+                getStatusColor(status) {
+                    return {
+                        'Request': 'bg-yellow-100 text-yellow-700',
+                        'Booking': 'bg-blue-600 text-white',
+                        'Sedang Di Pinjam': 'bg-purple-100 text-purple-700',
+                        'Selesai': 'bg-green-100 text-green-700',
+                        'Cancel': 'bg-red-100 text-red-700'
+                    }[status] || 'bg-gray-100 text-gray-700';
+                },
+
+                askPass(id, status, title) {
+                    this.activeId = id;
+                    this.targetStatus = status;
+                    this.modalTitle = title;
+                    this.modalType = 'password';
+                    this.passInput = '';
+                    this.showPassModal = true;
+                },
+
+                async verifyAction() {
+                    if (this.passInput === this.adminPass) {
+                        await this.updateStatus(this.activeId, this.targetStatus);
+                        this.showPassModal = false;
+                    } else {
+                        alert("Password Salah!");
+                    }
+                },
+
+                async updateStatus(id, newStatus) {
+                    const { error } = await _supabase.from('peminjaman_ruangan').update({ status: newStatus }).eq('id', id);
+                    if (!error) this.fetchData();
+                },
+
+                openUpload(id) {
+                    this.activeId = id;
+                    this.modalTitle = "Upload Foto Bukti";
+                    this.modalType = 'upload';
+                    this.showPassModal = true;
+                },
+
+                async handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    this.isUploading = true;
+                    const fileName = `${Date.now()}-${file.name}`;
                     
-                    // 3. Update Status di Tabel ke 'Sedang Di Pinjam'
-                    const { error: updateErr } = await _supabase.from('peminjaman_ruangan')
-                        .update({ 
+                    const { data, error } = await _supabase.storage.from('bukti-foto').upload(fileName, file);
+                    if (!error) {
+                        const { data: urlData } = _supabase.storage.from('bukti-foto').getPublicUrl(fileName);
+                        await _supabase.from('peminjaman_ruangan').update({ 
                             status: 'Sedang Di Pinjam',
                             foto_url: urlData.publicUrl 
-                        })
-                        .eq('id', this.activeId);
-
-                    if (!updateErr) {
-                        alert("Foto berhasil diunggah. Ruangan sedang digunakan.");
+                        }).eq('id', this.activeId);
                         this.showPassModal = false;
                         this.fetchData();
                     }
-                }
-                this.isUploading = false;
-            },
-            
-            // ... (lanjutkan fungsi fetch dan submitData dari kode sebelumnya) ...
-        }
-    }
-</script>
+                    this.isUploading = false;
+                },
 
+                async submitData() {
+                    if (this.form.tanggal.length === 0) return alert("Pilih tanggal!");
+                    const { error } = await _supabase.from('peminjaman_ruangan').insert([this.form]);
+                    if (!error) {
+                        alert("Berhasil Disimpan!");
+                        this.resetForm();
+                        this.changeView('list_ruangan');
+                    }
+                },
+
+                resetForm() {
+                    this.form = {
+                        unit_peminjam: 'Karyawan',
+                        nama_ruangan: 'Request..',
+                        judul_acara: '',
+                        jumlah_peserta: '',
+                        tanggal: [],
+                        jam_mulai: '',
+                        jam_selesai: '',
+                        durasi: '',
+                        nama: '',
+                        identitas: '',
+                        institusi: 'RSUDBK',
+                        jurusan_divisi: '',
+                        status: 'Request'
+                    };
+                }
+            }
+        }
     </script>
 </body>
 </html>
