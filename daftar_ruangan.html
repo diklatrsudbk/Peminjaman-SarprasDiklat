@@ -17,18 +17,20 @@
             <a href="input_ruangan.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700">+ Add</a>
         </div>
 
-        <div class="bg-white rounded-xl shadow border overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-gray-100 font-bold text-xs">
-                    <tr>
-                        <th class="p-4 text-center">No</th>
-                        <th class="p-4">Acara</th>
-                        <th class="p-4">Tanggal</th>
-                        <th class="p-4">Peminjam</th>
-                        <th class="p-4 text-center">Status</th>
-                        <th class="p-4 text-center">Aksi</th>
-                    </tr>
-                </thead>
+        <div class="w-full overflow-x-auto bg-white rounded-xl shadow border">
+    <table class="w-full text-left min-w-[800px]"> <thead class="bg-gray-100 font-bold text-xs">
+            <tr>
+                <th class="p-4 text-center">No</th>
+                <th class="p-4">Acara</th>
+                <th class="p-4">Tanggal</th>
+                <th class="p-4">Peminjam</th>
+                <th class="p-4 text-center">Status</th>
+                <th class="p-4 text-center">Aksi</th>
+            </tr>
+        </thead>
+        </table>
+</div>
+
                 <tbody class="text-sm">
                     <template x-for="(item, i) in list" :key="item.id">
                         <tr class="border-b">
