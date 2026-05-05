@@ -170,82 +170,125 @@
                     this.password = '';
                 },
                 async confirmPass() {
-    console.log("--- DEBUG START ---");
-    console.log("Password yang dimasukkan:", this.password);
-    console.log("Tipe Modal:", this.modalType);
-    console.log("ID Aktif:", this.activeId);
-
+    // 1. Validasi Password Admin
     if (this.password !== '123456') {
-        console.warn("Debug: Password salah");
         alert('Password Admin Salah!');
         return;
     }
 
-    if (this.modalType === 'delete') {
-        console.log("1. Memulai proses pengambilan data URL foto...");
-        const { data: item, error: fetchError } = await _sb
-            .from('peminjaman_ruangan')
-            .select('foto_url')
-            .eq('id', this.activeId)
-            .single();
+    this.isUploading = true; // Gunakan loading state jika ada
 
-        if (fetchError) {
-            console.error("Debug Error Fetch:", fetchError.message);
-        } else {
-            console.log("Data ditemukan, URL foto:", item?.foto_url);
-        }
+    try {
+        if (this.modalType === 'delete') {
+            console.log("--- MEMULAI PROSES HAPUS ---");
+            
+            // 2. Ambil data dari Database untuk mendapatkan URL Foto
+            const { data: item, error: fetchError } = await _sb
+                .from('peminjaman_ruangan')
+                .select('foto_url')
+                .eq('id', this.activeId)
+                .single();
 
-        if (!fetchError && item?.foto_url) {
-            try {
-                const url = new URL(item.foto_url);
-                const pathParts = url.pathname.split('/');
-                const fileName = pathParts.pop();
-                
-                console.log("2. Mencoba hapus file di Storage dengan nama:", fileName);
+            if (fetchError) {
+                console.error("Gagal mengambil data database:", fetchError.message);
+            }
 
-                const { error: storageError } = await _sb
-                    .storage
-                    .from('bukti-foto')
-                    .remove([fileName]);
+            // 3. Jika ada foto_url, hapus file di Storage
+            if (!fetchError && item?.foto_url) {
+                try {
+                    const url = new URL(item.foto_url);
+                    // decodeURI menangani karakter khusus atau spasi agar nama file pas
+                    const fullPath = decodeURI(url.pathname); 
+                    const searchPath = 'bukti-foto/';
+                    const fileName = fullPath.split(searchPath).pop();
 
-                if (storageError) {
-                    console.error("Debug Error Storage:", storageError.message);
-                } else {
-                    console.log("Berhasil hapus file di Storage.");
+                    console.log("Mencoba hapus file storage:", fileName);
+
+                    const { data: storageData, error: storageError } = await _sb
+                        .storage
+                        .from('bukti-foto')
+                        .remove([fileName]);
+
+                    if (storageError) {
+                        console.error("Gagal hapus di Storage:", storageError.message);
+                    } else if (storageData && storageData.length > 0) {
+                        console.log("Konfirmasi: File berhasil terhapus dari Storage.");
+                    } else {
+                        console.warn("Storage merespon sukses tapi tidak ada file yang terhapus (mungkin nama file tidak cocok).");
+                    }
+                } catch (e) {
+                    console.error("Gagal memproses URL untuk hapus storage:", e);
                 }
-            } catch (e) {
-                console.error("Debug Error Parsing URL:", e);
             }
-        }
 
-        console.log("3. Memulai proses hapus baris di Database...");
-        // Gunakan .select() untuk memastikan apakah ada baris yang benar-benar terhapus
-        const { data: deletedData, error: dbError } = await _sb
-            .from('peminjaman_ruangan')
-            .delete()
-            .eq('id', this.activeId)
-            .select();
+            // 4. Hapus baris di Database
+            const { error: dbError } = await _sb
+                .from('peminjaman_ruangan')
+                .delete()
+                .eq('id', this.activeId);
 
-        if (dbError) {
-            console.error("Debug Error Database:", dbError.message);
-            alert('Gagal hapus data: ' + dbError.message);
+            if (dbError) throw dbError;
+
+            alert('Data dan foto berhasil dihapus!');
+
         } else {
-            console.log("Data yang terhapus dari DB:", deletedData);
-            if (deletedData.length === 0) {
-                console.warn("Peringatan: Tidak ada baris yang terhapus. Cek RLS Policy atau ID.");
-            }
-            alert('Data dan foto berhasil dibersihkan!');
+            // Logika untuk Approve / Update Status
+            await this.updateStatus(this.activeId, this.nextStatus);
+            alert('Status berhasil diperbarui!');
         }
 
-    } else {
-        console.log("Menjalankan logika Update Status...");
-        await this.updateStatus(this.activeId, this.nextStatus);
-    }
+        // Sinkronisasi UI
+        this.modal = false;
+        this.password = '';
+        if (typeof this.fetchData === 'function') this.fetchData();
 
-    this.modal = false;
-    this.password = '';
-    console.log("--- DEBUG END ---");
-    if (typeof this.fetchData === 'function') this.fetchData();
+    } catch (error) {
+        console.error("Error Full:", error);
+        alert('Terjadi kesalahan: ' + error.message);
+    } finally {
+        this.isUploading = false;
+    }
+},
+
+async uploadPhoto(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    this.isUploading = true;
+
+    try {
+        // 1. Buat nama file unik dengan ekstensi asli
+        const fileExt = file.name.split('.').pop();
+        const fileName = `bukti_${this.activeId}_${Date.now()}.${fileExt}`;
+
+        // 2. Upload ke Storage
+        const { error: uploadError } = await _sb.storage
+            .from('bukti-foto')
+            .upload(fileName, file, {
+                contentType: file.type, // Menjamin file terbaca sebagai gambar
+                upsert: true
+            });
+
+        if (uploadError) throw uploadError;
+
+        // 3. Ambil Public URL
+        const { data: { publicUrl } } = _sb.storage
+            .from('bukti-foto')
+            .getPublicUrl(fileName);
+
+        // 4. Update Database dengan URL foto tersebut
+        await this.updateStatus(this.activeId, 'Sedang Di Pinjam', { foto_url: publicUrl });
+
+        alert('Bukti foto berhasil diunggah!');
+        this.modal = false;
+        if (typeof this.fetchData === 'function') this.fetchData();
+
+    } catch (error) {
+        console.error("Gagal Upload:", error);
+        alert('Gagal Upload: ' + error.message);
+    } finally {
+        this.isUploading = false;
+    }
 },
                 async updateStatus(id, status, extra = {}) {
                     await _sb.from('peminjaman_ruangan').update({ status, ...extra }).eq('id', id);
