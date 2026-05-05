@@ -170,62 +170,81 @@
                     this.password = '';
                 },
                 async confirmPass() {
+    console.log("--- DEBUG START ---");
+    console.log("Password yang dimasukkan:", this.password);
+    console.log("Tipe Modal:", this.modalType);
+    console.log("ID Aktif:", this.activeId);
+
     if (this.password !== '123456') {
+        console.warn("Debug: Password salah");
         alert('Password Admin Salah!');
         return;
     }
 
     if (this.modalType === 'delete') {
-        // 1. Ambil data untuk mendapatkan foto_url
+        console.log("1. Memulai proses pengambilan data URL foto...");
         const { data: item, error: fetchError } = await _sb
             .from('peminjaman_ruangan')
             .select('foto_url')
             .eq('id', this.activeId)
             .single();
 
+        if (fetchError) {
+            console.error("Debug Error Fetch:", fetchError.message);
+        } else {
+            console.log("Data ditemukan, URL foto:", item?.foto_url);
+        }
+
         if (!fetchError && item?.foto_url) {
             try {
-                // 2. Ekstrak nama file dengan lebih aman
-                // Menggunakan URL object agar parameter seperti ?v=123 tidak ikut terbawa
                 const url = new URL(item.foto_url);
                 const pathParts = url.pathname.split('/');
-                const fileName = pathParts.pop(); // Mengambil elemen terakhir
+                const fileName = pathParts.pop();
+                
+                console.log("2. Mencoba hapus file di Storage dengan nama:", fileName);
 
-                // 3. Hapus file dari Storage Supabase
                 const { error: storageError } = await _sb
                     .storage
                     .from('bukti-foto')
                     .remove([fileName]);
 
                 if (storageError) {
-                    console.error("Gagal hapus file di storage:", storageError.message);
-                    // Kita tidak pakai throw agar database tetap terhapus meski file storage gagal
+                    console.error("Debug Error Storage:", storageError.message);
+                } else {
+                    console.log("Berhasil hapus file di Storage.");
                 }
             } catch (e) {
-                console.error("Gagal memproses URL foto:", e);
+                console.error("Debug Error Parsing URL:", e);
             }
         }
 
-        // 4. Hapus data dari tabel database
-        const { error: dbError } = await _sb
+        console.log("3. Memulai proses hapus baris di Database...");
+        // Gunakan .select() untuk memastikan apakah ada baris yang benar-benar terhapus
+        const { data: deletedData, error: dbError } = await _sb
             .from('peminjaman_ruangan')
             .delete()
-            .eq('id', this.activeId);
+            .eq('id', this.activeId)
+            .select();
 
-        if (!dbError) {
-            alert('Data dan foto berhasil dihapus!');
-        } else {
+        if (dbError) {
+            console.error("Debug Error Database:", dbError.message);
             alert('Gagal hapus data: ' + dbError.message);
+        } else {
+            console.log("Data yang terhapus dari DB:", deletedData);
+            if (deletedData.length === 0) {
+                console.warn("Peringatan: Tidak ada baris yang terhapus. Cek RLS Policy atau ID.");
+            }
+            alert('Data dan foto berhasil dibersihkan!');
         }
 
     } else {
-        // Logika Approve/Reject
+        console.log("Menjalankan logika Update Status...");
         await this.updateStatus(this.activeId, this.nextStatus);
-        alert('Status berhasil diupdate!');
     }
 
     this.modal = false;
-    this.password = ''; // Reset password field
+    this.password = '';
+    console.log("--- DEBUG END ---");
     if (typeof this.fetchData === 'function') this.fetchData();
 },
                 async updateStatus(id, status, extra = {}) {
