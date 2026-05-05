@@ -13,6 +13,7 @@
 <body class="bg-gray-50 p-4 md:p-6" x-data="roomList()" x-init="fetchData()">
 
     <div class="max-w-7xl mx-auto">
+        <!-- Header -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <a href="index.html" class="text-blue-600 font-bold flex items-center gap-2">
                 <i class="fa fa-arrow-left"></i> Menu Utama
@@ -23,8 +24,7 @@
             </a>
         </div>
 
-        
-
+        <!-- Tabel -->
         <div class="w-full overflow-x-auto bg-white rounded-2xl shadow-sm border border-gray-200">
             <table class="w-full text-left border-collapse min-w-[900px]">
                 <thead class="bg-gray-100 text-gray-600 uppercase text-[11px] font-bold">
@@ -58,36 +58,40 @@
                             <td class="p-4 text-center">
                                 <span :class="colors[item.status]" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm" x-text="item.status"></span>
                             </td>
-                            <td class="p-4">
-                                <div class="flex justify-center gap-2">
+                            <td class="p-4 text-center">
+                                <div class="flex justify-center items-center gap-2">
+                                    <!-- Logika Tombol Sesuai Status -->
                                     <template x-if="item.status === 'Request'">
                                         <div class="flex gap-1">
                                             <button @click="openModal('pass', item.id, 'Booking')" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-green-700">APPROVE</button>
                                             <button @click="openModal('pass', item.id, 'Cancel')" class="bg-red-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-red-600">REJECT</button>
                                         </div>
                                     </template>
-                                    
+
                                     <template x-if="item.status === 'Booking'">
                                         <div class="flex gap-1">
                                             <button @click="openModal('upload', item.id)" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-blue-700">
-                                                <i class="fa fa-camera mr-1"></i> FOTO BUKTI
+                                                <i class="fa fa-camera mr-1"></i> FOTO
                                             </button>
-                                            <button @click="updateStatus(item.id, 'Cancel')" class="bg-gray-400 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-gray-500 text-uppercase">CANCEL</button>
+                                            <button @click="updateStatus(item.id, 'Cancel')" class="bg-gray-400 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-gray-500">CANCEL</button>
                                         </div>
                                     </template>
 
                                     <template x-if="item.status === 'Sedang Di Pinjam'">
-                                        <button @click="updateStatus(item.id, 'Selesai')" class="bg-teal-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-bold hover:bg-teal-700">
-                                            <i class="fa fa-check-circle mr-1"></i> KONFIRMASI SELESAI
+                                        <button @click="updateStatus(item.id, 'Selesai')" class="bg-teal-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-bold hover:bg-teal-700">KONFIRMASI SELESAI</button>
+                                    </template>
+
+                                    <!-- Foto & Hapus Selalu Tersedia jika ada link foto atau ingin hapus -->
+                                    <div class="flex items-center gap-2">
+                                        <template x-if="item.foto_url">
+                                            <a :href="item.foto_url" target="_blank" class="bg-gray-100 text-blue-600 p-2 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                                <i class="fa fa-image"></i>
+                                            </a>
+                                        </template>
+                                        <button @click="openModal('delete', item.id)" class="bg-red-50 text-red-600 p-2 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm">
+                                            <i class="fa fa-trash"></i>
                                         </button>
-                                    </template>
-                                    
-                                    <template x-if="item.foto_url">
-                                        <a :href="item.foto_url" target="_blank" class="text-blue-500 hover:underline text-[10px] font-bold"><i class="fa fa-image"></i> LIHAT FOTO</a>
-                                    </template>
-                                    <button @click="openModal('delete', item.id)" class="bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-red-600 hover:text-white transition-colors">
-    <i class="fa fa-trash"></i>
-</button>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -97,17 +101,19 @@
         </div>
     </div>
 
+    <!-- MODAL -->
     <div x-show="modal" x-cloak class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-gray-800" x-text="modalType === 'pass' ? 'Otoritas Admin' : 'Upload Bukti Foto'"></h3>
-                <button @click="modal = false" class="text-gray-400">&times;</button>
+                <h3 class="font-bold text-gray-800" x-text="modalType === 'upload' ? 'Upload Bukti Foto' : 'Konfirmasi Admin'"></h3>
+                <button @click="modal = false" class="text-gray-400 text-2xl">&times;</button>
             </div>
 
-            <template x-if="modalType === 'pass'">
+            <template x-if="modalType === 'pass' || modalType === 'delete'">
                 <div>
-                    <input type="password" x-model="password" class="w-full border-2 border-gray-100 p-3 rounded-xl mb-4 outline-none focus:border-blue-500 text-center text-lg tracking-widest" placeholder="******">
-                    <button @click="confirmPass()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg">KONFIRMASI</button>
+                    <p class="text-xs text-gray-500 mb-2 text-center" x-text="modalType === 'delete' ? 'Masukkan password untuk menghapus data' : 'Masukkan password untuk approval'"></p>
+                    <input type="password" x-model="password" class="w-full border-2 border-gray-100 p-3 rounded-xl mb-4 outline-none focus:border-blue-500 text-center text-lg" placeholder="******">
+                    <button @click="confirmPass()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg" x-text="modalType === 'delete' ? 'HAPUS DATA' : 'KONFIRMASI'"></button>
                 </div>
             </template>
 
@@ -115,17 +121,16 @@
                 <div class="text-center">
                     <div x-show="!isUploading">
                         <label class="cursor-pointer group">
-                            <div class="border-4 border-dashed border-gray-100 rounded-2xl p-10 group-hover:border-blue-200 transition-all">
+                            <div class="border-4 border-dashed border-gray-100 rounded-2xl p-10 group-hover:border-blue-200">
                                 <i class="fa fa-cloud-upload-alt text-4xl text-gray-300 mb-2 group-hover:text-blue-400"></i>
-                                <p class="text-xs text-gray-500">Klik untuk ambil foto atau pilih file</p>
+                                <p class="text-xs text-gray-500">Ambil Foto Bukti</p>
                             </div>
                             <input type="file" capture="environment" accept="image/*" @change="uploadPhoto" class="hidden">
                         </label>
                     </div>
-                    
                     <div x-show="isUploading" class="py-10">
                         <div class="animate-spin inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mb-2"></div>
-                        <p class="text-sm font-bold text-blue-600">Sedang mengupload...</p>
+                        <p class="text-sm font-bold text-blue-600">Mengupload...</p>
                     </div>
                 </div>
             </template>
@@ -163,89 +168,47 @@
                     this.activeId = id; 
                     this.nextStatus = status;
                     this.password = '';
-                    this.isUploading = false;
                 },
                 async confirmPass() {
                     if(this.password === '123456') {
-                        await this.updateStatus(this.activeId, this.nextStatus);
+                        if(this.modalType === 'delete') {
+                            const { error } = await _sb.from('peminjaman_ruangan').delete().eq('id', this.activeId);
+                            if(!error) alert('Data dihapus!');
+                        } else {
+                            await this.updateStatus(this.activeId, this.nextStatus);
+                            alert('Berhasil diupdate!');
+                        }
                         this.modal = false;
-                        alert('Berhasil diupdate!');
+                        this.fetchData();
                     } else { 
                         alert('Password Admin Salah!'); 
                     }
                 },
                 async updateStatus(id, status, extra = {}) {
-                    const { error } = await _sb.from('peminjaman_ruangan').update({ status, ...extra }).eq('id', id);
-                    if(error) alert(error.message);
+                    await _sb.from('peminjaman_ruangan').update({ status, ...extra }).eq('id', id);
                     this.fetchData();
                 },
                 async uploadPhoto(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    this.isUploading = true;
+                    try {
+                        const name = `bukti_${this.activeId}_${Date.now()}.jpg`;
+                        const { error: uploadError } = await _sb.storage.from('bukti-foto').upload(name, file);
+                        if (uploadError) throw uploadError;
 
-    this.isUploading = true;
-
-    try {
-        // 1. Buat nama file unik
-        const fileExt = file.name.split('.').pop(); // Mengambil ekstensi asli file
-        const name = `bukti_${this.activeId}_${Date.now()}.${fileExt}`;
-
-        // 2. Proses Upload ke Supabase
-        const { data, error: uploadError } = await _sb.storage
-            .from('bukti-foto')
-            .upload(name, file, {
-                contentType: file.type, // PENTING: Agar file tidak dianggap octet-stream
-                upsert: false
-            });
-
-        if (uploadError) throw uploadError;
-
-        // 3. Ambil Public URL
-        const { data: { publicUrl } } = _sb.storage
-            .from('bukti-foto')
-            .getPublicUrl(name);
-
-        // 4. Update Database
-        await this.updateStatus(this.activeId, 'Sedang Di Pinjam', { foto_url: publicUrl });
-        
-        this.modal = false;
-        alert('Bukti foto berhasil diunggah!');
-
-    } catch (error) {
-        console.error("Kesalahan Full:", error);
-        alert('Gagal: ' + (error.error_description || error.message || 'Terjadi kesalahan sistem'));
-    } finally {
-        this.isUploading = false;
-    }
-}
-                        // Tambahkan di dalam return objek roomList()
-async deleteData(id) {
-    const { error } = await _sb.from('peminjaman_ruangan').delete().eq('id', id);
-    if (!error) {
-        alert('Data berhasil dihapus');
-        this.fetchData();
-    } else {
-        alert('Gagal menghapus: ' + error.message);
-    }
-},
-
-// Update fungsi confirmPass() agar mendukung aksi delete
-async confirmPass() {
-    if (this.password === '123456') {
-        if (this.modalType === 'delete') {
-            await this.deleteData(this.activeId);
-        } else {
-            await this.updateStatus(this.activeId, this.nextStatus);
-        }
-        this.modal = false;
-    } else {
-        alert('Password Admin Salah!');
-    }
-}
+                        const { data: { publicUrl } } = _sb.storage.from('bukti-foto').getPublicUrl(name);
+                        await this.updateStatus(this.activeId, 'Sedang Di Pinjam', { foto_url: publicUrl });
+                        this.modal = false;
+                        alert('Foto terunggah!');
+                    } catch (error) {
+                        alert('Gagal: ' + error.message);
+                    } finally {
+                        this.isUploading = false;
+                    }
+                }
             }
         }
-
-
     </script>
 </body>
 </html>
