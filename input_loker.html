@@ -39,20 +39,25 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">No. Telp (WA)</label>
-                    <input type="text" x-model="f.no_telp" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none font-mono">
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Kunci Loker</label>
-                    <select x-model="f.jenis_kunci" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none bg-white">
-                        <option value="">Pilih Jenis</option>
-                        <option value="Perempuan">Perempuan</option>
-                        <option value="Laki-laki">Laki-laki</option>
-                    </select>
-                </div>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+        <label class="text-[10px] font-bold text-slate-400 uppercase">No. Telp (WA)</label>
+        <input type="text" x-model="f.no_telp" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none font-mono">
+    </div>
+    <div>
+        <label class="text-[10px] font-bold text-slate-400 uppercase">Kunci Loker</label>
+        <select x-model="f.jenis_kunci" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none bg-white">
+            <option value="">Pilih Jenis</option>
+            <option value="Perempuan">Perempuan</option>
+            <option value="Laki-laki">Laki-laki</option>
+        </select>
+    </div>
+    <div>
+        <label class="text-[10px] font-bold text-slate-400 uppercase">Jumlah Kunci</label>
+        <input type="number" x-model.number="f.jumlah" min="1" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none font-bold text-indigo-600">
+    </div>
+</div>
+
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 italic text-slate-500 text-xs">
                 <div>
