@@ -175,24 +175,44 @@
                     this.fetchData();
                 },
                 async uploadPhoto(e) {
-                    const file = e.target.files[0];
-                    if(!file) return;
-                    
-                    this.isUploading = true;
-                    const name = `bukti_${this.activeId}_${Date.now()}.jpg`;
-                    
-                    const { data, error } = await _sb.storage.from('bukti-foto').upload(name, file);
-                    
-                    if(!error) {
-                        const { data: { publicUrl } } = _sb.storage.from('bukti-foto').getPublicUrl(name);
-                        await this.updateStatus(this.activeId, 'Sedang Di Pinjam', { foto_url: publicUrl });
-                        this.modal = false;
-                        alert('Bukti foto berhasil diunggah!');
-                    } else {
-                        alert('Gagal Upload: ' + error.message);
-                    }
-                    this.isUploading = false;
-                }
+    const file = e.target.files[0];
+    if (!file) return;
+
+    this.isUploading = true;
+
+    try {
+        // 1. Buat nama file unik
+        const fileExt = file.name.split('.').pop(); // Mengambil ekstensi asli file
+        const name = `bukti_${this.activeId}_${Date.now()}.${fileExt}`;
+
+        // 2. Proses Upload ke Supabase
+        const { data, error: uploadError } = await _sb.storage
+            .from('bukti-foto')
+            .upload(name, file, {
+                contentType: file.type, // PENTING: Agar file tidak dianggap octet-stream
+                upsert: false
+            });
+
+        if (uploadError) throw uploadError;
+
+        // 3. Ambil Public URL
+        const { data: { publicUrl } } = _sb.storage
+            .from('bukti-foto')
+            .getPublicUrl(name);
+
+        // 4. Update Database
+        await this.updateStatus(this.activeId, 'Sedang Di Pinjam', { foto_url: publicUrl });
+        
+        this.modal = false;
+        alert('Bukti foto berhasil diunggah!');
+
+    } catch (error) {
+        console.error("Kesalahan Full:", error);
+        alert('Gagal: ' + (error.error_description || error.message || 'Terjadi kesalahan sistem'));
+    } finally {
+        this.isUploading = false;
+    }
+}
             }
         }
     </script>
