@@ -3,23 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sarpras Diklat - Home</title>
+    <title>Sistem Manajemen Sarpras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
-    <div class="max-w-4xl w-full p-6 text-center">
-        <h1 class="text-3xl font-bold mb-10 text-blue-900">SISTEM SARPRAS DIKLAT</h1>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <a href="daftar_ruangan.html" class="bg-white p-6 rounded-2xl shadow hover:shadow-xl transition-all border flex flex-col items-center">
-                <div class="bg-blue-500 w-12 h-12 rounded-full flex items-center justify-center text-white mb-4"><i class="fa fa-door-open"></i></div>
-                <span class="font-semibold text-sm">Peminjaman Ruangan</span>
+<body class="bg-slate-50">
+
+    <div class="min-h-screen flex flex-col items-center justify-center p-6">
+        
+        <div class="text-center mb-12">
+            <div class="w-20 h-20 bg-blue-600 rounded-3xl shadow-xl shadow-blue-200 flex items-center justify-center mx-auto mb-4 rotate-3 hover:rotate-0 transition-transform duration-500">
+                <i class="fa fa-boxes-stacked text-white text-3xl"></i>
+            </div>
+            <h1 class="text-3xl font-black text-slate-800 tracking-tighter uppercase">E-SARPRAS SYSTEM</h1>
+            <p class="text-slate-400 font-medium text-sm mt-1">Sistem Informasi Peminjaman Aset & Fasilitas</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
+            
+            <a href="daftar_ruangan.html" class="group bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-2xl hover:shadow-blue-100 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="relative">
+                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-200">
+                        <i class="fa fa-door-open text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-800 mb-2">Peminjaman Ruangan</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">Manajemen pemakaian aula, kelas, dan fasilitas gedung lainnya.</p>
+                    <div class="mt-6 flex items-center text-blue-600 text-xs font-bold gap-2">
+                        BUKA MODUL <i class="fa fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </div>
             </a>
-            <div class="bg-gray-100 p-6 rounded-2xl border flex flex-col items-center opacity-50 cursor-not-allowed">
-                <div class="bg-orange-500 w-12 h-12 rounded-full flex items-center justify-center text-white mb-4"><i class="fa fa-key"></i></div>
-                <span class="font-semibold text-sm">Kunci Loker</span>
-            </div>
-            </div>
+
+            <a href="daftar_loker.html" class="group bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-2xl hover:shadow-indigo-100 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="relative">
+                    <div class="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-indigo-200">
+                        <i class="fa fa-key text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-800 mb-2">Kunci Loker</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">Pantau peminjaman kunci loker laki-laki dan perempuan secara real-time.</p>
+                    <div class="mt-6 flex items-center text-indigo-600 text-xs font-bold gap-2">
+                        BUKA MODUL <i class="fa fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </div>
+            </a>
+
+            <a href="#" class="group bg-slate-100 p-8 rounded-[2rem] border border-slate-200 opacity-80 cursor-not-allowed relative overflow-hidden">
+                <div class="relative">
+                    <div class="w-14 h-14 bg-slate-400 text-white rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fa fa-box-open text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-slate-400 mb-2">Data Sarpras</h3>
+                    <p class="text-[10px] bg-slate-200 text-slate-500 px-2 py-1 rounded inline-block font-bold mb-3 italic">SEDANG DIKEMBANGKAN</p>
+                    <p class="text-xs text-slate-400 leading-relaxed text-balance">Modul untuk manajemen inventaris barang dan peralatan kantor.</p>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="mt-16 text-slate-400 text-[10px] font-bold tracking-[0.2em] uppercase">
+            &copy; 2026 Admin Sarpras Diklat
+        </div>
+
     </div>
+
 </body>
 </html>
