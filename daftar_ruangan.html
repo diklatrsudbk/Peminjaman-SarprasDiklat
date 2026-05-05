@@ -170,56 +170,63 @@
                     this.password = '';
                 },
                 async confirmPass() {
-    if (this.password === '123456') {
-        if (this.modalType === 'delete') {
-            // 1. Ambil data baris tersebut untuk mendapatkan foto_url
-            const { data: item, error: fetchError } = await _sb
-                .from('peminjaman_ruangan')
-                .select('foto_url')
-                .eq('id', this.activeId)
-                .single();
-
-            if (!fetchError && item.foto_url) {
-                try {
-                    // 2. Ekstrak nama file dari URL
-                    // URL biasanya: .../storage/v1/object/public/bukti-foto/nama_file.jpg
-                    const urlParts = item.foto_url.split('/');
-                    const fileName = urlParts[urlParts.length - 1];
-
-                    // 3. Hapus file dari Storage Supabase
-                    const { error: storageError } = await _sb
-                        .storage
-                        .from('bukti-foto')
-                        .remove([fileName]);
-
-                    if (storageError) console.error("Gagal hapus file di storage:", storageError.message);
-                } catch (e) {
-                    console.error("Gagal memproses penghapusan foto:", e);
-                }
-            }
-
-            // 4. Hapus data dari tabel database (tetap dijalankan meskipun foto gagal)
-            const { error: dbError } = await _sb
-                .from('peminjaman_ruangan')
-                .delete()
-                .eq('id', this.activeId);
-            
-            if (!dbError) {
-                alert('Data dan file foto berhasil dibersihkan!');
-            } else {
-                alert('Gagal hapus data: ' + dbError.message);
-            }
-
-        } else {
-            // Logika Approve/Reject
-            await this.updateStatus(this.activeId, this.nextStatus);
-            alert('Status berhasil diupdate!');
-        }
-        this.modal = false;
-        this.fetchData();
-    } else { 
-        alert('Password Admin Salah!'); 
+    if (this.password !== '123456') {
+        alert('Password Admin Salah!');
+        return;
     }
+
+    if (this.modalType === 'delete') {
+        // 1. Ambil data untuk mendapatkan foto_url
+        const { data: item, error: fetchError } = await _sb
+            .from('peminjaman_ruangan')
+            .select('foto_url')
+            .eq('id', this.activeId)
+            .single();
+
+        if (!fetchError && item?.foto_url) {
+            try {
+                // 2. Ekstrak nama file dengan lebih aman
+                // Menggunakan URL object agar parameter seperti ?v=123 tidak ikut terbawa
+                const url = new URL(item.foto_url);
+                const pathParts = url.pathname.split('/');
+                const fileName = pathParts.pop(); // Mengambil elemen terakhir
+
+                // 3. Hapus file dari Storage Supabase
+                const { error: storageError } = await _sb
+                    .storage
+                    .from('bukti-foto')
+                    .remove([fileName]);
+
+                if (storageError) {
+                    console.error("Gagal hapus file di storage:", storageError.message);
+                    // Kita tidak pakai throw agar database tetap terhapus meski file storage gagal
+                }
+            } catch (e) {
+                console.error("Gagal memproses URL foto:", e);
+            }
+        }
+
+        // 4. Hapus data dari tabel database
+        const { error: dbError } = await _sb
+            .from('peminjaman_ruangan')
+            .delete()
+            .eq('id', this.activeId);
+
+        if (!dbError) {
+            alert('Data dan foto berhasil dihapus!');
+        } else {
+            alert('Gagal hapus data: ' + dbError.message);
+        }
+
+    } else {
+        // Logika Approve/Reject
+        await this.updateStatus(this.activeId, this.nextStatus);
+        alert('Status berhasil diupdate!');
+    }
+
+    this.modal = false;
+    this.password = ''; // Reset password field
+    if (typeof this.fetchData === 'function') this.fetchData();
 },
                 async updateStatus(id, status, extra = {}) {
                     await _sb.from('peminjaman_ruangan').update({ status, ...extra }).eq('id', id);
