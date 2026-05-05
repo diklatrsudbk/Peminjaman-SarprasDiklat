@@ -172,24 +172,48 @@
                 async confirmPass() {
     if (this.password === '123456') {
         if (this.modalType === 'delete') {
-            // 1. Ambil info data dulu untuk mendapatkan nama file fotonya
-            const { data: item } = await _sb.from('peminjaman_ruangan').select('foto_url').eq('id', this.activeId).single();
-            
-            // 2. Jika ada foto, hapus file fisiknya dari Storage
-            if (item && item.foto_url) {
-                // Ambil nama file dari URL (mengambil bagian setelah /bukti-foto/)
-                const fileName = item.foto_url.split('/').pop();
-                await _sb.storage.from('bukti-foto').remove([fileName]);
+            // 1. Ambil data baris tersebut untuk mendapatkan foto_url
+            const { data: item, error: fetchError } = await _sb
+                .from('peminjaman_ruangan')
+                .select('foto_url')
+                .eq('id', this.activeId)
+                .single();
+
+            if (!fetchError && item.foto_url) {
+                try {
+                    // 2. Ekstrak nama file dari URL
+                    // URL biasanya: .../storage/v1/object/public/bukti-foto/nama_file.jpg
+                    const urlParts = item.foto_url.split('/');
+                    const fileName = urlParts[urlParts.length - 1];
+
+                    // 3. Hapus file dari Storage Supabase
+                    const { error: storageError } = await _sb
+                        .storage
+                        .from('bukti-foto')
+                        .remove([fileName]);
+
+                    if (storageError) console.error("Gagal hapus file di storage:", storageError.message);
+                } catch (e) {
+                    console.error("Gagal memproses penghapusan foto:", e);
+                }
             }
 
-            // 3. Baru hapus data dari tabel database
-            const { error } = await _sb.from('peminjaman_ruangan').delete().eq('id', this.activeId);
+            // 4. Hapus data dari tabel database (tetap dijalankan meskipun foto gagal)
+            const { error: dbError } = await _sb
+                .from('peminjaman_ruangan')
+                .delete()
+                .eq('id', this.activeId);
             
-            if(!error) alert('Data dan Foto berhasil dihapus!');
+            if (!dbError) {
+                alert('Data dan file foto berhasil dibersihkan!');
+            } else {
+                alert('Gagal hapus data: ' + dbError.message);
+            }
+
         } else {
-            // Logika untuk Approve/Reject tetap sama
+            // Logika Approve/Reject
             await this.updateStatus(this.activeId, this.nextStatus);
-            alert('Berhasil diupdate!');
+            alert('Status berhasil diupdate!');
         }
         this.modal = false;
         this.fetchData();
