@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pinjam Kunci Loker</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 p-4" x-data="lokerForm()">
+    <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+        <div class="bg-indigo-600 p-6 text-white text-center">
+            <h1 class="text-xl font-bold uppercase tracking-widest">Peminjaman Kunci Loker</h1>
+        </div>
+
+        <form @submit.prevent="submit" class="p-6 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Nama Peminjam</label>
+                    <input type="text" x-model="f.nama_peminjam" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">NIM / ID</label>
+                    <input type="text" x-model="f.nim" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none transition-all">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Nama Institusi</label>
+                    <input type="text" x-model="f.nama_institusi" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Jurusan</label>
+                    <input type="text" x-model="f.jurusan" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none transition-all">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">No. Telp (WA)</label>
+                    <input type="text" x-model="f.no_telp" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none font-mono">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Kunci Loker</label>
+                    <select x-model="f.jenis_kunci" required class="w-full border-b-2 border-slate-100 p-2 focus:border-indigo-500 outline-none bg-white">
+                        <option value="">Pilih Jenis</option>
+                        <option value="Perempuan">Perempuan</option>
+                        <option value="Laki-laki">Laki-laki</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 italic text-slate-500 text-xs">
+                <div>
+                    <label class="block mb-1">Tanggal Mulai</label>
+                    <input type="date" x-model="f.tanggal_mulai" required class="w-full border border-slate-200 p-2 rounded-lg outline-none focus:ring-2 ring-indigo-100">
+                </div>
+                <div>
+                    <label class="block mb-1">Tanggal Selesai</label>
+                    <input type="date" x-model="f.tanggal_selesai" required class="w-full border border-slate-200 p-2 rounded-lg outline-none focus:ring-2 ring-indigo-100">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-indigo-700 transition-all">
+                SIMPAN PEMINJAMAN
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const _sb = supabase.createClient("URL_ANDA", "KEY_ANDA");
+        function lokerForm() {
+            return {
+                f: { nama_peminjam: '', nim: '', nama_institusi: '', jurusan: '', no_telp: '', jenis_kunci: '', tanggal_mulai: '', tanggal_selesai: '', status: 'Proses' },
+                async submit() {
+                    const { error } = await _sb.from('peminjaman_loker').insert([this.f]);
+                    if(!error) { alert('Berhasil!'); window.location.href='daftar_loker.html'; }
+                    else { alert(error.message); }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
