@@ -23,6 +23,8 @@
             </a>
         </div>
 
+        
+
         <div class="w-full overflow-x-auto bg-white rounded-2xl shadow-sm border border-gray-200">
             <table class="w-full text-left border-collapse min-w-[900px]">
                 <thead class="bg-gray-100 text-gray-600 uppercase text-[11px] font-bold">
@@ -83,6 +85,9 @@
                                     <template x-if="item.foto_url">
                                         <a :href="item.foto_url" target="_blank" class="text-blue-500 hover:underline text-[10px] font-bold"><i class="fa fa-image"></i> LIHAT FOTO</a>
                                     </template>
+                                    <button @click="openModal('delete', item.id)" class="bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-red-600 hover:text-white transition-colors">
+    <i class="fa fa-trash"></i>
+</button>
                                 </div>
                             </td>
                         </tr>
