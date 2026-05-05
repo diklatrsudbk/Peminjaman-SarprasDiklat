@@ -16,18 +16,19 @@
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
         .btn-aksi {
-            min-width: 90px;
-            height: 34px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            font-size: 10px;
-            font-weight: 700;
-            border-radius: 8px;
-            transition: all 0.2s;
-            text-transform: uppercase;
-        }
+    width: 80px; /* Lebar tombol disamakan */
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 8px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
         
         .badge-status {
             display: inline-block;
@@ -113,48 +114,51 @@
                                 <span :class="colors[item.status]" class="badge-status" x-text="item.status"></span>
                             </td>
 
-                            <td class="p-4 text-center">
-                                <div class="flex flex-wrap justify-center items-center gap-2">
-                                    
-                                    <template x-if="item.status === 'Request'">
-                                        <div class="flex gap-2">
-                                            <button @click="openModal('pass', item.id, 'Booking')" class="btn-aksi bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md">
-                                                <i class="fa fa-check"></i> Approve
-                                            </button>
-                                            <button @click="openModal('pass', item.id, 'Cancel')" class="btn-aksi bg-rose-500 text-white hover:bg-rose-600 hover:shadow-md">
-                                                <i class="fa fa-times"></i> Reject
-                                            </button>
-                                        </div>
-                                    </template>
+                            <td class="p-4">
+    <div class="flex items-center justify-center gap-2">
+        
+        <template x-if="item.status === 'Request'">
+            <div class="flex gap-1">
+                <button @click="openModal('pass', item.id, 'Booking')" class="btn-aksi bg-emerald-500 text-white hover:bg-emerald-600">
+                    <i class="fa fa-check"></i> ACC
+                </button>
+                <button @click="openModal('pass', item.id, 'Cancel')" class="btn-aksi bg-rose-500 text-white hover:bg-rose-600">
+                    <i class="fa fa-times"></i> NO
+                </button>
+            </div>
+        </template>
 
-                                    <template x-if="item.status === 'Booking'">
-                                        <div class="flex gap-2">
-                                            <button @click="openModal('upload', item.id)" class="btn-aksi bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md shadow-blue-100">
-                                                <i class="fa fa-camera"></i> Foto
-                                            </button>
-                                            <button @click="updateStatus(item.id, 'Cancel')" class="btn-aksi bg-slate-400 text-white hover:bg-slate-500">
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </template>
+        <template x-if="item.status === 'Booking'">
+            <div class="flex gap-1">
+                <button @click="openModal('upload', item.id)" class="btn-aksi bg-blue-600 text-white hover:bg-blue-700">
+                    <i class="fa fa-camera"></i> FOTO
+                </button>
+                <button @click="updateStatus(item.id, 'Cancel')" class="btn-aksi bg-slate-400 text-white hover:bg-slate-500">
+                    BATAL
+                </button>
+            </div>
+        </template>
 
-                                    <template x-if="item.status === 'Sedang Di Pinjam'">
-                                        <button @click="updateStatus(item.id, 'Selesai')" class="btn-aksi bg-teal-600 text-white hover:bg-teal-700 shadow-md !min-w-[140px]">
-                                            <i class="fa fa-flag-checkered"></i> Selesai
-                                        </button>
-                                    </template>
+        <template x-if="item.status === 'Sedang Di Pinjam'">
+            <button @click="updateStatus(item.id, 'Selesai')" class="btn-aksi bg-teal-600 text-white hover:bg-teal-700 !min-w-[120px]">
+                <i class="fa fa-flag-checkered"></i> SELESAI
+            </button>
+        </template>
 
-                                    <div class="flex items-center gap-1 border-l pl-2 border-slate-200">
-                                        <template x-if="item.foto_url">
-                                            <a :href="item.foto_url" target="_blank" class="w-8 h-8 flex items-center justify-center bg-sky-50 text-sky-600 rounded-lg hover:bg-sky-600 hover:text-white transition-all shadow-sm" title="Lihat Foto Bukti">
-                                                <i class="fa fa-image text-xs"></i>
-                                            </a>
-                                        </template>
-                                        <button @click="openModal('delete', item.id)" class="w-8 h-8 flex items-center justify-center bg-rose-50 text-rose-500 rounded-lg hover:bg-rose-600 hover:text-white transition-all shadow-sm" title="Hapus Data">
-                                            <i class="fa fa-trash text-[10px]"></i>
-                                        </button>
-                                    </div>
-                                </div>
+        <div class="flex items-center gap-1 border-l pl-2 border-slate-200">
+            <template x-if="item.foto_url">
+                <a :href="item.foto_url" target="_blank" class="w-8 h-8 flex items-center justify-center bg-sky-50 text-sky-600 rounded-lg hover:bg-sky-600 hover:text-white transition-all shadow-sm" title="Lihat Foto">
+                    <i class="fa fa-image text-xs"></i>
+                </a>
+            </template>
+            <button @click="openModal('delete', item.id)" class="w-8 h-8 flex items-center justify-center bg-rose-50 text-rose-400 rounded-lg hover:bg-rose-600 hover:text-white transition-all shadow-sm" title="Hapus">
+                <i class="fa fa-trash text-[10px]"></i>
+            </button>
+        </div>
+
+    </div>
+</td>
+
                             </td>
                         </tr>
                     </template>
