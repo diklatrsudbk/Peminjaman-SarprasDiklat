@@ -170,20 +170,33 @@
                     this.password = '';
                 },
                 async confirmPass() {
-                    if(this.password === '123456') {
-                        if(this.modalType === 'delete') {
-                            const { error } = await _sb.from('peminjaman_ruangan').delete().eq('id', this.activeId);
-                            if(!error) alert('Data dihapus!');
-                        } else {
-                            await this.updateStatus(this.activeId, this.nextStatus);
-                            alert('Berhasil diupdate!');
-                        }
-                        this.modal = false;
-                        this.fetchData();
-                    } else { 
-                        alert('Password Admin Salah!'); 
-                    }
-                },
+    if (this.password === '123456') {
+        if (this.modalType === 'delete') {
+            // 1. Ambil info data dulu untuk mendapatkan nama file fotonya
+            const { data: item } = await _sb.from('peminjaman_ruangan').select('foto_url').eq('id', this.activeId).single();
+            
+            // 2. Jika ada foto, hapus file fisiknya dari Storage
+            if (item && item.foto_url) {
+                // Ambil nama file dari URL (mengambil bagian setelah /bukti-foto/)
+                const fileName = item.foto_url.split('/').pop();
+                await _sb.storage.from('bukti-foto').remove([fileName]);
+            }
+
+            // 3. Baru hapus data dari tabel database
+            const { error } = await _sb.from('peminjaman_ruangan').delete().eq('id', this.activeId);
+            
+            if(!error) alert('Data dan Foto berhasil dihapus!');
+        } else {
+            // Logika untuk Approve/Reject tetap sama
+            await this.updateStatus(this.activeId, this.nextStatus);
+            alert('Berhasil diupdate!');
+        }
+        this.modal = false;
+        this.fetchData();
+    } else { 
+        alert('Password Admin Salah!'); 
+    }
+},
                 async updateStatus(id, status, extra = {}) {
                     await _sb.from('peminjaman_ruangan').update({ status, ...extra }).eq('id', id);
                     this.fetchData();
