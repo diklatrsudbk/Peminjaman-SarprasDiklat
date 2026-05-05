@@ -220,6 +220,31 @@
 }
             }
         }
+
+        // Tambahkan di dalam return objek roomList()
+async deleteData(id) {
+    const { error } = await _sb.from('peminjaman_ruangan').delete().eq('id', id);
+    if (!error) {
+        alert('Data berhasil dihapus');
+        this.fetchData();
+    } else {
+        alert('Gagal menghapus: ' + error.message);
+    }
+},
+
+// Update fungsi confirmPass() agar mendukung aksi delete
+async confirmPass() {
+    if (this.password === '123456') {
+        if (this.modalType === 'delete') {
+            await this.deleteData(this.activeId);
+        } else {
+            await this.updateStatus(this.activeId, this.nextStatus);
+        }
+        this.modal = false;
+    } else {
+        alert('Password Admin Salah!');
+    }
+},
     </script>
 </body>
 </html>
