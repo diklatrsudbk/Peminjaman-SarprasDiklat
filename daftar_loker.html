@@ -10,8 +10,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         [x-cloak] { display: none !important; }
-        .custom-scroll::-webkit-scrollbar { height: 6px; }
+        .custom-scroll::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .btn-aksi {
+            width: 100px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 8px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body class="bg-slate-50 p-4 md:p-6" x-data="lokerManager()" x-init="fetchData()">
@@ -36,7 +51,7 @@
             <table class="w-full text-left border-collapse min-w-[1100px]">
                 <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 text-[10px] font-bold uppercase">
                     <tr>
-                        <th class="p-4 text-center">No</th>
+                        <th class="p-4 text-center w-12">No</th>
                         <th class="p-4">Peminjam</th>
                         <th class="p-4">Kunci & Jumlah</th>
                         <th class="p-4">No. Kunci Fisik</th>
@@ -82,26 +97,33 @@
                                 <div class="flex justify-center items-center gap-2">
                                     
                                     <template x-if="item.status === 'Request'">
-                                        <button @click="panggilPeserta(item)" class="h-9 px-4 bg-emerald-500 text-white rounded-lg text-[10px] font-bold hover:bg-emerald-600 flex items-center gap-2 transition-all">
-                                            <i class="fab fa-whatsapp text-sm"></i> PANGGIL KE LT.6
+                                        <button @click="panggilPeserta(item)" class="btn-aksi bg-emerald-500 text-white hover:bg-emerald-600">
+                                            <i class="fab fa-whatsapp"></i> WA PANGGIL
                                         </button>
                                     </template>
 
                                     <template x-if="item.status === 'Request'">
-                                        <button @click="openAcc(item.id)" class="h-9 px-4 bg-indigo-600 text-white rounded-lg text-[10px] font-bold hover:bg-indigo-700 flex items-center gap-2 transition-all">
-                                            <i class="fa fa-key"></i> BERIKAN KUNCI
+                                        <button @click="openAcc(item)" class="btn-aksi bg-indigo-600 text-white hover:bg-indigo-700">
+                                            <i class="fa fa-key"></i> PLOT KUNCI
                                         </button>
                                     </template>
 
                                     <template x-if="item.status === 'Sedang Di Pinjam'">
-                                        <button @click="openModal('upload', item.id)" class="h-9 px-4 bg-slate-800 text-white rounded-lg text-[10px] font-bold hover:bg-black transition-all">
-                                            KEMBALIKAN KUNCI
+                                        <button @click="openModal('upload', item.id)" class="btn-aksi bg-slate-800 text-white hover:bg-black">
+                                            KEMBALI
                                         </button>
                                     </template>
 
-                                    <button @click="openModal('delete', item.id)" class="w-9 h-9 flex items-center justify-center text-rose-300 hover:text-rose-600 transition-colors">
-                                        <i class="fa fa-trash-alt"></i>
-                                    </button>
+                                    <div class="flex items-center gap-1 border-l pl-2 border-slate-200">
+                                        <template x-if="item.foto_url">
+                                            <a :href="item.foto_url" target="_blank" class="w-8 h-8 flex items-center justify-center bg-sky-50 text-sky-600 rounded-lg hover:bg-sky-600 hover:text-white transition-all">
+                                                <i class="fa fa-image text-xs"></i>
+                                            </a>
+                                        </template>
+                                        <button @click="openModal('delete', item.id)" class="w-8 h-8 flex items-center justify-center text-rose-300 hover:text-rose-600 transition-colors">
+                                            <i class="fa fa-trash-alt"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -112,42 +134,59 @@
     </div>
 
     <div x-show="modal" x-cloak class="fixed inset-0 bg-slate-900/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl overflow-hidden p-6">
+        <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl overflow-hidden p-6" @click.away="modal = false">
             
             <h3 class="text-lg font-bold text-slate-800 mb-4" x-text="modalTitle"></h3>
 
             <template x-if="modalType === 'acc'">
-    <div class="space-y-4">
-        <p class="text-[10px] text-slate-400 font-bold uppercase">Plotting Nomor Kunci Fisik</p>
-        
-        <div class="max-h-60 overflow-y-auto pr-2 space-y-3 custom-scroll">
-            <template x-for="(n, index) in Array.from({length: selectedItem.jumlah})">
-                <div class="flex items-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-100">
-                    <span class="w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm font-black text-indigo-600" 
-                          x-text="selectedItem.jenis_kunci === 'Perempuan' ? 'P' : 'L'">
-                    </span>
-                    <input type="number" 
-                           x-model="noKunciArray[index]" 
-                           placeholder="Nomor..." 
-                           class="flex-1 bg-transparent border-b-2 border-slate-200 focus:border-indigo-500 outline-none p-2 font-bold text-lg">
+                <div class="space-y-4">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Masukkan Angka Nomor Kunci Fisik</p>
+                    
+                    <div class="max-h-64 overflow-y-auto pr-1 space-y-3 custom-scroll">
+                        <template x-for="(n, index) in Array.from({length: selectedItem.jumlah})" :key="index">
+                            <div class="flex items-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-100">
+                                <span class="w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm font-black text-indigo-600" 
+                                      x-text="selectedItem.jenis_kunci === 'Perempuan' ? 'P' : 'L'">
+                                </span>
+                                <input type="number" 
+                                       x-model="noKunciArray[index]" 
+                                       placeholder="Nomor..." 
+                                       required
+                                       class="flex-1 bg-transparent border-b-2 border-slate-200 focus:border-indigo-500 outline-none p-2 font-bold text-lg">
+                            </div>
+                        </template>
+                    </div>
+
+                    <button @click="prosesAcc()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 shadow-lg transition-all mt-4">
+                        SIMPAN & PINJAMKAN
+                    </button>
                 </div>
             </template>
-        </div>
 
-        <button @click="prosesAcc()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 shadow-lg transition-all mt-4">
-            SIMPAN & SERAHKAN KUNCI
-        </button>
-    </div>
-</template>
+            <template x-if="modalType === 'upload'">
+                <div class="text-center">
+                    <div x-show="!isUploading">
+                        <label class="cursor-pointer group block border-2 border-dashed border-slate-200 rounded-3xl p-8 hover:border-indigo-400">
+                            <i class="fa fa-camera text-3xl text-slate-300 mb-2 group-hover:text-indigo-500 transition-colors"></i>
+                            <p class="text-sm font-bold text-slate-700">Ambil Foto Bukti</p>
+                            <input type="file" capture="environment" accept="image/*" @change="uploadPhoto" class="hidden">
+                        </label>
+                    </div>
+                    <div x-show="isUploading" class="py-10">
+                        <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+                        <p class="text-xs font-bold text-indigo-600">Mengupload Bukti...</p>
+                    </div>
+                </div>
+            </template>
 
             <template x-if="modalType === 'delete'">
                 <div>
-                    <input type="password" x-model="password" class="w-full border-2 border-slate-100 p-4 rounded-2xl mb-4 text-center" placeholder="Password Admin">
+                    <input type="password" x-model="password" class="w-full border-2 border-slate-100 p-4 rounded-2xl mb-4 text-center font-mono" placeholder="Password Admin">
                     <button @click="confirmDelete()" class="w-full bg-rose-600 text-white py-4 rounded-2xl font-bold">HAPUS PERMANEN</button>
                 </div>
             </template>
 
-            <button @click="modal = false" class="w-full mt-4 text-slate-400 text-xs font-bold uppercase tracking-widest">Batal</button>
+            <button @click="modal = false" class="w-full mt-4 text-slate-400 text-xs font-bold uppercase tracking-widest text-center block">Batal</button>
         </div>
     </div>
 
@@ -157,50 +196,107 @@
         const _sb = supabase.createClient(SB_URL, SB_KEY);
 
         function lokerManager() {
-    return {
-        // ... (data lainnya)
-        selectedItem: {}, // Untuk menyimpan data item yang sedang di-ACC
-        noKunciArray: [], // Untuk menyimpan list nomor kunci
+            return {
+                list: [],
+                modal: false,
+                modalType: '',
+                modalTitle: '',
+                activeId: null,
+                selectedItem: {},
+                noKunciArray: [],
+                password: '',
+                isUploading: false,
+                colors: {
+                    'Request': 'bg-amber-100 text-amber-700',
+                    'Sedang Di Pinjam': 'bg-indigo-600 text-white shadow-indigo-100',
+                    'Selesai': 'bg-emerald-100 text-emerald-700'
+                },
 
-        async fetchData() {
-            const { data } = await _sb.from('peminjaman_loker').select('*').order('id', {ascending: false});
-            this.list = data || [];
-        },
+                async fetchData() {
+                    const { data } = await _sb.from('peminjaman_loker').select('*').order('id', {ascending: false});
+                    this.list = data || [];
+                },
 
-        openAcc(item) {
-            this.selectedItem = item;
-            this.activeId = item.id;
-            this.modalType = 'acc';
-            this.modalTitle = 'Persetujuan Nomor Kunci';
-            this.noKunciArray = []; // Reset array
-            this.modal = true;
-        },
+                panggilPeserta(item) {
+                    const pesan = `Halo ${item.nama_peminjam}, Request kunci loker ${item.jenis_kunci} (${item.jumlah} buah) sudah kami terima. Silakan datang ke Lantai 6 Ruang Diklat untuk pengambilan kunci. Terima kasih.`;
+                    const url = `https://wa.me/${item.no_telp}?text=${encodeURIComponent(pesan)}`;
+                    window.open(url, '_blank');
+                },
 
-        async prosesAcc() {
-            // Validasi: Semua input harus diisi angka
-            if(this.noKunciArray.length < this.selectedItem.jumlah || this.noKunciArray.includes(undefined) || this.noKunciArray.includes('')) {
-                return alert('Harap isi semua nomor kunci!');
+                openAcc(item) {
+                    this.selectedItem = item;
+                    this.activeId = item.id;
+                    this.modalType = 'acc';
+                    this.modalTitle = 'Persetujuan Nomor Kunci';
+                    this.noKunciArray = Array(item.jumlah).fill(''); // Inisialisasi array kosong sesuai jumlah
+                    this.modal = true;
+                },
+
+                async prosesAcc() {
+                    // Cek kelengkapan input angka
+                    const valid = this.noKunciArray.every(num => num !== null && num !== undefined && num !== '');
+                    if(!valid || this.noKunciArray.length < this.selectedItem.jumlah) {
+                        return alert('Harap isi semua nomor kunci!');
+                    }
+
+                    // Format otomatis: prefix (P/L) + nomor (contoh: P1, P2)
+                    const prefix = this.selectedItem.jenis_kunci === 'Perempuan' ? 'P' : 'L';
+                    const formattedKunci = this.noKunciArray.map(num => prefix + num).join(', ');
+
+                    const { error } = await _sb.from('peminjaman_loker').update({
+                        no_kunci: formattedKunci,
+                        status: 'Sedang Di Pinjam'
+                    }).eq('id', this.activeId);
+
+                    if(!error) {
+                        this.modal = false;
+                        this.fetchData();
+                        alert('Kunci ' + formattedKunci + ' berhasil diserahkan!');
+                    } else {
+                        alert(error.message);
+                    }
+                },
+
+                openModal(type, id) {
+                    this.activeId = id;
+                    this.modalType = type;
+                    this.modalTitle = type === 'delete' ? 'Hapus Data' : 'Kembalikan Kunci';
+                    this.password = '';
+                    this.modal = true;
+                },
+
+                async uploadPhoto(e) {
+                    const file = e.target.files[0];
+                    if(!file) return;
+                    this.isUploading = true;
+                    try {
+                        const name = `loker_${this.activeId}_${Date.now()}.jpg`;
+                        await _sb.storage.from('bukti-foto').upload(name, file);
+                        const { data: { publicUrl } } = _sb.storage.from('bukti-foto').getPublicUrl(name);
+                        
+                        await _sb.from('peminjaman_loker').update({ 
+                            status: 'Selesai', 
+                            bukti_foto_kembali: publicUrl // Menyimpan ke kolom bukti_foto_kembali
+                        }).eq('id', this.activeId);
+                        
+                        this.modal = false; 
+                        this.fetchData();
+                        alert('Kunci Berhasil Dikembalikan!');
+                    } catch (err) { 
+                        alert(err.message); 
+                    } finally { 
+                        this.isUploading = false; 
+                    }
+                },
+
+                async confirmDelete() {
+                    if(this.password !== '123456') return alert('Password Salah');
+                    await _sb.from('peminjaman_loker').delete().eq('id', this.activeId);
+                    this.modal = false;
+                    this.fetchData();
+                }
             }
-
-            // Gabungkan awalan P/L dengan angka yang diinput
-            const prefix = this.selectedItem.jenis_kunci === 'Perempuan' ? 'P' : 'L';
-            const formattedKunci = this.noKunciArray.map(num => prefix + num).join(', ');
-
-            const { error } = await _sb.from('peminjaman_loker').update({
-                no_kunci: formattedKunci,
-                status: 'Sedang Di Pinjam'
-            }).eq('id', this.activeId);
-
-            if(!error) {
-                this.modal = false;
-                this.fetchData();
-                alert('Kunci ' + formattedKunci + ' telah diserahkan!');
-            }
-        },
-        
-        // ... (fungsi lainnya)
-    }
-}
+        }
     </script>
 </body>
 </html>
