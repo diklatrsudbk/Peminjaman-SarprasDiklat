@@ -66,6 +66,7 @@
                         <th class="p-4">Peminjam & NIM</th>
                         <th class="p-4">Institusi & Jurusan</th>
                         <th class="p-4 text-center">Kunci</th>
+                        <th class="p-4">No. Kunci</th>
                         <th class="p-4">Waktu Pinjam</th>
                         <th class="p-4 text-center">Durasi</th>
                         <th class="p-4 text-center">Status</th>
@@ -88,6 +89,15 @@
                                 <div class="text-slate-700 font-medium" x-text="item.nama_institusi"></div>
                                 <div class="text-[10px] text-slate-400" x-text="item.jurusan"></div>
                             </td>
+
+                            <td class="p-4">
+    <template x-if="item.status === 'Request'">
+        <span class="text-slate-400 italic text-[10px]">Menunggu ACC...</span>
+    </template>
+    <template x-if="item.status !== 'Request'">
+        <span class="font-bold text-indigo-600" x-text="item.no_kunci"></span>
+    </template>
+</td>
 
                             <td class="p-4 text-center">
     <div class="flex flex-col items-center gap-1">
@@ -118,12 +128,22 @@
                             </td>
 
                             <td class="p-4">
-                                <div class="flex items-center justify-center gap-2">
-                                    <template x-if="item.status === 'Proses'">
-                                        <button @click="openModal('upload', item.id)" class="btn-aksi bg-indigo-600 text-white hover:bg-indigo-700">
-                                            KEMBALI
-                                        </button>
-                                    </template>
+    <div class="flex items-center justify-center gap-2">
+        <!-- Tombol ACC muncul jika status Request -->
+        <template x-if="item.status === 'Request'">
+            <button @click="openModal('acc', item.id)" class="btn-aksi bg-emerald-500 text-white hover:bg-emerald-600">
+                ACC
+            </button>
+        </template>
+
+        <!-- Tombol KEMBALI muncul jika status Dipinjam -->
+        <template x-if="item.status === 'Dipinjam'">
+            <button @click="openModal('upload', item.id)" class="btn-aksi bg-indigo-600 text-white hover:bg-indigo-700">
+                KEMBALI
+            </button>
+        </template>
+    </div>
+</td>
                                     
                                     <div class="flex items-center gap-1 border-l pl-2 border-slate-200">
                                         <template x-if="item.foto_url">
