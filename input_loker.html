@@ -88,16 +88,18 @@
             return {
                 loading: false,
                 f: { 
-                    nama_peminjam: '', 
-                    nim: '', 
-                    nama_institusi: '', 
-                    jurusan: '', 
-                    no_telp: '', 
-                    jenis_kunci: '', 
-                    tanggal_mulai: '', 
-                    tanggal_selesai: '', 
-                    status: 'Proses' 
-                },
+    nama_peminjam: '', 
+    nim: '', 
+    nama_institusi: '', 
+    jurusan: '', 
+    no_telp: '', 
+    jenis_kunci: '', 
+    jumlah: 1, // Kolom jumlah yang tadi
+    no_kunci: '', // Kosong saat request
+    tanggal_mulai: '', 
+    tanggal_selesai: '', 
+    status: 'Request' // Status awal
+},
                 async submit() {
                     this.loading = true;
                     try {
