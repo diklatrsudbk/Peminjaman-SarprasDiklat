@@ -117,14 +117,28 @@
             <h3 class="text-lg font-bold text-slate-800 mb-4" x-text="modalTitle"></h3>
 
             <template x-if="modalType === 'acc'">
-                <div>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Input Nomor Kunci Fisik</p>
-                    <input type="text" x-model="noKunciInput" class="w-full border-2 border-slate-100 p-4 rounded-2xl mb-4 text-center text-xl font-bold text-indigo-600 outline-none focus:border-indigo-500" placeholder="Contoh: L10, L12">
-                    <button @click="prosesAcc()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all">
-                        PINJAMKAN SEKARANG
-                    </button>
+    <div class="space-y-4">
+        <p class="text-[10px] text-slate-400 font-bold uppercase">Plotting Nomor Kunci Fisik</p>
+        
+        <div class="max-h-60 overflow-y-auto pr-2 space-y-3 custom-scroll">
+            <template x-for="(n, index) in Array.from({length: selectedItem.jumlah})">
+                <div class="flex items-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-100">
+                    <span class="w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm font-black text-indigo-600" 
+                          x-text="selectedItem.jenis_kunci === 'Perempuan' ? 'P' : 'L'">
+                    </span>
+                    <input type="number" 
+                           x-model="noKunciArray[index]" 
+                           placeholder="Nomor..." 
+                           class="flex-1 bg-transparent border-b-2 border-slate-200 focus:border-indigo-500 outline-none p-2 font-bold text-lg">
                 </div>
             </template>
+        </div>
+
+        <button @click="prosesAcc()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 shadow-lg transition-all mt-4">
+            SIMPAN & SERAHKAN KUNCI
+        </button>
+    </div>
+</template>
 
             <template x-if="modalType === 'delete'">
                 <div>
@@ -143,69 +157,50 @@
         const _sb = supabase.createClient(SB_URL, SB_KEY);
 
         function lokerManager() {
-            return {
-                list: [],
-                modal: false,
-                modalType: '',
-                modalTitle: '',
-                activeId: null,
-                noKunciInput: '',
-                password: '',
-                colors: {
-                    'Request': 'bg-amber-100 text-amber-700',
-                    'Sedang Di Pinjam': 'bg-indigo-600 text-white shadow-indigo-100',
-                    'Selesai': 'bg-emerald-100 text-emerald-700'
-                },
+    return {
+        // ... (data lainnya)
+        selectedItem: {}, // Untuk menyimpan data item yang sedang di-ACC
+        noKunciArray: [], // Untuk menyimpan list nomor kunci
 
-                async fetchData() {
-                    const { data } = await _sb.from('peminjaman_loker').select('*').order('id', {ascending: false});
-                    this.list = data || [];
-                },
+        async fetchData() {
+            const { data } = await _sb.from('peminjaman_loker').select('*').order('id', {ascending: false});
+            this.list = data || [];
+        },
 
-                panggilPeserta(item) {
-                    const pesan = `Halo ${item.nama_peminjam}, Request kunci loker ${item.jenis_kunci} (${item.jumlah} buah) sudah kami terima. Silakan datang ke Lantai 6 Ruang Diklat untuk pengambilan kunci. Terima kasih.`;
-                    const url = `https://wa.me/${item.no_telp}?text=${encodeURIComponent(pesan)}`;
-                    window.open(url, '_blank');
-                },
+        openAcc(item) {
+            this.selectedItem = item;
+            this.activeId = item.id;
+            this.modalType = 'acc';
+            this.modalTitle = 'Persetujuan Nomor Kunci';
+            this.noKunciArray = []; // Reset array
+            this.modal = true;
+        },
 
-                openAcc(id) {
-                    this.activeId = id;
-                    this.modalType = 'acc';
-                    this.modalTitle = 'Persetujuan Nomor Kunci';
-                    this.noKunciInput = '';
-                    this.modal = true;
-                },
-
-                async prosesAcc() {
-                    if(!this.noKunciInput) return alert('Input nomor kunci fisik!');
-                    
-                    const { error } = await _sb.from('peminjaman_loker').update({
-                        no_kunci: this.noKunciInput,
-                        status: 'Sedang Di Pinjam'
-                    }).eq('id', this.activeId);
-
-                    if(!error) {
-                        this.modal = false;
-                        this.fetchData();
-                        alert('Kunci telah diserahkan!');
-                    }
-                },
-
-                openModal(type, id) {
-                    this.activeId = id;
-                    this.modalType = type;
-                    this.modalTitle = type === 'delete' ? 'Hapus Data' : 'Kembalikan Kunci';
-                    this.modal = true;
-                },
-
-                async confirmDelete() {
-                    if(this.password !== '123456') return alert('Password Salah');
-                    await _sb.from('peminjaman_loker').delete().eq('id', this.activeId);
-                    this.modal = false;
-                    this.fetchData();
-                }
+        async prosesAcc() {
+            // Validasi: Semua input harus diisi angka
+            if(this.noKunciArray.length < this.selectedItem.jumlah || this.noKunciArray.includes(undefined) || this.noKunciArray.includes('')) {
+                return alert('Harap isi semua nomor kunci!');
             }
-        }
+
+            // Gabungkan awalan P/L dengan angka yang diinput
+            const prefix = this.selectedItem.jenis_kunci === 'Perempuan' ? 'P' : 'L';
+            const formattedKunci = this.noKunciArray.map(num => prefix + num).join(', ');
+
+            const { error } = await _sb.from('peminjaman_loker').update({
+                no_kunci: formattedKunci,
+                status: 'Sedang Di Pinjam'
+            }).eq('id', this.activeId);
+
+            if(!error) {
+                this.modal = false;
+                this.fetchData();
+                alert('Kunci ' + formattedKunci + ' telah diserahkan!');
+            }
+        },
+        
+        // ... (fungsi lainnya)
+    }
+}
     </script>
 </body>
 </html>
