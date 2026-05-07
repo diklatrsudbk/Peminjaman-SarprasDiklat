@@ -3,160 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Loker - Lantai 6</title>
+    <title>Daftar Antrean Loker - RSUD Bandung Kiwari</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        [x-cloak] { display: none !important; }
-        .custom-scroll::-webkit-scrollbar { height: 6px; width: 6px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    </style>
 </head>
-<body class="bg-slate-50 p-4 md:p-6" x-data="lokerManager()" x-init="fetchData()">
-
-    <div class="max-w-7xl mx-auto">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-            <div class="flex items-center gap-4">
-                <div class="bg-indigo-600 p-3 rounded-xl text-white shadow-lg shadow-indigo-100">
-                    <i class="fa fa-key text-xl"></i>
-                </div>
-                <div>
-                    <h2 class="text-xl font-black text-slate-800 tracking-tight">Admin Loker - Lantai 6</h2>
-                    <div class="relative mt-1">
-                        <input type="text" x-model="searchQuery" placeholder="Cari Nama / No. Kunci..." class="pl-8 pr-4 py-1 text-[10px] border rounded-full outline-none focus:border-indigo-500 w-48 md:w-64 font-bold uppercase">
-                        <i class="fa fa-search absolute left-3 top-2 text-slate-300 text-[10px]"></i>
-                    </div>
-                </div>
+<body class="bg-slate-50 p-4" x-data="lokerList()">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">Antrean Kunci Loker</h1>
+                <p class="text-sm text-slate-500">Manajemen Peminjaman Ruang Diklat Lt. 6</p>
             </div>
-            <div class="flex gap-2">
-                <a href="index.html" class="bg-slate-100 text-slate-600 p-2.5 rounded-xl hover:bg-slate-200"><i class="fa fa-home"></i></a>
-                <a href="input_loker.html" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-md hover:bg-indigo-700 transition-all text-xs tracking-widest">+ REQUEST</a>
-            </div>
+            <button @click="fetchData" class="bg-white p-3 rounded-full shadow-sm hover:rotate-180 transition-all duration-500">
+                <i class="fa fa-sync text-indigo-600"></i>
+            </button>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden custom-scroll overflow-x-auto">
-            <table class="w-full text-left border-collapse min-w-[1100px]">
-                <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 text-[10px] font-bold uppercase">
-                    <tr>
-                        <th class="p-4 text-center w-12">No</th>
-                        <th class="p-4">Peminjam</th>
-                        <th class="p-4">Kunci & Qty</th>
-                        <th class="p-4">No. Kunci Fisik</th>
-                        <th class="p-4">Status</th>
-                        <th class="p-4 text-center">Aksi Manajemen</th>
-                    </tr>
-                </thead>
-                <tbody class="text-sm">
-                    <template x-for="(item, i) in filteredList" :key="item.id">
-                        <tr class="border-b last:border-0 hover:bg-slate-50 transition-colors">
-                            <td class="p-4 text-center font-mono text-slate-300" x-text="i+1"></td>
-                            <td class="p-4">
-                                <div class="font-bold text-slate-800" x-text="item.nama_peminjam"></div>
-                                <div class="text-[10px] text-slate-400 font-medium" x-text="item.nim + ' | ' + item.jurusan"></div>
-                            </td>
-                            <td class="p-4">
-                                <span :class="item.jenis_kunci === 'Perempuan' ? 'text-pink-600 bg-pink-50' : 'text-blue-600 bg-blue-50'" 
-                                      class="px-2 py-1 rounded-md text-[10px] font-black border border-current uppercase">
-                                    <span x-text="item.jenis_kunci"></span> | QTY: <span x-text="item.jumlah"></span>
-                                </span>
-                            </td>
-                            <td class="p-4">
-                                <template x-if="item.no_kunci">
-                                    <span class="bg-indigo-600 text-white px-3 py-1 rounded-lg font-bold text-[10px] shadow-sm" x-text="item.no_kunci"></span>
-                                </template>
-                                <template x-if="!item.no_kunci">
-                                    <span class="text-slate-300 italic text-[10px]">Menunggu Plotting...</span>
-                                </template>
-                            </td>
-                            <td class="p-4">
-                                <span :class="colors[item.status]" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase" x-text="item.status"></span>
-                            </td>
-                            <td class="p-4">
-                                <div class="flex justify-center items-center gap-2">
-                                    <template x-if="item.status === 'Request'">
-                                        <div class="flex gap-1">
-                                            <button @click="panggilPeserta(item)" class="px-3 py-2 bg-emerald-500 text-white rounded-lg text-[9px] font-bold hover:bg-emerald-600 transition-all">WA PANGGIL</button>
-                                            <button @click="openAcc(item)" class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-[9px] font-bold hover:bg-indigo-700 transition-all">PLOT KUNCI</button>
-                                        </div>
-                                    </template>
-                                    
-                                    <template x-if="item.status === 'Sedang Di Pinjam'">
-                                        <button @click="openModal('upload', item.id)" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-[9px] font-bold hover:bg-black transition-all">KEMBALI</button>
-                                    </template>
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50">
+                        <tr class="text-[10px] uppercase tracking-widest text-slate-400 border-b">
+                            <th class="p-4">Peminjam</th>
+                            <th class="p-4">Institusi/Jurusan</th>
+                            <th class="p-4">Jenis/Qty</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <template x-for="item in lokers" :key="item.id">
+                            <tr class="border-b hover:bg-slate-50/50 transition-colors">
+                                <td class="p-4">
+                                    <div class="font-bold text-slate-700" x-text="item.nama_peminjam"></div>
+                                    <div class="text-[10px] text-slate-400 font-mono" x-text="item.nim"></div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="text-xs text-slate-600 font-medium" x-text="item.nama_institusi"></div>
+                                    <div class="text-[10px] text-indigo-500 uppercase font-bold" x-text="item.jurusan"></div>
+                                </td>
+                                <td class="p-4 text-center">
+                                    <span class="px-2 py-1 rounded-md bg-indigo-50 text-indigo-600 font-bold text-[10px]" x-text="item.jenis_kunci == 'Laki-laki' ? 'L' : 'P'"></span>
+                                    <span class="ml-1 font-bold text-slate-700" x-text="item.jumlah"></span>
+                                </td>
+                                <td class="p-4">
+                                    <span :class="{
+                                        'bg-amber-100 text-amber-600': item.status === 'Request',
+                                        'bg-green-100 text-green-600': item.status === 'Approved',
+                                        'bg-blue-100 text-blue-600': item.status === 'Selesai'
+                                    }" class="px-3 py-1 rounded-full text-[9px] font-black uppercase" x-text="item.status"></span>
+                                </td>
+                                <td class="p-4">
+                                    <button x-show="item.status === 'Request' && !isAdminVerified(item.id)" 
+                                            @click="verifyAdmin(item.id)" 
+                                            class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-[10px] font-bold shadow-md hover:bg-indigo-700 transition-all uppercase">
+                                        Confirm
+                                    </button>
 
-                                    <div class="flex items-center gap-1 border-l pl-2 border-slate-200">
-                                        <template x-if="item.bukti_foto_kembali">
-                                            <a :href="item.bukti_foto_kembali" target="_blank" class="w-8 h-8 flex items-center justify-center bg-sky-50 text-sky-600 rounded-lg hover:bg-sky-600 hover:text-white transition-all">
-                                                <i class="fa fa-image text-xs"></i>
-                                            </a>
-                                        </template>
-                                        <button @click="openModal('delete', item.id)" class="w-8 h-8 flex items-center justify-center text-rose-300 hover:text-rose-600 transition-colors">
-                                            <i class="fa fa-trash-alt text-xs"></i>
+                                    <div class="flex gap-2" x-show="isAdminVerified(item.id)">
+                                        <button @click="panggilWA(item)" class="bg-green-500 text-white w-8 h-8 rounded-lg flex items-center justify-center hover:bg-green-600 transition-all shadow-sm shadow-green-100">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </button>
+                                        <button @click="plotKunci(item)" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold hover:bg-blue-700 shadow-sm shadow-blue-100 uppercase">
+                                            Plot Kunci
                                         </button>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div x-show="modal" x-cloak class="fixed inset-0 bg-slate-900/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl overflow-hidden p-6" @click.away="modal = false">
-            
-            <h3 class="text-lg font-bold text-slate-800 mb-2 text-center uppercase tracking-tighter" x-text="modalTitle"></h3>
-
-            <template x-if="modalType === 'acc'">
-                <div class="space-y-4 mt-4">
-                    <div class="max-h-64 overflow-y-auto pr-1 space-y-3 custom-scroll">
-                        <template x-for="(n, index) in Array.from({length: selectedItem.jumlah})" :key="index">
-                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                <label class="text-[9px] font-bold text-indigo-400 uppercase">Kunci ke-<span x-text="index+1"></span></label>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <span class="w-8 h-8 bg-indigo-600 text-white rounded flex items-center justify-center font-black" x-text="selectedItem.jenis_kunci === 'Perempuan' ? 'P' : 'L'"></span>
-                                    <select x-model="noKunciArray[index]" class="flex-1 bg-transparent border-b-2 border-indigo-100 py-1 font-bold outline-none">
-                                        <option value="">Pilih Nomor</option>
-                                        <template x-for="num in availableNumbers" :key="num">
-                                            <option :value="num" x-text="num"></option>
-                                        </template>
-                                    </select>
-                                </div>
-                            </div>
+                                </td>
+                            </tr>
                         </template>
-                    </div>
-                    <button @click="prosesAcc()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-indigo-700">KONFIRMASI PLOTTING</button>
-                </div>
-            </template>
-
-            <template x-if="modalType === 'upload'">
-                <div class="text-center py-4">
-                    <div x-show="!isUploading">
-                        <label class="cursor-pointer group block border-2 border-dashed border-slate-200 rounded-3xl p-10 hover:border-indigo-400">
-                            <i class="fa fa-camera text-4xl text-slate-200 mb-3 group-hover:text-indigo-500 transition-colors"></i>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Foto Bukti Pengembalian Kunci</p>
-                            <input type="file" capture="environment" accept="image/*" @change="uploadPhoto" class="hidden">
-                        </label>
-                    </div>
-                    <div x-show="isUploading" class="py-10">
-                        <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-2"></div>
-                        <p class="text-[10px] font-bold text-indigo-600">Sedang Mengirim...</p>
-                    </div>
-                </div>
-            </template>
-
-            <template x-if="modalType === 'delete'">
-                <div class="mt-4">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase text-center mb-4 italic">Otoritas Admin Diperlukan</p>
-                    <input type="password" x-model="password" class="w-full border-2 border-slate-100 p-4 rounded-2xl mb-4 text-center font-mono outline-none focus:border-indigo-500" placeholder="••••••">
-                    <button @click="confirmDelete()" class="w-full bg-rose-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-rose-700">HAPUS PERMANEN</button>
-                </div>
-            </template>
-
-            <button @click="modal = false" class="w-full mt-4 text-slate-300 text-[10px] font-bold uppercase text-center hover:text-slate-500">Batal / Tutup</button>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -165,99 +84,72 @@
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aXVjb29nbnh5a2Fra3NydWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjQ0MDQsImV4cCI6MjA5Mjg0MDQwNH0.Ht_yQbty5AaWYZWPp7sLWwIRDrmNs-LPot0NnVi3VIU";
         const _sb = supabase.createClient(SB_URL, SB_KEY);
 
-        function lokerManager() {
+        function lokerList() {
             return {
-                list: [],
-                searchQuery: '',
-                modal: false,
-                modalType: '',
-                modalTitle: '',
-                activeId: null,
-                selectedItem: {},
-                noKunciArray: [],
-                availableNumbers: [],
-                password: '',
-                isUploading: false,
-                colors: {
-                    'Request': 'bg-amber-100 text-amber-700',
-                    'Sedang Di Pinjam': 'bg-indigo-600 text-white shadow-indigo-100',
-                    'Selesai': 'bg-emerald-100 text-emerald-700'
-                },
+                lokers: [],
+                verifiedIds: [], // Menyimpan ID yang sudah berhasil login password
+                adminPass: "diklat6", // Silakan ganti password admin di sini
 
-                get filteredList() {
-                    return this.list.filter(i => 
-                        i.nama_peminjam.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
-                        (i.no_kunci && i.no_kunci.toLowerCase().includes(this.searchQuery.toLowerCase()))
-                    );
+                async init() {
+                    this.fetchData();
                 },
 
                 async fetchData() {
-                    const { data } = await _sb.from('peminjaman_loker').select('*').order('id', {ascending: false});
-                    this.list = data || [];
+                    const { data, error } = await _sb
+                        .from('peminjaman_loker')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    if (data) this.lokers = data;
                 },
 
-                panggilPeserta(item) {
-                    const pesan = `Halo ${item.nama_peminjam}, Request kunci loker ${item.jenis_kunci} (${item.jumlah} buah) sudah kami terima. Silakan datang ke Lantai 6 Ruang Diklat untuk pengambilan kunci. Terima kasih.`;
-                    window.open(`https://wa.me/${item.no_telp}?text=${encodeURIComponent(pesan)}`, '_blank');
+                verifyAdmin(id) {
+                    const input = prompt("Hanya Admin: Masukkan Password");
+                    if (input === this.adminPass) {
+                        this.verifiedIds.push(id);
+                    } else {
+                        alert("Password Salah!");
+                    }
                 },
 
-                openAcc(item) {
-                    this.selectedItem = item;
-                    this.activeId = item.id;
-                    this.modalType = 'acc';
-                    this.modalTitle = 'Plotting Kunci';
-                    this.noKunciArray = Array(item.jumlah).fill('');
+                isAdminVerified(id) {
+                    return this.verifiedIds.includes(id);
+                },
+
+                panggilWA(item) {
+                    // Normalisasi Nomor HP (Hapus 0 di depan ganti 62)
+                    let phone = item.no_telp.replace(/^0/, '62');
                     
-                    const max = item.jenis_kunci === 'Perempuan' ? 150 : 100;
-                    const prefix = item.jenis_kunci === 'Perempuan' ? 'P' : 'L';
-                    const busyKeys = this.list.filter(i => i.status === 'Sedang Di Pinjam' && i.no_kunci).flatMap(i => i.no_kunci.split(', '));
+                    const pesan = `Halo kak ${item.nama_peminjam},\n\nPermohonan kunci loker Anda sudah kami proses. Silakan datang ke Lantai 6 Ruang Diklat RSUD Bandung Kiwari untuk pengambilan kunci loker.\n\nTerima kasih.`;
                     
-                    this.availableNumbers = Array.from({length: max}, (_, i) => prefix + (i + 1)).filter(num => !busyKeys.includes(num));
-                    this.modal = true;
+                    const encodedPesan = encodeURIComponent(pesan);
+                    const waUrl = `https://wa.me/${phone}?text=${encodedPesan}`;
+                    
+                    // Membuka jendela baru untuk WhatsApp
+                    window.open(waUrl, '_blank');
                 },
 
-                async prosesAcc() {
-                    if (this.noKunciArray.some(n => n === '')) return alert('Pilih semua nomor!');
-                    if (new Set(this.noKunciArray).size !== this.noKunciArray.length) return alert('Nomor tidak boleh duplikat!');
-
-                    const { error } = await _sb.from('peminjaman_loker').update({
-                        no_kunci: this.noKunciArray.join(', '),
-                        status: 'Sedang Di Pinjam'
-                    }).eq('id', this.activeId);
-
-                    if(!error) { this.modal = false; this.fetchData(); alert('Data Diupdate!'); }
+                plotKunci(item) {
+                    const noKunci = prompt("Masukkan Nomor Kunci yang diberikan:");
+                    if (noKunci) {
+                        this.updateStatus(item.id, noKunci);
+                    }
                 },
 
-                openModal(type, id) {
-                    this.activeId = id;
-                    this.modalType = type;
-                    this.modalTitle = type === 'delete' ? 'Hapus Data' : 'Kembalikan Kunci';
-                    this.password = '';
-                    this.modal = true;
-                },
+                async updateStatus(id, noKunci) {
+                    const { error } = await _sb
+                        .from('peminjaman_loker')
+                        .update({ 
+                            status: 'Approved', 
+                            no_kunci: noKunci 
+                        })
+                        .eq('id', id);
 
-                async uploadPhoto(e) {
-                    const file = e.target.files[0];
-                    if(!file) return;
-                    this.isUploading = true;
-                    try {
-                        const name = `loker_${this.activeId}_${Date.now()}.jpg`;
-                        await _sb.storage.from('bukti-foto').upload(name, file);
-                        const { data: { publicUrl } } = _sb.storage.from('bukti-foto').getPublicUrl(name);
-                        
-                        await _sb.from('peminjaman_loker').update({ 
-                            status: 'Selesai', 
-                            bukti_foto_kembali: publicUrl 
-                        }).eq('id', this.activeId);
-                        
-                        this.modal = false; this.fetchData();
-                    } catch (err) { alert(err.message); } finally { this.isUploading = false; }
-                },
-
-                async confirmDelete() {
-                    if(this.password !== '123456') return alert('Password Salah!');
-                    await _sb.from('peminjaman_loker').delete().eq('id', this.activeId);
-                    this.modal = false; this.fetchData();
+                    if (!error) {
+                        alert("Kunci Berhasil Diplot!");
+                        this.fetchData();
+                    } else {
+                        alert("Gagal update data");
+                    }
                 }
             }
         }
