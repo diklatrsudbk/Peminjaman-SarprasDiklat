@@ -15,18 +15,18 @@
         
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-slate-800">Daftar Peminjaman Kunci</h1>
-                <p class="text-sm text-slate-500">Ruang Diklat Lantai 6</p>
+                <h1 class="text-2xl font-bold text-slate-800 text-center md:text-left">Daftar Peminjaman Kunci</h1>
+                <p class="text-sm text-slate-500 text-center md:text-left">RSUD Bandung Kiwari - Ruang Diklat Lt. 6</p>
             </div>
             
             <div class="flex items-center gap-2 w-full md:w-auto">
                 <div class="relative w-full">
                     <i class="fa fa-search absolute left-3 top-3 text-slate-400"></i>
-                    <input type="text" x-model="search" placeholder="Cari Nama / NIM / No. Kunci..." 
+                    <input type="text" x-model="search" placeholder="Cari Nama/NIM/Kunci..." 
                            class="pl-10 pr-4 py-2 w-full md:w-64 rounded-xl border border-slate-200 focus:ring-2 ring-indigo-100 outline-none transition-all shadow-sm">
                 </div>
                 <button @click="fetchData" class="bg-indigo-600 text-white p-2.5 rounded-xl hover:bg-indigo-700 shadow-md transition-all">
-                    <i class="fa fa-sync"></i>
+                    <i class="fa fa-sync" :class="loading ? 'animate-spin' : ''"></i>
                 </button>
             </div>
         </div>
@@ -38,7 +38,7 @@
                         <tr class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                             <th class="p-4">Peminjam</th>
                             <th class="p-4">Institusi</th>
-                            <th class="p-4">No. Kunci</th>
+                            <th class="p-4 text-center">No. Kunci</th>
                             <th class="p-4 text-center">Status</th>
                             <th class="p-4 text-center">Aksi</th>
                         </tr>
@@ -54,9 +54,10 @@
                                     <div class="text-xs text-slate-600 truncate max-w-[150px]" x-text="item.nama_institusi"></div>
                                     <div class="text-[9px] text-indigo-500 font-bold uppercase" x-text="item.jurusan"></div>
                                 </td>
-                                <td class="p-4">
-                                    <div class="bg-slate-100 px-2 py-1 rounded-lg border text-center font-bold text-slate-700" 
-                                         x-text="item.no_kunci || '-'"></div>
+                                <td class="p-4 text-center">
+                                    <span :class="item.no_kunci ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'" 
+                                          class="px-3 py-1 rounded-lg font-black text-xs border" 
+                                          x-text="item.no_kunci || '-'"></span>
                                 </td>
                                 <td class="p-4 text-center">
                                     <span :class="{
@@ -67,10 +68,19 @@
                                     }" class="px-3 py-1 rounded-full text-[9px] font-black uppercase inline-block" x-text="item.status"></span>
                                 </td>
                                 <td class="p-4 text-center">
-                                    <button @click="openActionModal(item)" 
-                                            class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-lg text-[10px] font-black hover:bg-indigo-600 hover:text-white transition-all uppercase border border-indigo-100">
-                                        Confirm
-                                    </button>
+                                    <template x-if="item.status === 'Request' || item.status === 'Approved'">
+                                        <button @click="openActionModal(item)" 
+                                                class="bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-lg text-[10px] font-black hover:bg-indigo-600 hover:text-white transition-all uppercase border border-indigo-100">
+                                            Confirm
+                                        </button>
+                                    </template>
+                                    
+                                    <template x-if="item.status === 'Sedang Dipinjam'">
+                                        <button @click="finishLoan(item)" 
+                                                class="bg-rose-50 text-rose-600 px-4 py-1.5 rounded-lg text-[10px] font-black hover:bg-rose-600 hover:text-white transition-all uppercase border border-rose-100">
+                                            Selesai
+                                        </button>
+                                    </template>
                                 </td>
                             </tr>
                         </template>
@@ -79,27 +89,33 @@
             </div>
         </div>
 
-        <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-            <div @click.away="showModal = false" class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden animate-bounce-short">
+        <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div @click.away="showModal = false" class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden shadow-indigo-200/50">
                 <div class="p-6 text-center">
                     <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fa fa-key text-2xl"></i>
+                        <i class="fa fa-tasks text-2xl"></i>
                     </div>
                     <h3 class="font-bold text-slate-800 text-lg" x-text="selectedItem?.nama_peminjam"></h3>
-                    <p class="text-xs text-slate-500 mb-6 uppercase tracking-tighter" x-text="selectedItem?.nim"></p>
+                    <p class="text-[10px] text-slate-400 mb-6 uppercase font-mono" x-text="selectedItem?.nim"></p>
 
                     <div class="grid grid-cols-1 gap-3">
-                        <button @click="handleAction('whatsapp')" class="flex items-center justify-between bg-green-500 hover:bg-green-600 text-white p-4 rounded-2xl transition-all">
-                            <span class="font-bold text-sm">Panggil via WhatsApp</span>
-                            <i class="fab fa-whatsapp text-xl"></i>
+                        <button @click="handleAction('whatsapp')" class="flex items-center justify-between bg-green-500 hover:bg-green-600 text-white p-4 rounded-2xl transition-all shadow-lg shadow-green-100">
+                            <div class="text-left">
+                                <p class="font-bold text-sm">Panggil WhatsApp</p>
+                                <p class="text-[9px] opacity-80 uppercase">Ubah Status: Approved</p>
+                            </div>
+                            <i class="fab fa-whatsapp text-2xl"></i>
                         </button>
                         
-                        <button @click="handleAction('plot')" class="flex items-center justify-between bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl transition-all">
-                            <span class="font-bold text-sm">Plot Kunci Langsung</span>
-                            <i class="fa fa-edit text-lg"></i>
+                        <button @click="handleAction('plot')" class="flex items-center justify-between bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl transition-all shadow-lg shadow-blue-100">
+                            <div class="text-left">
+                                <p class="font-bold text-sm">Plot Nomor Kunci</p>
+                                <p class="text-[9px] opacity-80 uppercase">Status: Sedang Dipinjam</p>
+                            </div>
+                            <i class="fa fa-key text-xl"></i>
                         </button>
 
-                        <button @click="showModal = false" class="text-xs text-slate-400 font-bold uppercase py-2 mt-2">Batal</button>
+                        <button @click="showModal = false" class="text-[10px] text-slate-400 font-bold uppercase py-2 mt-2">Tutup</button>
                     </div>
                 </div>
             </div>
@@ -117,6 +133,7 @@
                 search: '',
                 showModal: false,
                 selectedItem: null,
+                loading: false,
                 adminPass: "diklat6",
 
                 async init() {
@@ -124,8 +141,10 @@
                 },
 
                 async fetchData() {
+                    this.loading = true;
                     const { data } = await _sb.from('peminjaman_loker').select('*').order('created_at', { ascending: false });
                     if (data) this.lokers = data;
+                    this.loading = false;
                 },
 
                 get filteredLokers() {
@@ -149,18 +168,20 @@
 
                 async handleAction(type) {
                     if (type === 'whatsapp') {
-                        // 1. Kirim WA
-                        let phone = this.selectedItem.no_telp.replace(/^0/, '62');
-                        const pesan = `Halo kak ${this.selectedItem.nama_peminjam},\n\nPermohonan kunci loker Anda sudah kami setujui (Approved). Silakan datang ke Lantai 6 Ruang Diklat untuk pengambilan kunci.\n\nTerima kasih.`;
-                        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(pesan)}`, '_blank');
+                        // MEMBERSIHKAN NOMOR: Hanya ambil angka saja
+                        let rawPhone = this.selectedItem.no_telp.replace(/\D/g, ''); 
+                        // Pastikan format Indonesia (62)
+                        let phone = rawPhone.startsWith('0') ? '62' + rawPhone.slice(1) : rawPhone;
+                        if (!phone.startsWith('62')) phone = '62' + phone;
 
-                        // 2. Update Status ke Approved
+                        const pesan = `Halo kak ${this.selectedItem.nama_peminjam},\n\nPermohonan kunci loker Anda sudah kami setujui (Approved). Silakan datang ke Lantai 6 Ruang Diklat RSUD Bandung Kiwari untuk pengambilan kunci.\n\nTerima kasih.`;
+                        
+                        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(pesan)}`, '_blank');
                         await this.updateData(this.selectedItem.id, { status: 'Approved' });
                     } 
                     else if (type === 'plot') {
                         const no = prompt("Masukkan Nomor Kunci Fisik:");
                         if (no) {
-                            // Update Status ke Sedang Dipinjam + Simpan Nomor Kunci
                             await this.updateData(this.selectedItem.id, { 
                                 status: 'Sedang Dipinjam', 
                                 no_kunci: no 
@@ -170,12 +191,18 @@
                     this.showModal = false;
                 },
 
+                async finishLoan(item) {
+                    if(confirm(`Selesaikan peminjaman untuk ${item.nama_peminjam}?`)) {
+                        await this.updateData(item.id, { status: 'Selesai' });
+                    }
+                },
+
                 async updateData(id, payload) {
                     const { error } = await _sb.from('peminjaman_loker').update(payload).eq('id', id);
                     if (!error) {
                         this.fetchData();
                     } else {
-                        alert("Gagal update: " + error.message);
+                        alert("Gagal update data");
                     }
                 }
             }
