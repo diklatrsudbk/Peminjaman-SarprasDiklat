@@ -71,6 +71,7 @@
                     <option value="Approved">Approved</option>
                     <option value="Booking">Booking</option>
                     <option value="Sedang Dipinjam">Sedang Dipinjam</option>
+                    <option value="Overdue">Overdue</option>
                     <option value="Bukti Terkirim">Bukti Terkirim</option>
                     <option value="Selesai">Selesai</option>
                     <option value="Cancel">Cancel</option>
@@ -211,6 +212,16 @@
                                                 <i class="fa fa-times-circle"></i>
                                             </button>
                                         </template>
+
+                                        <!-- WA -->
+                                        <template x-if="item.status === 'Overdue'">
+                                                <button
+                                                @click="ingatkanWA(item)"
+                                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+
+                                                    Reminder WA
+                                                </button>
+                                            </template>
 
                                         <!-- DELETE -->
                                         <template x-if="item.status === 'Cancel' || item.status === 'Selesai'">
@@ -363,34 +374,64 @@
                     this.fetchData();
                 },
 
-                async fetchData() {
+               async fetchData() {
 
-                    this.loading = true;
+    this.loading = true;
 
-                    try {
+    try {
 
-                        const { data, error } = await _sb
-                            .from('peminjaman_loker')
-                            .select('*')
-                            .order('created_at', {
-                                ascending: false
-                            });
+        const { data, error } = await _sb
+            .from('peminjaman_loker')
+            .select('*')
+            .order('created_at', {
+                ascending: false
+            });
 
-                        if (error) throw error;
+        if (error) throw error;
 
-                        this.lokers = data || [];
+        const now = new Date();
 
-                    } catch (err) {
+        for (const item of data) {
 
-                        console.error(err);
+            if (
+                item.status === 'Sedang Dipinjam' &&
+                item.tanggal_selesai
+            ) {
 
-                        alert('Gagal mengambil data');
+                const tanggalSelesai =
+                    new Date(item.tanggal_selesai);
 
-                    } finally {
+                tanggalSelesai.setDate(
+                    tanggalSelesai.getDate() + 1
+                );
 
-                        this.loading = false;
-                    }
-                },
+                if (now > tanggalSelesai) {
+
+                    await _sb
+                        .from('peminjaman_loker')
+                        .update({
+                            status: 'Overdue'
+                        })
+                        .eq('id', item.id);
+
+                    item.status = 'Overdue';
+                }
+            }
+        }
+
+        this.lokers = data || [];
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert('Gagal mengambil data');
+
+    } finally {
+
+        this.loading = false;
+    }
+},
 
                 get filteredLokers() {
 
@@ -423,26 +464,32 @@
                         'Approved': 'bg-purple-100 text-purple-700',
                         'Booking': 'bg-blue-100 text-blue-700',
                         'Sedang Dipinjam': 'bg-indigo-600 text-white',
+                        'Overdue': 'bg-red-600 text-white',
                         'Bukti Terkirim': 'bg-cyan-100 text-cyan-700',
                         'Selesai': 'bg-green-100 text-green-700',
                         'Cancel': 'bg-rose-100 text-rose-700'
+                        
 
                     }[status] || 'bg-slate-100 text-slate-600';
                 },
 
                 openConfirmModal(item) {
 
-                    const pass = prompt(
-                        "Hanya Admin - Masukkan Password"
-                    );
+                const pass = prompt(
+                    "Admin Only - Masukkan Password"
+                );
 
-                    if (pass !== this.adminPass) {
-                        alert("Password salah!");
-                        return;
-                    }
+                if (pass === null || pass.trim() === '') {
+                    return;
+                }
 
-                    this.selectedItem = item;
-                    this.showConfirmModal = true;
+                if (pass !== this.adminPass) {
+                    alert("Wrong Password!");
+                    return;
+                }
+
+                this.selectedItem = item;
+                this.showConfirmModal = true;
                 },
 
                 async panggilWA() {
@@ -480,16 +527,49 @@ Terima kasih.`;
                     this.showConfirmModal = false;
                 },
 
+                
+                ingatkanWA(item) {
+
+    let rawPhone =
+        item.no_telp.replace(/\D/g, '');
+
+    if (rawPhone.startsWith('0')) {
+        rawPhone = '62' + rawPhone.substring(1);
+    }
+
+    if (rawPhone.startsWith('8')) {
+        rawPhone = '62' + rawPhone;
+    }
+
+    const pesan =
+`Halo ${item.nama_peminjam}
+
+Kami mengingatkan bahwa peminjaman loker Anda telah melewati batas waktu pengembalian.
+
+Mohon segera mengembalikan kunci loker ke Ruang DIKLAT Lantai 6.
+
+Terima kasih.`;
+
+    window.open(
+        `https://wa.me/${rawPhone}?text=${encodeURIComponent(pesan)}`,
+        '_blank'
+    );
+},
+
                 openPlotAdmin(item) {
 
                     const pass = prompt(
-                        "Admin Only - Masukkan Password"
-                    );
+                    "Admin Only - Masukkan Password"
+                );
 
-                    if (pass !== this.adminPass) {
-                        alert("Password salah!");
-                        return;
-                    }
+                if (pass === null || pass.trim() === '') {
+                    return;
+                }
+
+                if (pass !== this.adminPass) {
+                    alert("Wrong Password!");
+                    return;
+                }
 
                     this.openPlotModal(item);
                 },
@@ -621,15 +701,18 @@ Terima kasih.`;
 
                 async handleReject(item) {
 
-                    const pass =
-                        prompt("Admin Only - Masukkan Password");
+                    const pass = prompt(
+                    "Admin Only - Masukkan Password"
+                );
 
-                    if (pass !== this.adminPass) {
+                if (pass === null || pass.trim() === '') {
+                    return;
+                }
 
-                        alert("Password salah!");
-
-                        return;
-                    }
+                if (pass !== this.adminPass) {
+                    alert("Wrong Password!");
+                    return;
+                }
 
                     const yakin =
                         confirm(
@@ -665,17 +748,18 @@ Terima kasih.`;
 
                 async deleteData(item) {
 
-                    const pass =
-                        prompt(
-                            "Password Admin untuk Hapus:"
-                        );
+                    const pass = prompt(
+                    "Admin Only - Masukkan Password"
+                );
 
-                    if (pass !== this.adminPass) {
+                if (pass === null || pass.trim() === '') {
+                    return;
+                }
 
-                        alert("Password salah!");
-
-                        return;
-                    }
+                if (pass !== this.adminPass) {
+                    alert("Wrong Password!");
+                    return;
+                }
 
                     const yakin =
                         confirm(
