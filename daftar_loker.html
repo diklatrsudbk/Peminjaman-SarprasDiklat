@@ -244,6 +244,25 @@
                     }
                 },
 
+                async deleteData(item) {
+    const pass = prompt("Hanya Admin: Masukkan Password untuk MENGHAPUS data " + item.nama_peminjam);
+    if (pass !== this.adminPass) return alert("Password Salah!");
+
+    if (confirm(`APAKAH ANDA YAKIN? Data ${item.nama_peminjam} akan dihapus permanen dari database.`)) {
+        const { error } = await _sb
+            .from('peminjaman_loker')
+            .delete()
+            .eq('id', item.id);
+
+        if (!error) {
+            alert("Data berhasil dihapus selamanya.");
+            this.fetchData();
+        } else {
+            alert("Gagal menghapus: " + error.message);
+        }
+    }
+},
+
                 async updateStatus(id, status, noKunci = null) {
                     let payload = { status: status };
                     if (noKunci) payload.no_kunci = noKunci;
