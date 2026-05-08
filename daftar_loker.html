@@ -47,28 +47,28 @@
             </div>
 
             <!-- ACTION -->
-            <div class="flex flex-col md:flex-row gap-3 w-full lg:w-auto">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 w-full lg:w-auto">
 
                 <a href="input_loker.html"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition-all uppercase">
+                    class="h-12 bg-indigo-600 hover:bg-indigo-700 text-white px-5 rounded-2xl rounded-2xl text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition-all uppercase">
                     <i class="fa fa-plus-circle"></i>
                     Input Baru
                 </a>
 
                 <!-- SEARCH -->
                 <div class="relative flex-1 md:w-64">
-                    <i class="fa fa-search absolute left-3 top-3.5 text-slate-400 text-xs"></i>
+                    <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
 
                     <input type="text"
                         x-model="search"
                         placeholder="Cari nama / no kunci..."
-                        class="w-full pl-9 pr-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-semibold outline-none focus:ring-2 ring-indigo-100 shadow-sm" />
+                        class="w-full pl-9 pr-4 h-12 rounded-2xl border border-slate-200 bg-white text-sm font-semibold outline-none focus:ring-2 ring-indigo-100 shadow-sm" />
                 </div>
 
                 <!-- FILTER -->
                 <select
                     x-model="filterStatus"
-                    class="px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-semibold shadow-sm outline-none">
+                    class="px-4 h-12 rounded-2xl border border-slate-200 bg-white text-sm font-semibold shadow-sm outline-none">
 
                     <option value="">Semua Status</option>
                     <option value="Request">Request</option>
@@ -85,7 +85,7 @@
                 <button
                     @click="fetchData"
                     :disabled="loading"
-                    class="bg-white text-indigo-600 w-12 h-12 rounded-2xl border border-slate-200 shadow-sm disabled:opacity-50">
+                    class="bg-white text-indigo-600 min-w-[48px] h-12 rounded-2xl border border-slate-200 shadow-sm disabled:opacity-50">
 
                     <i class="fa fa-sync"
                         :class="loading ? 'animate-spin' : ''"></i>
@@ -102,11 +102,11 @@
 
                     <thead class="bg-slate-50 border-b text-xs uppercase text-slate-400 font-black">
                         <tr>
-                            <th class="p-4">Peminjam</th>
-                            <th class="p-4 text-center">Qty</th>
-                            <th class="p-4">No. Kunci</th>
-                            <th class="p-4 text-center">Status</th>
-                            <th class="p-4 text-center">Aksi</th>
+                            <th class="py-3 px-4">Peminjam</th>
+                            <th class="py-3 px-4 text-center">Qty</th>
+                            <th class="py-3 px-4">No. Kunci</th>
+                            <th class="py-3 px-4 text-center">Status</th>
+                            <th class="py-3 px-4 text-center w-[280px]">Aksi</th>
                         </tr>
                     </thead>
 
@@ -153,7 +153,7 @@
                                 <td class="p-4 text-center">
                                     <span
                                         :class="statusColor(item.status)"
-                                        class="px-3 py-1 rounded-full text-[11px] font-bold uppercase"
+                                        class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase"
                                         x-text="item.status">
                                     </span>
                                 </td>
@@ -161,13 +161,13 @@
                                 <!-- AKSI -->
                                 <td class="p-4">
 
-                                    <div class="flex flex-wrap items-center justify-center gap-2">
+                                    <div class="flex items-center justify-center gap-2 flex-wrap max-w-[260px] mx-auto">
 
                                         <!-- CONFIRM -->
                                         <template x-if="item.status === 'Request'">
                                             <button
                                                 @click="openConfirmModal(item)"
-                                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
                                                 Confirm
                                             </button>
                                         </template>
@@ -176,7 +176,7 @@
                                         <template x-if="item.status === 'Approved'">
                                             <button
                                                 @click="openPlotAdmin(item)"
-                                                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                class="bg-purple-600 hover:bg-purple-700 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
                                                 Plot Kunci
                                             </button>
                                         </template>
@@ -185,7 +185,7 @@
                                         <template x-if="item.status === 'Sedang Dipinjam'">
                                             <button
                                                 @click="handleBuktiFoto(item)"
-                                                class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                class="bg-amber-500 hover:bg-amber-600 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
                                                 Bukti Pengembalian
                                             </button>
                                         </template>
@@ -194,7 +194,7 @@
                                         <template x-if="item.status === 'Bukti Terkirim'">
                                             <button
                                                 @click="updateStatus(item.id, 'Selesai')"
-                                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                class="bg-green-600 hover:bg-green-700 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
                                                 Selesai
                                             </button>
                                         </template>
@@ -203,7 +203,7 @@
                                         <template x-if="['Request','Booking'].includes(item.status)">
                                             <button
                                                 @click="confirmCancel(item)"
-                                                class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                class="bg-slate-500 hover:bg-slate-600 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
                                                 Cancel
                                             </button>
                                         </template>
@@ -212,7 +212,7 @@
                                         <template x-if="['Request','Approved','Booking','Sedang Dipinjam'].includes(item.status)">
                                             <button
                                                 @click="handleReject(item)"
-                                                class="text-rose-500 hover:bg-rose-50 w-10 h-10 rounded-xl transition">
+                                                class="text-rose-500 hover:bg-rose-50 w-8 h-8 flex items-center justify-center rounded-xl transition">
                                                 <i class="fa fa-times-circle"></i>
                                             </button>
                                         </template>
@@ -221,7 +221,7 @@
                                         <template x-if="item.status === 'Overdue'">
                                                 <button
                                                 @click="ingatkanWA(item)"
-                                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                class="bg-red-600 hover:bg-red-700 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
 
                                                     Reminder WA
                                                 </button>
@@ -231,7 +231,7 @@
                                         <template x-if="item.status === 'Cancel' || item.status === 'Selesai'">
                                             <button
                                                 @click="deleteData(item)"
-                                                class="text-slate-300 hover:text-red-600 w-10 h-10 rounded-xl transition">
+                                                class="text-slate-300 hover:text-red-600 w-8 h-8 flex items-center justify-center rounded-xl transition">
                                                 <i class="fa fa-trash"></i>
                                             </button>
                                         </template>
