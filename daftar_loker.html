@@ -19,86 +19,67 @@
                     <i class="fa fa-key text-white text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-800 font-serif">Management Loker</h1>
-                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-black">RSUD Bandung Kiwari • Lantai 6</p>
+                    <h1 class="text-2xl font-bold text-slate-800">Management Loker</h1>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-black">Lantai 6 • RSUD Bandung Kiwari</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3 w-full md:w-auto">
-                <a href="input_loker.html" class="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 transition-all uppercase">
+                <a href="input_loker.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg flex items-center gap-2 transition-all uppercase">
                     <i class="fa fa-plus-circle"></i> Input Baru
                 </a>
                 <div class="relative flex-1 md:w-64">
                     <i class="fa fa-search absolute left-3 top-3 text-slate-400 text-xs"></i>
-                    <input type="text" x-model="search" placeholder="Cari Nama/NIM..." class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 outline-none shadow-sm focus:ring-2 ring-indigo-100 text-xs font-bold">
+                    <input type="text" x-model="search" placeholder="Cari Nama / No. Kunci..." class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 outline-none shadow-sm focus:ring-2 ring-indigo-100 text-xs font-bold">
                 </div>
-                <button @click="fetchData" class="bg-white text-indigo-600 p-2.5 rounded-xl border border-slate-200 shadow-sm hover:bg-slate-50">
-                    <i class="fa fa-sync" :class="loading ? 'animate-spin' : ''"></i>
-                </button>
+                <button @click="fetchData" class="bg-white text-indigo-600 p-2.5 rounded-xl border border-slate-200 shadow-sm"><i class="fa fa-sync" :class="loading ? 'animate-spin' : ''"></i></button>
             </div>
         </div>
 
         <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-50/80 border-b text-[10px] uppercase text-slate-400 font-black tracking-tighter">
+                    <thead class="bg-slate-50 border-b text-[10px] uppercase text-slate-400 font-black">
                         <tr>
-                            <th class="p-5">Data Peminjam</th>
+                            <th class="p-5">Peminjam</th>
                             <th class="p-5 text-center">Qty</th>
-                            <th class="p-5">Nomor Kunci</th>
+                            <th class="p-5">No. Kunci</th>
                             <th class="p-5 text-center">Status</th>
-                            <th class="p-5 text-center">Aksi Manajemen</th>
+                            <th class="p-5 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="text-sm">
                         <template x-for="item in filteredLokers" :key="item.id">
-                            <tr class="border-b last:border-0 hover:bg-slate-50/50 transition-colors">
+                            <tr class="border-b last:border-0 hover:bg-slate-50/50">
                                 <td class="p-5">
-                                    <div class="font-bold text-slate-700 text-sm" x-text="item.nama_peminjam"></div>
-                                    <div class="text-[10px] text-indigo-500 font-bold uppercase" x-text="item.nama_institusi"></div>
-                                    <div class="text-[9px] text-slate-400 font-mono uppercase" x-text="'NIM: ' + item.nim"></div>
+                                    <div class="font-bold text-slate-700" x-text="item.nama_peminjam"></div>
+                                    <div class="text-[9px] text-slate-400 font-mono" x-text="'NIM: ' + item.nim"></div>
                                 </td>
+                                <td class="p-5 text-center font-black" x-text="item.jumlah"></td>
+                                <td class="p-5 font-mono text-xs font-bold text-indigo-600" x-text="item.no_kunci || '-'"></td>
                                 <td class="p-5 text-center">
-                                    <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded-md font-black text-xs" x-text="item.jumlah"></span>
+                                    <span :class="statusColor(item.status)" class="px-3 py-1 rounded-full text-[9px] font-black uppercase" x-text="item.status"></span>
                                 </td>
-                                <td class="p-5">
-                                    <div class="flex flex-wrap gap-1 max-w-[150px]">
-                                        <template x-if="item.no_kunci">
-                                            <template x-for="k in item.no_kunci.split(',')" :key="k">
-                                                <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-100 font-mono text-[10px] font-bold" x-text="k.trim()"></span>
-                                            </template>
-                                        </template>
-                                        <span x-show="!item.no_kunci" class="text-slate-300 italic text-xs">Belum di-plot</span>
-                                    </div>
-                                </td>
-                                <td class="p-5 text-center">
-                                    <span :class="statusColor(item.status)" class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tight" x-text="item.status"></span>
-                                </td>
-                                <td class="p-5 text-center flex items-center justify-center gap-1.5">
+                                <td class="p-5 text-center flex items-center justify-center gap-2">
                                     
                                     <template x-if="item.status === 'Request'">
-                                        <button @click="openConfirmModal(item)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-sm transition-all">Confirm</button>
+                                        <button @click="openConfirmModal(item)" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">Confirm</button>
                                     </template>
 
-                                    <template x-if="item.status === 'Booking'">
-                                        <button @click="openPlotModal(item)" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-sm transition-all">Plot Kunci</button>
+                                    <template x-if="item.status === 'Approved'">
+                                        <button @click="openPlotModal(item)" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">Plot Kunci</button>
                                     </template>
                                     
                                     <template x-if="item.status === 'Sedang Dipinjam'">
-                                        <button @click="uploadBuktiFoto(item)" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-sm transition-all">Bukti Foto</button>
+                                        <button @click="handleBuktiFoto(item)" class="bg-amber-500 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">Bukti Foto</button>
                                     </template>
 
                                     <template x-if="item.status === 'Bukti Terkirim'">
-                                        <button @click="updateStatus(item.id, 'Selesai')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-sm transition-all">Selesai</button>
+                                        <button @click="updateStatus(item.id, 'Selesai')" class="bg-green-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">Selesai</button>
                                     </template>
 
-                                    <template x-if="['Request', 'Booking', 'Sedang Dipinjam'].includes(item.status)">
-                                        <button @click="handleReject(item)" class="bg-rose-50 text-rose-600 px-3 py-2 rounded-xl text-[10px] font-black uppercase border border-rose-100 transition-all">Reject</button>
-                                    </template>
-
-                                    <button @click="deleteData(item)" class="bg-slate-100 hover:bg-red-600 hover:text-white text-slate-400 px-3 py-2 rounded-xl text-[10px] transition-all border border-slate-200">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
+                                    <button @click="handleReject(item)" class="text-rose-500 hover:bg-rose-50 p-2 rounded-lg transition-colors"><i class="fa fa-times-circle"></i></button>
+                                    <button @click="deleteData(item)" class="text-slate-300 hover:text-red-600 p-2 rounded-lg transition-colors"><i class="fa fa-trash"></i></button>
                                 </td>
                             </tr>
                         </template>
@@ -107,24 +88,36 @@
             </div>
         </div>
 
+        <div x-show="showConfirmModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div @click.away="showConfirmModal = false" class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden p-6 text-center">
+                <h3 class="font-black text-slate-800 text-lg mb-6">Pilih Tindakan</h3>
+                <div class="grid gap-3">
+                    <button @click="panggilWA()" class="flex items-center justify-between bg-green-500 text-white p-4 rounded-2xl font-bold shadow-lg shadow-green-100">
+                        <span>Chat WhatsApp Peserta</span><i class="fab fa-whatsapp text-2xl"></i>
+                    </button>
+                    <button @click="showConfirmModal = false; openPlotModal(selectedItem)" class="flex items-center justify-between bg-indigo-600 text-white p-4 rounded-2xl font-bold shadow-lg shadow-indigo-100">
+                        <span>Plot Kunci Langsung</span><i class="fa fa-key text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div x-show="showPlotModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-            <div @click.away="showPlotModal = false" class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
-                <div class="p-6">
-                    <h3 class="font-black text-slate-800 text-lg mb-4 text-center">PLOT NOMOR KUNCI (<span x-text="selectedItem?.jumlah"></span> UNIT)</h3>
-                    <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border">
-                        <template x-for="(n, index) in tempKeys" :key="index">
-                            <div class="flex items-center gap-2">
-                                <div class="bg-white text-[10px] font-black px-2 py-3 rounded-xl border w-12 text-center text-slate-400 shadow-sm" x-text="'#' + (index+1)"></div>
-                                <select x-model="tempKeys[index]" class="w-full bg-white border p-2.5 rounded-xl text-sm outline-none focus:border-indigo-500 font-bold shadow-sm">
-                                    <option value="">-- Pilih Nomor --</option>
-                                    <template x-for="num in getAvailableNumbers()" :key="num">
-                                        <option :value="num" x-text="num"></option>
-                                    </template>
-                                </select>
-                            </div>
-                        </template>
-                        <button @click="simpanPlotKunci()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg transition-all">SIMPAN & PINJAMKAN</button>
-                    </div>
+            <div @click.away="showPlotModal = false" class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6">
+                <h3 class="font-black text-slate-800 text-lg mb-4 text-center uppercase">Plotting Nomor Kunci</h3>
+                <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border">
+                    <template x-for="(n, index) in tempKeys" :key="index">
+                        <div class="flex items-center gap-2">
+                            <div class="bg-white text-[10px] font-black px-2 py-3 rounded-xl border w-12 text-center" x-text="'#' + (index+1)"></div>
+                            <select x-model="tempKeys[index]" class="w-full bg-white border p-2.5 rounded-xl text-sm outline-none font-bold">
+                                <option value="">-- Pilih Nomor --</option>
+                                <template x-for="num in getAvailableNumbers()" :key="num">
+                                    <option :value="num" x-text="num"></option>
+                                </template>
+                            </select>
+                        </div>
+                    </template>
+                    <button @click="simpanPlotKunci()" class="w-full mt-4 bg-indigo-600 text-white py-4 rounded-2xl font-black text-xs uppercase shadow-lg transition-all">SIMPAN & PINJAMKAN</button>
                 </div>
             </div>
         </div>
@@ -140,6 +133,7 @@
                 lokers: [],
                 search: '',
                 selectedItem: null,
+                showConfirmModal: false,
                 showPlotModal: false,
                 tempKeys: [],
                 loading: false,
@@ -155,33 +149,38 @@
                 },
 
                 get filteredLokers() {
-                    return this.lokers.filter(i => 
-                        i.nama_peminjam.toLowerCase().includes(this.search.toLowerCase()) || 
-                        i.nim.toLowerCase().includes(this.search.toLowerCase())
-                    );
+                    return this.lokers.filter(i => {
+                        const s = this.search.toLowerCase();
+                        const noKunci = i.no_kunci ? i.no_kunci.toLowerCase() : '';
+                        return i.nama_peminjam.toLowerCase().includes(s) || noKunci.includes(s);
+                    });
                 },
 
                 statusColor(s) {
                     return {
                         'Request': 'bg-amber-100 text-amber-600',
-                        'Booking': 'bg-purple-100 text-purple-600',
+                        'Approved': 'bg-purple-100 text-purple-600',
                         'Sedang Dipinjam': 'bg-indigo-600 text-white',
-                        'Bukti Terkirim': 'bg-cyan-100 text-cyan-700 font-bold',
+                        'Bukti Terkirim': 'bg-cyan-100 text-cyan-700',
                         'Selesai': 'bg-green-100 text-green-600',
                         'Cancel': 'bg-rose-100 text-rose-600'
                     }[s] || 'bg-slate-100';
                 },
 
-                async openConfirmModal(item) {
+                openConfirmModal(item) {
                     const pass = prompt("Hanya Admin: Masukkan Password");
                     if (pass !== this.adminPass) return alert("Password Salah!");
-                    
-                    let rawPhone = item.no_telp.replace(/\D/g, '');
+                    this.selectedItem = item;
+                    this.showConfirmModal = true;
+                },
+
+                async panggilWA() {
+                    let rawPhone = this.selectedItem.no_telp.replace(/\D/g, '');
                     let phone = rawPhone.startsWith('0') ? '62' + rawPhone.slice(1) : rawPhone;
-                    const pesan = `Halo kak ${item.nama_peminjam},\n\nPermohonan kunci loker Anda sudah disetujui. Silakan balas "YES" untuk booking.`;
-                    
+                    const pesan = `Halo kak ${this.selectedItem.nama_peminjam}, Permohonan kunci loker Anda sudah disetujui. Silakan datang ke Lantai 6.`;
                     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(pesan)}`, '_blank');
-                    await this.updateStatus(item.id, 'Booking');
+                    await this.updateStatus(this.selectedItem.id, 'Approved');
+                    this.showConfirmModal = false;
                 },
 
                 openPlotModal(item) {
@@ -194,7 +193,7 @@
                     const prefix = this.selectedItem?.jenis_kunci === 'Laki-laki' ? 'L' : 'P';
                     const max = prefix === 'L' ? 100 : 150;
                     const usedNumbers = this.lokers
-                        .filter(i => ['Booking', 'Sedang Dipinjam', 'Bukti Terkirim'].includes(i.status) && i.no_kunci)
+                        .filter(i => ['Approved', 'Sedang Dipinjam', 'Bukti Terkirim'].includes(i.status) && i.no_kunci)
                         .flatMap(i => i.no_kunci.split(',').map(n => n.trim()));
 
                     let available = [];
@@ -207,16 +206,12 @@
 
                 async simpanPlotKunci() {
                     if (this.tempKeys.some(k => k === '')) return alert("Pilih semua nomor kunci!");
-                    if (new Set(this.tempKeys).size !== this.tempKeys.length) return alert("Nomor kunci tidak boleh sama!");
-                    
                     await this.updateStatus(this.selectedItem.id, 'Sedang Dipinjam', this.tempKeys.join(', '));
                     this.showPlotModal = false;
                 },
 
-                async uploadBuktiFoto(item) {
-                    if (confirm("Konfirmasi: Apakah Anda sudah menerima bukti foto pengembalian?")) {
-                        await this.updateStatus(item.id, 'Bukti Terkirim');
-                    }
+                async handleBuktiFoto(item) {
+                    if (confirm("Sudah menerima foto pengembalian?")) await this.updateStatus(item.id, 'Bukti Terkirim');
                 },
 
                 async handleReject(item) {
@@ -224,8 +219,7 @@
                 },
 
                 async deleteData(item) {
-                    if (prompt("Masukkan Password Admin untuk HAPUS:") !== this.adminPass) return alert("Salah!");
-                    if (confirm("Hapus permanen?")) {
+                    if (prompt("Password Admin untuk Hapus:") === this.adminPass) {
                         await _sb.from('peminjaman_loker').delete().eq('id', item.id);
                         this.fetchData();
                     }
