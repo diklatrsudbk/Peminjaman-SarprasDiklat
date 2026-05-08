@@ -85,7 +85,7 @@ class="bg-purple-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold upper
                                     </template>
                                     
                                     <template x-if="item.status === 'Sedang Dipinjam'">
-                                        <button @click="handleBuktiFoto(item)" class="bg-amber-500 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">Bukti Foto</button>
+                                        <button @click="handleBuktiFoto(item)" class="bg-amber-500 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">Bukti Pengembalian</button>
                                     </template>
 
                                     <template x-if="item.status === 'Bukti Terkirim'">
@@ -233,7 +233,7 @@ class="bg-purple-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold upper
 
 Permohonan peminjaman loker Anda telah disetujui.
 
-Silakan datang ke Lantai 6 RSUD Bandung Kiwari untuk pengambilan kunci.
+Silakan datang ke Lantai 6 Ruang DIKLAT untuk pengambilan kunci.
 
 Terima kasih.`;
 
@@ -359,7 +359,7 @@ Terima kasih.`;
     const yakin = confirm(
 `Yakin ingin membatalkan peminjaman?
 
-Nomor yang sudah dibatalkan tidak dapat dikembalikan lagi.`
+`
     );
 
     if (!yakin) return;
