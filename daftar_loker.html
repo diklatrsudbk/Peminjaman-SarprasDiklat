@@ -159,97 +159,144 @@
                                 </td>
 
                                 <!-- AKSI -->
-                                <td class="p-4">
+<td class="p-4">
 
-                                    <div class="flex items-center justify-center gap-2 flex-wrap min-h-[40px] max-w-[260px] mx-auto">
+    <div
+        x-data="{ openMenu: false }"
+        class="relative flex justify-center">
 
-                                    
-                                        <template x-if="['Request','Booking'].includes(item.status)">
-                                        <a
-                                        :href="'input_loker.html?id=' + item.id"
-                                        class="bg-sky-500 hover:bg-sky-600 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md flex items-center gap-1">
-                                        <i class="fa fa-pen"></i>
-                                        Edit
-                                        </a>
-                                        </template>
-                                        
-                                        <!-- CONFIRM -->
-                                        <template x-if="item.status === 'Request'">
-                                            <button
-                                                @click="openConfirmModal(item)"
-                                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
-                                                Confirm
-                                            </button>
-                                        </template>
+        <!-- BUTTON TITIK 3 -->
+        <button
+            @click="openMenu = !openMenu"
+            class="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 flex items-center justify-center shadow-sm">
 
-                                        <!-- PLOT -->
-                                        <template x-if="item.status === 'Approved'">
-                                            <button
-                                                @click="openPlotAdmin(item)"
-                                                class="bg-purple-600 hover:bg-purple-700 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
-                                                Plot Kunci
-                                            </button>
-                                        </template>
+            <i class="fa fa-ellipsis-vertical text-slate-600"></i>
+        </button>
 
-                                        <!-- FOTO -->
-                                        <template x-if="item.status === 'Sedang Dipinjam'">
-                                            <button
-                                                @click="handleBuktiFoto(item)"
-                                                class="bg-amber-500 hover:bg-amber-600 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
-                                                Return Key
-                                            </button>
-                                        </template>
+        <!-- DROPDOWN MENU -->
+        <div
+            x-show="openMenu"
+            x-transition
+            @click.away="openMenu = false"
+            class="absolute right-0 top-11 z-50 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
 
-                                        <!-- SELESAI -->
-                                        <template x-if="item.status === 'Bukti Terkirim'">
-                                            <button
-                                                @click="updateStatus(item.id, 'Selesai')"
-                                                class="bg-green-600 hover:bg-green-700 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
-                                                Selesai
-                                            </button>
-                                        </template>
+            <div class="p-2 space-y-1">
 
-                                        <!-- CANCEL -->
-                                        <template x-if="['Request','Booking'].includes(item.status)">
-                                            <button
-                                                @click="confirmCancel(item)"
-                                                class="bg-slate-500 hover:bg-slate-600 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
-                                                Cancel
-                                            </button>
-                                        </template>
+                <!-- EDIT -->
+                <template x-if="['Request','Booking'].includes(item.status)">
+                    <a
+                        :href="'input_loker.html?id=' + item.id"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-sky-50 text-sky-700 text-sm font-semibold transition">
 
-                                        <!-- REJECT -->
-                                        <template x-if="['Request','Approved','Booking','Sedang Dipinjam'].includes(item.status)">
-                                            <button
-                                                @click="handleReject(item)"
-                                                class="text-rose-500 hover:bg-rose-50 w-8 h-8 flex items-center justify-center rounded-xl transition">
-                                                <i class="fa fa-times-circle"></i>
-                                            </button>
-                                        </template>
+                        <i class="fa fa-pen w-5"></i>
+                        Edit Data
+                    </a>
+                </template>
 
-                                        <!-- WA -->
-                                        <template x-if="item.status === 'Overdue'">
-                                                <button
-                                                @click="ingatkanWA(item)"
-                                                class="bg-red-600 hover:bg-red-700 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md">
+                <!-- CONFIRM -->
+                <template x-if="item.status === 'Request'">
+                    <button
+                        @click="openConfirmModal(item); openMenu=false"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 text-indigo-700 text-sm font-semibold transition">
 
-                                                    Reminder WA
-                                                </button>
-                                            </template>
+                        <i class="fa fa-circle-check w-5"></i>
+                        Confirm
+                    </button>
+                </template>
 
+                <!-- PLOT -->
+                <template x-if="item.status === 'Approved'">
+                    <button
+                        @click="openPlotAdmin(item); openMenu=false"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-purple-50 text-purple-700 text-sm font-semibold transition">
 
-                                        <!-- DELETE -->
-                                        <template x-if="item.status === 'Cancel' || item.status === 'Selesai'">
-                                            <button
-                                                @click="deleteData(item)"
-                                                class="text-slate-300 hover:text-red-600 w-8 h-8 flex items-center justify-center rounded-xl transition">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                        </template>
+                        <i class="fa fa-key w-5"></i>
+                        Plot Kunci
+                    </button>
+                </template>
 
-                                    </div>
+                <!-- BUKTI FOTO -->
+                <template x-if="item.status === 'Sedang Dipinjam'">
+                    <button
+                        @click="handleBuktiFoto(item); openMenu=false"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-50 text-amber-700 text-sm font-semibold transition">
 
-                                </td>
+                        <i class="fa fa-camera w-5"></i>
+                        Bukti Pengembalian
+                    </button>
+                </template>
+
+                <!-- REMINDER -->
+                <template x-if="item.status === 'Overdue'">
+                    <button
+                        @click="ingatkanWA(item); openMenu=false"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-700 text-sm font-semibold transition">
+
+                        <i class="fab fa-whatsapp w-5"></i>
+                        Reminder WA
+                    </button>
+                </template>
+
+                <!-- SELESAI -->
+                <template x-if="item.status === 'Bukti Terkirim'">
+                    <button
+                        @click="updateStatus(item.id, 'Selesai'); openMenu=false"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-50 text-green-700 text-sm font-semibold transition">
+
+                        <i class="fa fa-circle-check w-5"></i>
+                        Tandai Selesai
+                    </button>
+                </template>
+
+                <!-- CATATAN -->
+                <button
+                    @click="openCatatan(item); openMenu=false"
+                    class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 text-slate-700 text-sm font-semibold transition">
+
+                    <i class="fa fa-note-sticky w-5"></i>
+                    Catatan
+                </button>
+
+                <!-- CANCEL -->
+                <template x-if="['Request','Booking'].includes(item.status)">
+                    <button
+                        @click="confirmCancel(item); openMenu=false"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 text-slate-700 text-sm font-semibold transition">
+
+                        <i class="fa fa-ban w-5"></i>
+                        Cancel
+                    </button>
+                </template>
+
+                <!-- REJECT -->
+                <template x-if="['Request','Approved','Booking','Sedang Dipinjam','Overdue'].includes(item.status)">
+                    <button
+                        @click="handleReject(item); openMenu=false"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-rose-50 text-rose-700 text-sm font-semibold transition">
+
+                        <i class="fa fa-times-circle w-5"></i>
+                        Reject
+                    </button>
+                </template>
+
+                <!-- DELETE -->
+                <template x-if="['Cancel','Selesai'].includes(item.status)">
+                    <button
+                        @click="deleteData(item); openMenu=false"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-700 text-sm font-semibold transition">
+
+                        <i class="fa fa-trash w-5"></i>
+                        Hapus
+                    </button>
+                </template>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</td>
 
                             </tr>
 
