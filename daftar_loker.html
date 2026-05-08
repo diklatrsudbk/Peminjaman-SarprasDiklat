@@ -1,234 +1,464 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Loker - RSUD Bandung Kiwari</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Management Loker - RSUD Bandung Kiwari</title>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style> [x-cloak] { display: none !important; } </style>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 p-4" x-data="lokerList()">
-    <div class="max-w-6xl mx-auto">
-        
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+
+<body class="bg-slate-100 min-h-screen p-3 md:p-5" x-data="lokerList()">
+
+    <div class="max-w-7xl mx-auto">
+
+        <!-- HEADER -->
+        <div class="flex flex-col lg:flex-row justify-between gap-4 mb-6">
+
             <div class="flex items-center gap-4">
-                <div class="bg-indigo-600 p-3 rounded-2xl shadow-lg">
+                <div class="bg-indigo-600 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg">
                     <i class="fa fa-key text-white text-2xl"></i>
                 </div>
+
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-800">Management Loker</h1>
-                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-black">Lantai 6 • RSUD Bandung Kiwari</p>
+                    <h1 class="text-2xl font-bold text-slate-800">
+                        Management Loker
+                    </h1>
+
+                    <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">
+                        Lantai 6 • RSUD Bandung Kiwari
+                    </p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <a href="input_loker.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg flex items-center gap-2 transition-all uppercase">
-                    <i class="fa fa-plus-circle"></i> Input Baru
+            <!-- ACTION -->
+            <div class="flex flex-col md:flex-row gap-3 w-full lg:w-auto">
+
+                <a href="input_loker.html"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition-all uppercase">
+                    <i class="fa fa-plus-circle"></i>
+                    Input Baru
                 </a>
+
+                <!-- SEARCH -->
                 <div class="relative flex-1 md:w-64">
-                    <i class="fa fa-search absolute left-3 top-3 text-slate-400 text-xs"></i>
-                    <input type="text" x-model="search" placeholder="Cari Nama / No. Kunci..." class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 outline-none shadow-sm focus:ring-2 ring-indigo-100 text-xs font-bold">
+                    <i class="fa fa-search absolute left-3 top-3.5 text-slate-400 text-xs"></i>
+
+                    <input type="text"
+                        x-model="search"
+                        placeholder="Cari nama / no kunci..."
+                        class="w-full pl-9 pr-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-semibold outline-none focus:ring-2 ring-indigo-100 shadow-sm" />
                 </div>
-                <select x-model="filterStatus"
-class="px-4 py-2.5 rounded-xl border border-slate-200 outline-none shadow-sm text-xs font-bold bg-white">
-    <option value="">Semua Status</option>
-    <option value="Request">Request</option>
-    <option value="Approved">Approved</option>
-    <option value="Booking">Booking</option>
-    <option value="Sedang Dipinjam">Sedang Dipinjam</option>
-    <option value="Bukti Terkirim">Bukti Terkirim</option>
-    <option value="Selesai">Selesai</option>
-    <option value="Cancel">Cancel</option>
-</select>
-                <button @click="fetchData" class="bg-white text-indigo-600 p-2.5 rounded-xl border border-slate-200 shadow-sm"><i class="fa fa-sync" :class="loading ? 'animate-spin' : ''"></i></button>
+
+                <!-- FILTER -->
+                <select
+                    x-model="filterStatus"
+                    class="px-4 py-3 rounded-2xl border border-slate-200 bg-white text-sm font-semibold shadow-sm outline-none">
+
+                    <option value="">Semua Status</option>
+                    <option value="Request">Request</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Booking">Booking</option>
+                    <option value="Sedang Dipinjam">Sedang Dipinjam</option>
+                    <option value="Bukti Terkirim">Bukti Terkirim</option>
+                    <option value="Selesai">Selesai</option>
+                    <option value="Cancel">Cancel</option>
+                </select>
+
+                <!-- REFRESH -->
+                <button
+                    @click="fetchData"
+                    :disabled="loading"
+                    class="bg-white text-indigo-600 w-12 h-12 rounded-2xl border border-slate-200 shadow-sm disabled:opacity-50">
+
+                    <i class="fa fa-sync"
+                        :class="loading ? 'animate-spin' : ''"></i>
+                </button>
             </div>
         </div>
 
+        <!-- TABLE -->
         <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-50 border-b text-[10px] uppercase text-slate-400 font-black">
+
+                <table class="w-full text-left border-collapse min-w-[900px]">
+
+                    <thead class="bg-slate-50 border-b text-xs uppercase text-slate-400 font-black">
                         <tr>
-                            <th class="p-5">Peminjam</th>
-                            <th class="p-5 text-center">Qty</th>
-                            <th class="p-5">No. Kunci</th>
-                            <th class="p-5 text-center">Status</th>
-                            <th class="p-5 text-center">Aksi</th>
+                            <th class="p-4">Peminjam</th>
+                            <th class="p-4 text-center">Qty</th>
+                            <th class="p-4">No. Kunci</th>
+                            <th class="p-4 text-center">Status</th>
+                            <th class="p-4 text-center">Aksi</th>
                         </tr>
                     </thead>
+
                     <tbody class="text-sm">
-                        <template x-for="item in filteredLokers" :key="item.id">
-                            <tr class="border-b last:border-0 hover:bg-slate-50/50">
-                                <td class="p-5">
-                                    <div class="font-bold text-slate-700" x-text="item.nama_peminjam"></div>
-                                    <div class="text-[9px] text-slate-400 font-mono" x-text="'NIM: ' + item.nim"></div>
-                                </td>
-                                <td class="p-5 text-center font-black" x-text="item.jumlah"></td>
-                                <td class="p-5 font-mono text-xs font-bold text-indigo-600" x-text="item.no_kunci || '-'"></td>
-                                <td class="p-5 text-center">
-                                    <span :class="statusColor(item.status)" class="px-3 py-1 rounded-full text-[9px] font-black uppercase" x-text="item.status"></span>
-                                </td>
-                                <td class="p-5 text-center flex items-center justify-center gap-2">
-                                    
-                                    <template x-if="item.status === 'Request'">
-                                        <button @click="openConfirmModal(item)" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">Confirm</button>
-                                    </template>
 
-                                    <template x-if="item.status === 'Approved'">
-                                        <button @click="openPlotAdmin(item)"
-class="bg-purple-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">
-    Plot Kunci
-</button>
-                                    </template>
-                                    
-                                    <template x-if="item.status === 'Sedang Dipinjam'">
-                                        <button @click="handleBuktiFoto(item)" class="bg-amber-500 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">Bukti Pengembalian</button>
-                                    </template>
-
-                                    <template x-if="item.status === 'Bukti Terkirim'">
-                                        <button @click="updateStatus(item.id, 'Selesai')" class="bg-green-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">Selesai</button>
-                                    </template>
-
-                                    <template x-if="['Request','Approved','Booking','Sedang Dipinjam'].includes(item.status)">
-    <button
-        @click="handleReject(item)"
-        class="text-rose-500 hover:bg-rose-50 p-2 rounded-lg transition-colors">
-        <i class="fa fa-times-circle"></i>
-    </button>
-</template>
-                                    <template x-if="['Request','Booking'].includes(item.status)">
-    <button
-        <button
-    @click="confirmCancel(item)"
-        class="bg-slate-500 text-white px-3 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">
-        Cancel
-    </button>
-</template>
-                                    <button @click="deleteData(item)" class="text-slate-300 hover:text-red-600 p-2 rounded-lg transition-colors"><i class="fa fa-trash"></i></button>
+                        <!-- EMPTY -->
+                        <template x-if="filteredLokers.length === 0">
+                            <tr>
+                                <td colspan="5" class="p-10 text-center text-slate-400">
+                                    Tidak ada data ditemukan
                                 </td>
                             </tr>
                         </template>
+
+                        <!-- DATA -->
+                        <template x-for="item in filteredLokers" :key="item.id">
+
+                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+
+                                <!-- PEMINJAM -->
+                                <td class="p-4">
+                                    <div class="font-bold text-slate-700"
+                                        x-text="item.nama_peminjam">
+                                    </div>
+
+                                    <div class="text-xs text-slate-400 font-mono mt-1"
+                                        x-text="'NIM : ' + item.nim">
+                                    </div>
+                                </td>
+
+                                <!-- JUMLAH -->
+                                <td class="p-4 text-center font-black text-slate-700"
+                                    x-text="item.jumlah">
+                                </td>
+
+                                <!-- KUNCI -->
+                                <td class="p-4">
+                                    <div class="font-mono font-bold text-indigo-600"
+                                        x-text="item.no_kunci || '-'">
+                                    </div>
+                                </td>
+
+                                <!-- STATUS -->
+                                <td class="p-4 text-center">
+                                    <span
+                                        :class="statusColor(item.status)"
+                                        class="px-3 py-1 rounded-full text-[11px] font-bold uppercase"
+                                        x-text="item.status">
+                                    </span>
+                                </td>
+
+                                <!-- AKSI -->
+                                <td class="p-4">
+
+                                    <div class="flex flex-wrap items-center justify-center gap-2">
+
+                                        <!-- CONFIRM -->
+                                        <template x-if="item.status === 'Request'">
+                                            <button
+                                                @click="openConfirmModal(item)"
+                                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                Confirm
+                                            </button>
+                                        </template>
+
+                                        <!-- PLOT -->
+                                        <template x-if="item.status === 'Approved'">
+                                            <button
+                                                @click="openPlotAdmin(item)"
+                                                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                Plot Kunci
+                                            </button>
+                                        </template>
+
+                                        <!-- FOTO -->
+                                        <template x-if="item.status === 'Sedang Dipinjam'">
+                                            <button
+                                                @click="handleBuktiFoto(item)"
+                                                class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                Bukti Pengembalian
+                                            </button>
+                                        </template>
+
+                                        <!-- SELESAI -->
+                                        <template x-if="item.status === 'Bukti Terkirim'">
+                                            <button
+                                                @click="updateStatus(item.id, 'Selesai')"
+                                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                Selesai
+                                            </button>
+                                        </template>
+
+                                        <!-- CANCEL -->
+                                        <template x-if="['Request','Booking'].includes(item.status)">
+                                            <button
+                                                @click="confirmCancel(item)"
+                                                class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-md">
+                                                Cancel
+                                            </button>
+                                        </template>
+
+                                        <!-- REJECT -->
+                                        <template x-if="['Request','Approved','Booking','Sedang Dipinjam'].includes(item.status)">
+                                            <button
+                                                @click="handleReject(item)"
+                                                class="text-rose-500 hover:bg-rose-50 w-10 h-10 rounded-xl transition">
+                                                <i class="fa fa-times-circle"></i>
+                                            </button>
+                                        </template>
+
+                                        <!-- DELETE -->
+                                        <template x-if="item.status === 'Cancel' || item.status === 'Selesai'">
+                                            <button
+                                                @click="deleteData(item)"
+                                                class="text-slate-300 hover:text-red-600 w-10 h-10 rounded-xl transition">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </template>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        </template>
+
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div x-show="showConfirmModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-            <div @click.away="showConfirmModal = false" class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden p-6 text-center">
-                <h3 class="font-black text-slate-800 text-lg mb-6">Pilih Tindakan</h3>
-                <div class="grid gap-3">
-                    <button @click="panggilWA()" class="flex items-center justify-between bg-green-500 text-white p-4 rounded-2xl font-bold shadow-lg shadow-green-100">
-                        <span>Chat WhatsApp Peserta</span><i class="fab fa-whatsapp text-2xl"></i>
-                    </button>
-                    <button @click="showConfirmModal = false; openPlotModal(selectedItem)" class="flex items-center justify-between bg-indigo-600 text-white p-4 rounded-2xl font-bold shadow-lg shadow-indigo-100">
-                        <span>Plot Kunci Langsung</span><i class="fa fa-key text-xl"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+    </div>
 
-        <div x-show="showPlotModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-            <div @click.away="showPlotModal = false" class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6">
-                <h3 class="font-black text-slate-800 text-lg mb-4 text-center uppercase">Plotting Nomor Kunci</h3>
-                <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border">
-                    <template x-for="(n, index) in tempKeys" :key="index">
-                        <div class="flex items-center gap-2">
-                            <div class="bg-white text-[10px] font-black px-2 py-3 rounded-xl border w-12 text-center" x-text="'#' + (index+1)"></div>
-                            <select x-model="tempKeys[index]" class="w-full bg-white border p-2.5 rounded-xl text-sm outline-none font-bold">
-                                <option value="">-- Pilih Nomor --</option>
-                                <template x-for="num in getAvailableNumbers()" :key="num">
-                                    <option :value="num" x-text="num"></option>
-                                </template>
-                            </select>
-                        </div>
-                    </template>
-                    <button @click="simpanPlotKunci()" class="w-full mt-4 bg-indigo-600 text-white py-4 rounded-2xl font-black text-xs uppercase shadow-lg transition-all">SIMPAN & PINJAMKAN</button>
-                </div>
+    <!-- MODAL CONFIRM -->
+    <div
+        x-show="showConfirmModal"
+        x-cloak
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+
+        <div
+            @click.away="showConfirmModal = false"
+            class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6">
+
+            <h3 class="text-xl font-black text-center text-slate-800 mb-5">
+                Pilih Tindakan
+            </h3>
+
+            <div class="space-y-3">
+
+                <button
+                    @click="panggilWA()"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white p-4 rounded-2xl flex items-center justify-between font-bold shadow-lg">
+
+                    <span>Chat WhatsApp</span>
+                    <i class="fab fa-whatsapp text-2xl"></i>
+                </button>
+
+                <button
+                    @click="showConfirmModal = false; openPlotAdmin(selectedItem)"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-2xl flex items-center justify-between font-bold shadow-lg">
+
+                    <span>Plot Kunci Langsung</span>
+                    <i class="fa fa-key"></i>
+                </button>
+
             </div>
+
         </div>
     </div>
 
+    <!-- MODAL PLOT -->
+    <div
+        x-show="showPlotModal"
+        x-cloak
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+
+        <div
+            @click.away="showPlotModal = false"
+            class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6">
+
+            <h3 class="text-lg font-black text-center uppercase text-slate-800 mb-5">
+                Plotting Nomor Kunci
+            </h3>
+
+            <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border">
+
+                <template x-for="(n, index) in tempKeys" :key="index">
+
+                    <div class="flex items-center gap-2">
+
+                        <div
+                            class="bg-white border rounded-xl w-12 py-3 text-center font-black text-xs">
+                            <span x-text="'#' + (index + 1)"></span>
+                        </div>
+
+                        <select
+                            x-model="tempKeys[index]"
+                            class="w-full bg-white border rounded-xl p-3 font-semibold outline-none">
+
+                            <option value="">-- Pilih Nomor --</option>
+
+                            <template x-for="num in getAvailableNumbers(index)" :key="num">
+                                <option :value="num" x-text="num"></option>
+                            </template>
+
+                        </select>
+                    </div>
+
+                </template>
+
+                <button
+                    @click="simpanPlotKunci()"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-black text-sm shadow-lg mt-3">
+
+                    SIMPAN & PINJAMKAN
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CAMERA -->
+    <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        id="cameraInput"
+        class="hidden" />
+
     <script>
-        const SB_URL = "https://gyiucoognxykakksrulo.supabase.co";
-        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aXVjb29nbnh5a2Fra3NydWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjQ0MDQsImV4cCI6MjA5Mjg0MDQwNH0.Ht_yQbty5AaWYZWPp7sLWwIRDrmNs-LPot0NnVi3VIU";
+
+        const SB_URL = "YOUR_SUPABASE_URL";
+        const SB_KEY = "YOUR_SUPABASE_KEY";
+
         const _sb = supabase.createClient(SB_URL, SB_KEY);
 
         function lokerList() {
+
             return {
+
                 lokers: [],
-                filterStatus: '',
                 search: '',
+                filterStatus: '',
+
                 selectedItem: null,
+
                 showConfirmModal: false,
                 showPlotModal: false,
-                tempKeys: [],
-                loading: false,
-                adminPass: "diklat6",
 
-                async init() { this.fetchData(); },
+                tempKeys: [],
+
+                loading: false,
+
+                adminPass: atob("ZGlrbGF0Ng=="),
+
+                async init() {
+                    this.fetchData();
+                },
 
                 async fetchData() {
+
                     this.loading = true;
-                    const { data } = await _sb.from('peminjaman_loker').select('*').order('created_at', { ascending: false });
-                    if (data) this.lokers = data;
-                    this.loading = false;
+
+                    try {
+
+                        const { data, error } = await _sb
+                            .from('peminjaman_loker')
+                            .select('*')
+                            .order('created_at', {
+                                ascending: false
+                            });
+
+                        if (error) throw error;
+
+                        this.lokers = data || [];
+
+                    } catch (err) {
+
+                        console.error(err);
+
+                        alert('Gagal mengambil data');
+
+                    } finally {
+
+                        this.loading = false;
+                    }
                 },
 
                 get filteredLokers() {
-    return this.lokers.filter(i => {
 
-        const s = this.search.toLowerCase();
+                    return this.lokers.filter(i => {
 
-        const noKunci = i.no_kunci
-            ? i.no_kunci.toLowerCase()
-            : '';
+                        const s = this.search.toLowerCase();
 
-        const cocokSearch =
-            i.nama_peminjam.toLowerCase().includes(s) ||
-            noKunci.includes(s);
+                        const noKunci =
+                            i.no_kunci
+                                ? i.no_kunci.toLowerCase()
+                                : '';
 
-        const cocokStatus =
-            this.filterStatus === '' ||
-            i.status === this.filterStatus;
+                        const cocokSearch =
+                            i.nama_peminjam.toLowerCase().includes(s)
+                            || noKunci.includes(s);
 
-        return cocokSearch && cocokStatus;
-    });
-},
+                        const cocokStatus =
+                            this.filterStatus === ''
+                            || i.status === this.filterStatus;
 
-                statusColor(s) {
+                        return cocokSearch && cocokStatus;
+                    });
+                },
+
+                statusColor(status) {
+
                     return {
-                        'Request': 'bg-amber-100 text-amber-600',
-                        'Approved': 'bg-purple-100 text-purple-600',
+
+                        'Request': 'bg-amber-100 text-amber-700',
+                        'Approved': 'bg-purple-100 text-purple-700',
+                        'Booking': 'bg-blue-100 text-blue-700',
                         'Sedang Dipinjam': 'bg-indigo-600 text-white',
                         'Bukti Terkirim': 'bg-cyan-100 text-cyan-700',
-                        'Selesai': 'bg-green-100 text-green-600',
-                        'Cancel': 'bg-rose-100 text-rose-600'
-                    }[s] || 'bg-slate-100';
+                        'Selesai': 'bg-green-100 text-green-700',
+                        'Cancel': 'bg-rose-100 text-rose-700'
+
+                    }[status] || 'bg-slate-100 text-slate-600';
                 },
 
                 openConfirmModal(item) {
-                    const pass = prompt("Hanya Admin: Masukkan Password");
-                    if (pass !== this.adminPass) return alert("Password Salah!");
+
+                    const pass = prompt(
+                        "Hanya Admin - Masukkan Password"
+                    );
+
+                    if (pass !== this.adminPass) {
+                        alert("Password salah!");
+                        return;
+                    }
+
                     this.selectedItem = item;
                     this.showConfirmModal = true;
                 },
 
                 async panggilWA() {
 
-    let rawPhone = this.selectedItem.no_telp.replace(/\D/g, '');
+                    let rawPhone =
+                        this.selectedItem.no_telp.replace(/\D/g, '');
 
-    if (rawPhone.startsWith('0')) {
-        rawPhone = '62' + rawPhone.substring(1);
-    }
+                    if (rawPhone.startsWith('0')) {
+                        rawPhone = '62' + rawPhone.substring(1);
+                    }
 
-    if (rawPhone.startsWith('8')) {
-        rawPhone = '62' + rawPhone;
-    }
+                    if (rawPhone.startsWith('8')) {
+                        rawPhone = '62' + rawPhone;
+                    }
 
-    const pesan =
+                    const pesan =
 `Halo ${this.selectedItem.nama_peminjam}
 
 Permohonan peminjaman loker Anda telah disetujui.
@@ -237,154 +467,265 @@ Silakan datang ke Lantai 6 Ruang DIKLAT untuk pengambilan kunci.
 
 Terima kasih.`;
 
-    window.open(
-        `https://wa.me/${rawPhone}?text=${encodeURIComponent(pesan)}`,
-        '_blank'
-    );
+                    window.open(
+                        `https://wa.me/${rawPhone}?text=${encodeURIComponent(pesan)}`,
+                        '_blank'
+                    );
 
-    await this.updateStatus(this.selectedItem.id, 'Approved');
+                    await this.updateStatus(
+                        this.selectedItem.id,
+                        'Approved'
+                    );
 
-    this.showConfirmModal = false;
-},
-               openPlotAdmin(item) {
+                    this.showConfirmModal = false;
+                },
 
-    const pass = prompt("Admin Only - Masukkan Password");
+                openPlotAdmin(item) {
 
-    if (pass !== this.adminPass) {
-        alert("Password salah!");
-        return;
-    }
+                    const pass = prompt(
+                        "Admin Only - Masukkan Password"
+                    );
 
-    this.openPlotModal(item);
-}, 
+                    if (pass !== this.adminPass) {
+                        alert("Password salah!");
+                        return;
+                    }
+
+                    this.openPlotModal(item);
+                },
 
                 openPlotModal(item) {
+
                     this.selectedItem = item;
-                    this.tempKeys = Array(item.jumlah).fill('');
+
+                    this.tempKeys =
+                        Array(item.jumlah).fill('');
+
                     this.showPlotModal = true;
                 },
 
-                getAvailableNumbers() {
-                    const prefix = this.selectedItem?.jenis_kunci === 'Laki-laki' ? 'L' : 'P';
-                    const max = prefix === 'L' ? 100 : 150;
+                getAvailableNumbers(currentIndex = null) {
+
+                    const prefix =
+                        this.selectedItem?.jenis_kunci === 'Laki-laki'
+                            ? 'L'
+                            : 'P';
+
+                    const max =
+                        prefix === 'L'
+                            ? 100
+                            : 150;
+
                     const usedNumbers = this.lokers
-                        .filter(i => ['Approved', 'Sedang Dipinjam', 'Bukti Terkirim'].includes(i.status) && i.no_kunci)
-                        .flatMap(i => i.no_kunci.split(',').map(n => n.trim()));
+                        .filter(i =>
+                            ['Approved', 'Sedang Dipinjam', 'Bukti Terkirim']
+                            .includes(i.status)
+                            && i.no_kunci
+                        )
+                        .flatMap(i =>
+                            i.no_kunci
+                                .split(',')
+                                .map(n => n.trim())
+                        );
+
+                    const selectedTemp =
+                        this.tempKeys.filter(
+                            (k, i) => i !== currentIndex
+                        );
 
                     let available = [];
-                    for(let i=1; i<=max; i++) {
+
+                    for (let i = 1; i <= max; i++) {
+
                         let num = prefix + i;
-                        if (!usedNumbers.includes(num)) available.push(num);
+
+                        if (
+                            !usedNumbers.includes(num)
+                            && !selectedTemp.includes(num)
+                        ) {
+                            available.push(num);
+                        }
                     }
+
                     return available;
                 },
 
                 async simpanPlotKunci() {
-                    if (this.tempKeys.some(k => k === '')) return alert("Pilih semua nomor kunci!");
-                    await this.updateStatus(this.selectedItem.id, 'Sedang Dipinjam', this.tempKeys.join(', '));
+
+                    if (this.tempKeys.some(k => k === '')) {
+
+                        alert('Pilih semua nomor kunci');
+
+                        return;
+                    }
+
+                    await this.updateStatus(
+                        this.selectedItem.id,
+                        'Sedang Dipinjam',
+                        this.tempKeys.join(', ')
+                    );
+
                     this.showPlotModal = false;
                 },
 
                 async handleBuktiFoto(item) {
 
-    const input = document.getElementById('cameraInput');
+                    const input =
+                        document.getElementById('cameraInput');
 
-    input.onchange = async (e) => {
+                    input.value = '';
 
-        const file = e.target.files[0];
+                    input.onchange = async (e) => {
 
-        if (!file) return;
+                        const file = e.target.files[0];
 
-        const fileName =
-            `${Date.now()}_${item.nama_peminjam}.jpg`;
+                        if (!file) return;
 
-        const { error: uploadError } = await _sb
-            .storage
-            .from('bukti-foto')
-            .upload(fileName, file);
+                        const fileName =
+                            `${Date.now()}_${item.nama_peminjam}.jpg`;
 
-        if (uploadError) {
-            alert('Upload foto gagal');
-            return;
-        }
+                        const { error: uploadError } =
+                            await _sb.storage
+                                .from('bukti-foto')
+                                .upload(fileName, file);
 
-        const { data } = _sb
-            .storage
-            .from('bukti-foto')
-            .getPublicUrl(fileName);
+                        if (uploadError) {
 
-        const fotoUrl = data.publicUrl;
+                            alert('Upload foto gagal');
 
-        const { error } = await _sb
-            .from('peminjaman_loker')
-            .update({
-                status: 'Bukti Terkirim',
-                bukti_foto: fotoUrl
-            })
-            .eq('id', item.id);
+                            return;
+                        }
 
-        if (!error) {
-            alert('Foto berhasil dikirim');
-            this.fetchData();
-        }
-    };
+                        const { data } =
+                            _sb.storage
+                                .from('bukti-foto')
+                                .getPublicUrl(fileName);
 
-    input.click();
-},
+                        const fotoUrl = data.publicUrl;
+
+                        await _sb
+                            .from('peminjaman_loker')
+                            .update({
+                                status: 'Bukti Terkirim',
+                                bukti_foto: fotoUrl
+                            })
+                            .eq('id', item.id);
+
+                        alert('Foto berhasil dikirim');
+
+                        this.fetchData();
+                    };
+
+                    input.click();
+                },
 
                 async handleReject(item) {
 
-    const pass = prompt("Admin Only - Masukkan Password");
+                    const pass =
+                        prompt("Admin Only - Masukkan Password");
 
-    if (pass !== this.adminPass) {
-        alert("Password salah!");
-        return;
-    }
+                    if (pass !== this.adminPass) {
 
-    if (confirm("Yakin reject peminjaman ini?")) {
+                        alert("Password salah!");
 
-        await this.updateStatus(item.id, 'Cancel');
-
-        alert("Peminjaman berhasil direject");
-    }
-},
-                async deleteData(item) {
-                    if (prompt("Password Admin untuk Hapus:") === this.adminPass) {
-                        await _sb.from('peminjaman_loker').delete().eq('id', item.id);
-                        this.fetchData();
+                        return;
                     }
+
+                    const yakin =
+                        confirm(
+                            "Yakin reject peminjaman ini?"
+                        );
+
+                    if (!yakin) return;
+
+                    await this.updateStatus(
+                        item.id,
+                        'Cancel'
+                    );
+
+                    alert('Peminjaman berhasil direject');
                 },
+
                 async confirmCancel(item) {
 
-    const yakin = confirm(
-`Yakin ingin membatalkan peminjaman?
+                    const yakin =
+                        confirm(
+                            "Yakin ingin membatalkan peminjaman?"
+                        );
 
-`
-    );
+                    if (!yakin) return;
 
-    if (!yakin) return;
+                    await this.updateStatus(
+                        item.id,
+                        'Cancel'
+                    );
 
-    await this.updateStatus(item.id, 'Cancel');
+                    alert('Peminjaman berhasil dibatalkan');
+                },
 
-    alert("Peminjaman berhasil dibatalkan");
-},
+                async deleteData(item) {
 
-                async updateStatus(id, status, noKunci = null) {
-                    let payload = { status: status };
-                    if (noKunci) payload.no_kunci = noKunci;
-                    const { error } = await _sb.from('peminjaman_loker').update(payload).eq('id', id);
-                    if (!error) this.fetchData();
+                    const pass =
+                        prompt(
+                            "Password Admin untuk Hapus:"
+                        );
+
+                    if (pass !== this.adminPass) {
+
+                        alert("Password salah!");
+
+                        return;
+                    }
+
+                    const yakin =
+                        confirm(
+                            "Yakin hapus data ini?"
+                        );
+
+                    if (!yakin) return;
+
+                    await _sb
+                        .from('peminjaman_loker')
+                        .delete()
+                        .eq('id', item.id);
+
+                    this.fetchData();
+                },
+
+                async updateStatus(
+                    id,
+                    status,
+                    noKunci = null
+                ) {
+
+                    let payload = {
+                        status: status
+                    };
+
+                    if (noKunci) {
+                        payload.no_kunci = noKunci;
+                    }
+
+                    const { error } =
+                        await _sb
+                            .from('peminjaman_loker')
+                            .update(payload)
+                            .eq('id', id);
+
+                    if (error) {
+
+                        alert('Gagal update status');
+
+                        return;
+                    }
+
+                    this.fetchData();
                 }
-            }
+
+            };
         }
+
     </script>
 
-    <input
-    type="file"
-    accept="image/*"
-    capture="environment"
-    id="cameraInput"
-    class="hidden"
-/>
 </body>
 </html>
