@@ -78,7 +78,10 @@ class="px-4 py-2.5 rounded-xl border border-slate-200 outline-none shadow-sm tex
                                     </template>
 
                                     <template x-if="item.status === 'Approved'">
-                                        <button @click="openPlotModal(item)" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">Plot Kunci</button>
+                                        <button @click="openPlotAdmin(item)"
+class="bg-purple-600 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">
+    Plot Kunci
+</button>
                                     </template>
                                     
                                     <template x-if="item.status === 'Sedang Dipinjam'">
@@ -98,7 +101,8 @@ class="px-4 py-2.5 rounded-xl border border-slate-200 outline-none shadow-sm tex
 </template>
                                     <template x-if="['Request','Booking'].includes(item.status)">
     <button
-        @click="updateStatus(item.id, 'Cancel')"
+        <button
+    @click="confirmCancel(item)"
         class="bg-slate-500 text-white px-3 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md">
         Cancel
     </button>
@@ -242,6 +246,17 @@ Terima kasih.`;
 
     this.showConfirmModal = false;
 },
+               openPlotAdmin(item) {
+
+    const pass = prompt("Admin Only - Masukkan Password");
+
+    if (pass !== this.adminPass) {
+        alert("Password salah!");
+        return;
+    }
+
+    this.openPlotModal(item);
+}, 
 
                 openPlotModal(item) {
                     this.selectedItem = item;
@@ -318,15 +333,41 @@ Terima kasih.`;
 },
 
                 async handleReject(item) {
-                    if (confirm("Reject peminjaman ini?")) await this.updateStatus(item.id, 'Cancel');
-                },
 
+    const pass = prompt("Admin Only - Masukkan Password");
+
+    if (pass !== this.adminPass) {
+        alert("Password salah!");
+        return;
+    }
+
+    if (confirm("Yakin reject peminjaman ini?")) {
+
+        await this.updateStatus(item.id, 'Cancel');
+
+        alert("Peminjaman berhasil direject");
+    }
+},
                 async deleteData(item) {
                     if (prompt("Password Admin untuk Hapus:") === this.adminPass) {
                         await _sb.from('peminjaman_loker').delete().eq('id', item.id);
                         this.fetchData();
                     }
                 },
+                async confirmCancel(item) {
+
+    const yakin = confirm(
+`Yakin ingin membatalkan peminjaman?
+
+Nomor yang sudah dibatalkan tidak dapat dikembalikan lagi.`
+    );
+
+    if (!yakin) return;
+
+    await this.updateStatus(item.id, 'Cancel');
+
+    alert("Peminjaman berhasil dibatalkan");
+},
 
                 async updateStatus(id, status, noKunci = null) {
                     let payload = { status: status };
