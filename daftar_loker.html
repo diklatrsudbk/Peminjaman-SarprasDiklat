@@ -163,6 +163,16 @@
 
                                     <div class="flex items-center justify-center gap-2 flex-wrap min-h-[40px] max-w-[260px] mx-auto">
 
+                                    
+                                        <template x-if="['Request','Booking'].includes(item.status)">
+                                        <a
+                                        :href="'input_loker.html?id=' + item.id"
+                                        class="bg-sky-500 hover:bg-sky-600 text-white px-3 h-9 rounded-xl text-[11px] font-bold shadow-md flex items-center gap-1">
+                                        <i class="fa fa-pen"></i>
+                                        Edit
+                                        </a>
+                                        </template>
+                                        
                                         <!-- CONFIRM -->
                                         <template x-if="item.status === 'Request'">
                                             <button
@@ -226,6 +236,7 @@
                                                     Reminder WA
                                                 </button>
                                             </template>
+
 
                                         <!-- DELETE -->
                                         <template x-if="item.status === 'Cancel' || item.status === 'Selesai'">
