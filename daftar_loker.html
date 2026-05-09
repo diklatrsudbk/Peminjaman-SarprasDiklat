@@ -140,31 +140,32 @@
     <!-- NAMA + JENIS -->
     <div class="flex items-center gap-2">
 
-        <div
-            class="font-bold text-slate-800 leading-tight"
-            x-text="item.nama_peminjam">
-        </div>
+    <!-- BADGE JENIS -->
+    <span
+        :class="
+            item.jenis_kunci === 'Perempuan'
+            ? 'bg-pink-100 text-pink-600'
+            : 'bg-blue-100 text-blue-600'
+        "
+        class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black uppercase shrink-0">
 
-        <!-- BADGE JENIS -->
         <span
-            :class="
+            x-text="
                 item.jenis_kunci === 'Perempuan'
-                ? 'bg-pink-100 text-pink-600'
-                : 'bg-blue-100 text-blue-600'
-            "
-            class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black uppercase">
-
-            <span
-                x-text="
-                    item.jenis_kunci === 'Perempuan'
-                    ? 'P'
-                    : 'L'
-                ">
-            </span>
-
+                ? 'P'
+                : 'L'
+            ">
         </span>
 
+    </span>
+
+    <!-- NAMA -->
+    <div
+        class="font-bold text-slate-800 leading-tight"
+        x-text="item.nama_peminjam">
     </div>
+
+</div>
 
     <!-- STATUS + QTY -->
     <div class="flex items-center gap-2 mt-2 flex-wrap">
