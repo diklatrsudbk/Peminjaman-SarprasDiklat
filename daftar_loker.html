@@ -205,16 +205,33 @@
 
             <div class="p-2 space-y-1">
 
-                <!-- EDIT -->
-                <template x-if="['Request','Booking'].includes(item.status)">
-                    <a
-                        :href="'input_loker.html?id=' + item.id"
-                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-sky-50 text-sky-700 text-sm font-semibold transition">
+                <!-- EDIT PESERTA -->
+<template x-if="['Request','Booking'].includes(item.status)">
 
-                        <i class="fa fa-pen w-5"></i>
-                        Edit Data
-                    </a>
-                </template>
+    <button
+        @click="editPeserta(item); openMenu=false"
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 text-blue-700 text-sm font-semibold transition">
+
+        <i class="fa fa-pen-to-square w-5"></i>
+
+        Edit Data
+    </button>
+
+</template>
+
+                <!-- EDIT NOMOR KUNCI -->
+<template x-if="item.status === 'Sedang Dipinjam'">
+
+    <button
+        @click="editKunciAdmin(item); openMenu=false"
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-purple-50 text-purple-700 text-sm font-semibold transition">
+
+        <i class="fa fa-key w-5"></i>
+
+        Edit Nomor Kunci
+    </button>
+
+</template>
 
                 <!-- CONFIRM -->
                 <template x-if="item.status === 'Request'">
@@ -671,6 +688,41 @@
                 this.selectedItem = item;
                 this.showConfirmModal = true;
                 },
+
+                editPeserta(item) {
+
+    window.location.href =
+        `input_loker.html?id=${item.id}`;
+},
+
+                editKunciAdmin(item) {
+
+    const pass = prompt(
+        "Admin Only - Masukkan Password"
+    );
+
+    if (pass === null || pass.trim() === '') {
+        return;
+    }
+
+    if (pass !== this.adminPass) {
+
+        alert("Wrong Password!");
+
+        return;
+    }
+
+    this.selectedItem = item;
+
+    this.tempKeys =
+        item.no_kunci
+            ? item.no_kunci
+                .split(',')
+                .map(k => k.trim())
+            : Array(item.jumlah).fill('');
+
+    this.showPlotModal = true;
+},
 
                 async panggilWA() {
 
