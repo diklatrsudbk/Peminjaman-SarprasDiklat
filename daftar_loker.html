@@ -195,8 +195,13 @@
 
         <!-- notif dot -->
         <span
-            class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 border border-white">
-        </span>
+    :class="{
+        'bg-red-500': item.catatan.startsWith('[RUSAK]'),
+        'bg-orange-500': item.catatan.startsWith('[KOMPLAIN]'),
+        'bg-green-500': item.catatan.startsWith('[INFO]')
+    }"
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border border-white">
+</span>
 
     </button>
 
