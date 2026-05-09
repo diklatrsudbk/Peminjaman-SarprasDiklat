@@ -398,6 +398,47 @@
         </div>
     </div>
 
+    <!-- MODAL CATATAN -->
+<div
+    x-show="showCatatanModal"
+    x-cloak
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+
+    <div
+        @click.away="showCatatanModal = false"
+        class="bg-white rounded-3xl shadow-xl w-full max-w-md p-6">
+
+        <div class="flex items-center justify-between mb-4">
+
+            <h3 class="text-lg font-black text-slate-800">
+                Catatan
+            </h3>
+
+            <button
+                @click="showCatatanModal = false"
+                class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-500">
+
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+
+        <textarea
+            x-model="catatanText"
+            rows="6"
+            placeholder="Tulis catatan..."
+            class="w-full border border-slate-200 rounded-2xl p-4 text-sm outline-none focus:ring-2 ring-indigo-100 resize-none"></textarea>
+
+        <button
+            @click="simpanCatatan()"
+            class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-2xl font-bold shadow-lg">
+
+            Simpan Catatan
+        </button>
+
+    </div>
+
+</div>
+
     <!-- CAMERA -->
     <input
         type="file"
@@ -425,6 +466,8 @@
 
                 showConfirmModal: false,
                 showPlotModal: false,
+                showCatatanModal: false,
+                catatanText: '',
 
                 tempKeys: [],
 
@@ -645,6 +688,15 @@ Terima kasih.`;
 
                     this.showPlotModal = true;
                 },
+               openCatatan(item) {
+
+    this.selectedItem = item;
+
+    this.catatanText =
+        item.catatan || '';
+
+    this.showCatatanModal = true;
+}, 
 
                 getAvailableNumbers(currentIndex = null) {
 
@@ -837,6 +889,30 @@ Terima kasih.`;
 
                     this.fetchData();
                 },
+
+
+                async simpanCatatan() {
+
+    const { error } = await _sb
+        .from('peminjaman_loker')
+        .update({
+            catatan: this.catatanText
+        })
+        .eq('id', this.selectedItem.id);
+
+    if (error) {
+
+        alert('Gagal menyimpan catatan');
+
+        return;
+    }
+
+    alert('Catatan berhasil disimpan');
+
+    this.showCatatanModal = false;
+
+    this.fetchData();
+},
 
                 async updateStatus(
                     id,
