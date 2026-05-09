@@ -182,8 +182,9 @@
 
     <button
         @click="lihatCatatan(item)"
-        class="relative">
+        class="relative w-8 h-8 flex items-center justify-center">
 
+        <!-- ICON -->
         <i
             :class="{
                 'text-red-500': item.catatan.startsWith('[RUSAK]'),
@@ -193,20 +194,19 @@
             class="fa fa-note-sticky text-lg">
         </i>
 
-        <!-- notif dot -->
+        <!-- DOT -->
         <span
-    :class="{
-        'bg-red-500': item.catatan.startsWith('[RUSAK]'),
-        'bg-orange-500': item.catatan.startsWith('[KOMPLAIN]'),
-        'bg-green-500': item.catatan.startsWith('[INFO]')
-    }"
-    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border border-white">
-</span>
+            :class="{
+                'bg-red-500': item.catatan.startsWith('[RUSAK]'),
+                'bg-orange-500': item.catatan.startsWith('[KOMPLAIN]'),
+                'bg-green-500': item.catatan.startsWith('[INFO]')
+            }"
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border border-white">
+        </span>
 
     </button>
 
 </template>
-
     </div>
 
 </td>
@@ -779,6 +779,9 @@
                 showConfirmModal: false,
                 showPlotModal: false,
                 showCatatanModal: false,
+                showViewCatatan: false,
+                viewCatatanText: '',
+                viewCatatanColor: '',
                 selectedCatatan: '',
                 catatanText: '',
                 catatanType: 'HIJAU',
@@ -921,10 +924,21 @@
 
                 lihatCatatan(item) {
 
-    this.selectedCatatan =
-        item.catatan || 'Tidak ada catatan';
+    this.viewCatatanText =
+        item.catatan
+            .replace('[INFO]', '')
+            .replace('[KOMPLAIN]', '')
+            .replace('[RUSAK]', '')
+            .trim();
 
-    this.showCatatanModal = true;
+    this.viewCatatanColor =
+        item.catatan.startsWith('[RUSAK]')
+            ? 'MERAH'
+            : item.catatan.startsWith('[KOMPLAIN]')
+                ? 'OREN'
+                : 'HIJAU';
+
+    this.showViewCatatan = true;
 },
 
                 
