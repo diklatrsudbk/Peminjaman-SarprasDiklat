@@ -250,12 +250,37 @@
 
                 <!-- CATATAN -->
                 <button
-                    @click="openCatatan(item); openMenu=false"
-                    class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 text-slate-700 text-sm font-semibold transition">
+    @click="openCatatan(item); openMenu=false"
+    class="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-slate-100 text-slate-700 text-sm font-semibold transition">
 
-                    <i class="fa fa-note-sticky w-5"></i>
-                    Catatan
-                </button>
+    <div class="flex items-center gap-3">
+        <i class="fa fa-note-sticky w-5"></i>
+        Catatan
+    </div>
+
+    <!-- TITIK WARNA -->
+    <template x-if="item.catatan">
+
+        <span
+            :class="{
+
+                'bg-red-500':
+                    item.catatan.startsWith('MERAH|'),
+
+                'bg-orange-500':
+                    item.catatan.startsWith('OREN|'),
+
+                'bg-green-500':
+                    item.catatan.startsWith('HIJAU|')
+
+            }"
+
+            class="w-2.5 h-2.5 rounded-full">
+        </span>
+
+    </template>
+
+</button>
 
                 <!-- CANCEL -->
                 <template x-if="['Request','Booking'].includes(item.status)">
@@ -422,6 +447,43 @@
             </button>
         </div>
 
+        <div class="grid grid-cols-3 gap-2 mb-4">
+
+    <button
+        type="button"
+        @click="catatanType='MERAH'"
+        :class="catatanType==='MERAH'
+            ? 'bg-red-600 text-white'
+            : 'bg-red-100 text-red-700'"
+        class="h-11 rounded-2xl font-bold text-sm transition">
+
+        Rusak/Hilang
+    </button>
+
+    <button
+        type="button"
+        @click="catatanType='OREN'"
+        :class="catatanType==='OREN'
+            ? 'bg-orange-500 text-white'
+            : 'bg-orange-100 text-orange-700'"
+        class="h-11 rounded-2xl font-bold text-sm transition">
+
+        Komplen
+    </button>
+
+    <button
+        type="button"
+        @click="catatanType='HIJAU'"
+        :class="catatanType==='HIJAU'
+            ? 'bg-green-600 text-white'
+            : 'bg-green-100 text-green-700'"
+        class="h-11 rounded-2xl font-bold text-sm transition">
+
+        Info
+    </button>
+
+</div>
+
         <textarea
             x-model="catatanText"
             rows="6"
@@ -468,6 +530,7 @@
                 showPlotModal: false,
                 showCatatanModal: false,
                 catatanText: '',
+                catatanType: 'HIJAU',
 
                 tempKeys: [],
 
@@ -688,15 +751,32 @@ Terima kasih.`;
 
                     this.showPlotModal = true;
                 },
+                
                openCatatan(item) {
 
     this.selectedItem = item;
 
-    this.catatanText =
-        item.catatan || '';
+    if (item.catatan && item.catatan.includes('|')) {
+
+        const parts =
+            item.catatan.split('|');
+
+        this.catatanType =
+            parts[0];
+
+        this.catatanText =
+            parts[1];
+
+    } else {
+
+        this.catatanType = 'HIJAU';
+
+        this.catatanText =
+            item.catatan || '';
+    }
 
     this.showCatatanModal = true;
-}, 
+},
 
                 getAvailableNumbers(currentIndex = null) {
 
@@ -893,10 +973,13 @@ Terima kasih.`;
 
                 async simpanCatatan() {
 
+    const finalCatatan =
+        `${this.catatanType}|${this.catatanText}`;
+
     const { error } = await _sb
         .from('peminjaman_loker')
         .update({
-            catatan: this.catatanText
+            catatan: finalCatatan
         })
         .eq('id', this.selectedItem.id);
 
