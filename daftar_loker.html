@@ -422,7 +422,11 @@
             class="bg-white rounded-3xl shadow-xl w-full max-w-md p-6">
 
             <h3 class="text-lg font-black text-center uppercase text-slate-800 mb-5">
-                Plotting Nomor Kunci
+                <span x-text="
+    selectedItem?.no_kunci
+        ? 'Edit Nomor Kunci'
+        : 'Plotting Nomor Kunci'
+"></span>
             </h3>
 
             <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border">
@@ -844,50 +848,82 @@ Terima kasih.`;
 
                 getAvailableNumbers(currentIndex = null) {
 
-                    const prefix =
-                        this.selectedItem?.jenis_kunci === 'Laki-laki'
-                            ? 'L'
-                            : 'P';
+    const prefix =
+        this.selectedItem?.jenis_kunci === 'Laki-laki'
+            ? 'L'
+            : 'P';
 
-                    const max =
-                        prefix === 'L'
-                            ? 100
-                            : 150;
+    const max =
+        prefix === 'L'
+            ? 100
+            : 150;
 
-                    const usedNumbers = this.lokers
-                        .filter(i =>
-                            ['Approved', 'Sedang Dipinjam', 'Bukti Terkirim']
-                            .includes(i.status)
-                            && i.no_kunci
-                        )
-                        .flatMap(i =>
-                            i.no_kunci
-                                .split(',')
-                                .map(n => n.trim())
-                        );
+    // =========================
+    // NOMOR MILIK DATA INI
+    // =========================
 
-                    const selectedTemp =
-                        this.tempKeys.filter(
-                            (k, i) => i !== currentIndex
-                        );
+    const currentKeys =
+        this.selectedItem?.no_kunci
+            ? this.selectedItem.no_kunci
+                .split(',')
+                .map(n => n.trim())
+            : [];
 
-                    let available = [];
+    // =========================
+    // NOMOR TERPAKAI ORANG LAIN
+    // =========================
 
-                    for (let i = 1; i <= max; i++) {
+    const usedNumbers = this.lokers
 
-                        let num = prefix + i;
+        .filter(i => {
 
-                        if (
-                            !usedNumbers.includes(num)
-                            && !selectedTemp.includes(num)
-                        ) {
-                            available.push(num);
-                        }
-                    }
+            return (
+                i.id !== this.selectedItem.id &&
+                ['Approved',
+                 'Sedang Dipinjam',
+                 'Bukti Terkirim',
+                 'Overdue']
+                .includes(i.status) &&
+                i.no_kunci
+            );
+        })
 
-                    return available;
-                },
+        .flatMap(i =>
+            i.no_kunci
+                .split(',')
+                .map(n => n.trim())
+        );
 
+    // =========================
+    // NOMOR YANG SEDANG DIPILIH
+    // =========================
+
+    const selectedTemp =
+        this.tempKeys.filter(
+            (k, i) => i !== currentIndex
+        );
+
+    let available = [];
+
+    for (let i = 1; i <= max; i++) {
+
+        let num = prefix + i;
+
+        if (
+            (
+                !usedNumbers.includes(num)
+                || currentKeys.includes(num)
+            )
+            &&
+            !selectedTemp.includes(num)
+        ) {
+
+            available.push(num);
+        }
+    }
+
+    return available;
+},
                 async simpanPlotKunci() {
 
                     if (this.tempKeys.some(k => k === '')) {
