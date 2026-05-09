@@ -105,13 +105,9 @@
 
         <th class="py-3 px-4">Peminjam</th>
         <th class="py-3 px-4 text-center">Status</th>
-
         <th class="py-3 px-4">Institusi</th>
-
         <th class="py-3 px-4">Periode</th>
-
         <th class="py-3 px-4">Nomor Kunci</th>
-
         <th class="py-3 px-4 text-center w-[90px]">
             Aksi
         </th>
@@ -168,8 +164,18 @@
 
 </div>
 
-    <!-- STATUS + QTY -->
+    <!-- QTY + NOTE -->
     <div class="flex items-center gap-2 mt-2 flex-wrap">
+                <!-- QTY -->
+        <div class="text-xs font-bold text-slate-500">
+
+            Qty :
+            <span
+                class="text-indigo-600"
+                x-text="item.jumlah">
+            </span>
+
+        </div>
 
         <!-- NOTE -->
 <template x-if="item.catatan">
@@ -195,17 +201,6 @@
     </button>
 
 </template>
-
-        <!-- QTY -->
-        <div class="text-xs font-bold text-slate-500">
-
-            Qty :
-            <span
-                class="text-indigo-600"
-                x-text="item.jumlah">
-            </span>
-
-        </div>
 
     </div>
 
