@@ -36,16 +36,48 @@
                     </select>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold mb-2">Nama Ruangan</label>
-                    <select x-model="f.nama_ruangan" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500">
-                        <option>Aula 1</option>
-                        <option>Aula 2</option>
-                        <option>Aula 3</option>
-                        <option>LT. 3 Ruang Belajar</option>
-                        <option>Lantai 8, 801</option>
-                    </select>
-                </div>
+                <!-- JUDUL ACARA -->
+<div class="md:col-span-2">
+    <label class="block text-sm font-semibold mb-2">
+        Judul Acara
+    </label>
+
+    <input
+        type="text"
+        x-model="f.judul_acara"
+        required
+        placeholder="Contoh: Rapat Koordinasi Tahunan"
+        class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500">
+</div>
+
+<!-- KEPERLUAN -->
+<div>
+    <label class="block text-sm font-semibold mb-2">
+        Keperluan Ruangan
+    </label>
+
+    <select
+        x-model="f.keperluan_ruangan"
+        class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500">
+
+        <option value="">-- Pilih Keperluan --</option>
+
+        <option>Rapat</option>
+        <option>Bimbingan</option>
+        <option>Sosialisasi</option>
+        <option>Ruang Belajar</option>
+        <option>Kunjungan</option>
+        <option>Pelatihan</option>
+        <option>Pertemuan</option>
+        <option>Penutupan</option>
+        <option>Penerimaan</option>
+        <option>Seminar</option>
+        <option>Workshop</option>
+        <option>Ujian</option>
+        <option>Lainnya</option>
+
+    </select>
+</div>
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold mb-2">Judul Acara</label>
@@ -134,21 +166,31 @@
         function roomForm() {
             return {
                 f: {
-                    unit_peminjam: 'Karyawan',
-                    nama_ruangan: 'Aula 1',
-                    judul_acara: '',
-                    jumlah_peserta: '',
-                    tanggal: [],
-                    jam_mulai: '',
-                    jam_selesai: '',
-                    durasi: '',
-                    nama: '',
-                    identitas: '',
-                    institusi: 'RSUDBK',
-                    jurusan_divisi: '',
-                    no_telepon: '',
-                    status: 'Request'
-                },
+    unit_peminjam: 'Karyawan',
+
+    nama_ruangan: '',
+    keperluan_ruangan: '',
+
+    judul_acara: '',
+    catatan: '',
+
+    jumlah_peserta: '',
+    tanggal: [],
+
+    jam_mulai: '',
+    jam_selesai: '',
+    durasi: '',
+
+    nama: '',
+    identitas: '',
+
+    institusi: 'RSUDBK',
+    jurusan_divisi: '',
+
+    no_telepon: '',
+
+    status: 'Request'
+},
 
                 addDate(val) {
                     if (val && !this.f.tanggal.includes(val)) {
