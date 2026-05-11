@@ -9,7 +9,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 p-4 md:p-8" x-data="roomForm()">
+<body
+    class="bg-gray-100 p-4 md:p-8"
+    x-data="roomForm()"
+    x-init="init()">
 
     <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="bg-blue-600 p-6 text-white flex justify-between items-center">
@@ -45,7 +48,7 @@
     </label>
 
     <select
-        x-model="f.keperluan_ruangan"
+        x-model="f.keperluan_ruangan" required
         class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500">
 
         <option value="">-- Pilih Keperluan --</option>
@@ -396,7 +399,8 @@ daftarJurusan: [
 "D4 Promosi Kesehatan",
 "S1 Kesehatan Msyarakat"
 ],
-                f: {
+
+f: {
     unit_peminjam: 'Karyawan',
 
     nama_ruangan: '',
@@ -420,12 +424,14 @@ daftarJurusan: [
 
     no_telepon: '',
     ttd_digital: '',
+
     status: 'Request'
-    signaturePad: null,
-    isDrawing: false,
-    
 },
 
+signaturePad: null,
+isDrawing: false,
+
+                    
                 init() {
 
     this.$nextTick(() => {
@@ -531,20 +537,42 @@ daftarJurusan: [
 },
 
                 async submit() {
-                    if (this.f.tanggal.length === 0) return alert("Pilih minimal satu tanggal!");
-                    const canvas =
-    document.getElementById('signatureCanvas');
 
-this.f.ttd_digital =
-    canvas.toDataURL('image/png');
-                    const { error } = await _sb.from('peminjaman_ruangan').insert([this.f]);
-                    if (!error) {
-                        alert("Data Berhasil Terkirim!");
-                        window.location.href = 'daftar_ruangan.html';
-                    } else {
-                        alert("Error: " + error.message);
-                    }
-                }
+    if (this.f.tanggal.length === 0)
+        return alert("Pilih minimal satu tanggal!");
+
+    const canvas =
+        document.getElementById('signatureCanvas');
+
+    const isBlank = !canvas
+        .getContext('2d')
+        .getImageData(0, 0, canvas.width, canvas.height)
+        .data.some(channel => channel !== 0);
+
+    if (isBlank) {
+        return alert("Tanda tangan wajib diisi!");
+    }
+
+    this.f.ttd_digital =
+        canvas.toDataURL('image/png');
+
+    const { error } =
+        await _sb
+        .from('peminjaman_ruangan')
+        .insert([this.f]);
+
+    if (!error) {
+
+        alert("Data Berhasil Terkirim!");
+
+        window.location.href =
+            'daftar_ruangan.html';
+
+    } else {
+
+        alert("Error: " + error.message);
+    }
+}
             }
         }
     </script>
