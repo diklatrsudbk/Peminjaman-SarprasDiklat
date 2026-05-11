@@ -126,20 +126,141 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold mb-2" x-text="f.unit_peminjam === 'Karyawan' ? 'Nama Perusahaan' : 'Institusi'"></label>
-                    <input type="text" x-model="f.institusi" :disabled="f.unit_peminjam === 'Karyawan'" class="w-full border rounded-xl p-3 outline-none bg-white disabled:bg-gray-200">
-                </div>
+
+    <label
+        class="block text-sm font-semibold mb-2"
+        x-text="
+            f.unit_peminjam === 'Karyawan'
+            ? 'Nama Perusahaan'
+            : 'Institusi'
+        ">
+    </label>
+
+    <!-- DROPDOWN PESERTA DIDIK -->
+    <template x-if="f.unit_peminjam === 'Peserta Didik'">
+
+        <select
+            x-model="f.institusi"
+            class="w-full border rounded-xl p-3 outline-none bg-white">
+
+            <option value="">
+                -- Pilih Institusi --
+            </option>
+
+            <template
+                x-for="inst in daftarInstitusi"
+                :key="inst">
+
+                <option
+                    :value="inst"
+                    x-text="inst">
+                </option>
+
+            </template>
+
+        </select>
+
+    </template>
+
+    <!-- INPUT BIASA -->
+    <template x-if="f.unit_peminjam !== 'Peserta Didik'">
+
+        <input
+            type="text"
+            x-model="f.institusi"
+            class="w-full border rounded-xl p-3 outline-none bg-white">
+
+    </template>
+
+</div>
 
                 <div>
-                    <label class="block text-sm font-semibold mb-2" x-text="f.unit_peminjam === 'Peserta Didik' ? 'Jurusan' : 'Divisi / Instalasi'"></label>
-                    <input type="text" x-model="f.jurusan_divisi" class="w-full border rounded-xl p-3 outline-none bg-white">
-                </div>
+
+    <label
+        class="block text-sm font-semibold mb-2"
+        x-text="
+            f.unit_peminjam === 'Peserta Didik'
+            ? 'Jurusan'
+            : 'Divisi / Instalasi'
+        ">
+    </label>
+
+    <!-- DROPDOWN -->
+    <template x-if="f.unit_peminjam === 'Peserta Didik'">
+
+        <select
+            x-model="f.jurusan_divisi"
+            class="w-full border rounded-xl p-3 outline-none bg-white">
+
+            <option value="">
+                -- Pilih Jurusan --
+            </option>
+
+            <template
+                x-for="jrs in daftarJurusan"
+                :key="jrs">
+
+                <option
+                    :value="jrs"
+                    x-text="jrs">
+                </option>
+
+            </template>
+
+        </select>
+
+    </template>
+
+    <!-- INPUT -->
+    <template x-if="f.unit_peminjam !== 'Peserta Didik'">
+
+        <input
+            type="text"
+            x-model="f.jurusan_divisi"
+            class="w-full border rounded-xl p-3 outline-none bg-white">
+
+    </template>
+
+</div>
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold mb-2 text-gray-600">No. Telepon (WhatsApp)</label>
                     <input type="text" x-model="f.no_telepon" placeholder="08xxxx" class="w-full border rounded-xl p-3 outline-none bg-white">
                 </div>
             </div>
+
+            <!-- TANDA TANGAN -->
+<div class="border-t pt-6">
+
+    <label class="block text-sm font-bold mb-3">
+        Tanda Tangan Digital
+    </label>
+
+    <div class="border-2 border-dashed rounded-2xl p-3 bg-slate-50">
+
+        <canvas
+            id="signatureCanvas"
+            width="600"
+            height="220"
+            class="w-full bg-white rounded-xl border touch-none">
+        </canvas>
+
+        <div class="flex justify-end mt-3">
+
+            <button
+                type="button"
+                @click="clearSignature()"
+                class="px-4 py-2 rounded-xl bg-rose-500 text-white text-sm font-bold">
+
+                Hapus TTD
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
             <div class="pt-6">
                 <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-700 transition-all uppercase tracking-widest">
@@ -155,7 +276,126 @@
         const _sb = supabase.createClient(SB_URL, SB_KEY);
 
         function roomForm() {
-            return {
+            return { daftarInstitusi: [
+"ATRO Persada Nusantara Bekasi",
+"Binus University Bandung",
+"Institut Teknologi Bandung (ITB)",
+"Politeknik PIKSI Ganesha",
+"Politkenik Al Islam Bandung",
+"Universitas Indonesia (UI)",
+"Sekolah Tinggi Farmasi Indonesia (STFI)",
+"Universitas Muhammadiyah Bandung (UMB)",
+"Universitas Wahid Hasyim Semarang (UNWAHAS)",
+"UIN Sunan Gunung Djati Bandung",
+"Poltekkes Semarang",
+"Poltekkes Tasikmalaya",
+"SMKN 7 Bandung",
+"SMK Nusa Bhakti Bandung",
+"Universitas Diponegoro (UNDIP)",
+"Universitas Islam Bandung (UNISBA)",
+"Universitas Maranatha",
+"Universitas Sriwijaya",
+"Universitas Siliwangi Tasikmalaya",
+"Universitas Telkom",
+"Stikes Karsa Husada Garut",
+"Universitas Logistik dan Bisnis Internasional (ULBI)",
+"Universitas Bandung",
+"Stikep PPNI Jabar",
+"Stikes Budi Luhur",
+"Stikes RS Dustira",
+"Stikes Dharma Husada Bandung (DHB)",
+"Inkes Rajawali",
+"Inkes Immanuel",
+"Inkes Pelamonia Makasar",
+"Poltekkes Palu",
+"Poltekkes Bandung",
+"Politeknik Cendrawasih Palu",
+"Universitas Padjajaran (UNPAD)",
+"Universitas Pasundan (UNPAS)",
+"Universitas Sali Al-Aitam",
+"UNISA Bandung",
+"Universitas Bhakti Kencana (UBK)",
+"Universitas Pendidikan Indonesia (UPI)",
+"Universitas Jenderal Achmad Yani (UNJANI)",
+"Universitas Borromeus",
+"Universitas Muhammadiyah Ahmad Dahlan (UM-AD) Palembang",
+"Universitas Dehasen (UNIVED) Bengkulu",
+"Stikes Marendeng Majene"
+],
+
+daftarJurusan: [
+"D3 Keperawatan",
+"D3 Keperawatan RPL",
+"D4 Keperawatan",
+"D4 Keperawatan RPL",
+"S1 Keperawatan Regular",
+"S1 Keperawatan Non-Regular",
+"Profesi Ners",
+"Profesi Ners Non-Reguler",
+"S2 Keperawatan",
+"S3 Keperawatan",
+"D3 Kebidanan",
+"D3 Kebidanan RPL",
+"D4 Kebidanan",
+"D4 Kebidanan RPL",
+"S1 Kebidanan Regular",
+"S1 Kebidanan Non-Regular",
+"Profesi Bidan Regular",
+"Profesi Bidan Non-Regular",
+"S2 Kebidanan",
+"S3 Kebidanan",
+"S1 Kedokteran / PSPD",
+"Profesi Kedokteran",
+"S2 Kedokteran",
+"S3 Kedokteran",
+"Specialis PPDS Anak",
+"Specialis PPDS Anestesi",
+"Specialis PPDS Bedah",
+"Specialis PPDS Obsgyn",
+"Specialis PPDS KFR",
+"Specialis PPDS THT-KL",
+"Specialis PPDS Neurologi",
+"Specialis PPDS IPD",
+"S1 Kedokteran Gigi",
+"Specialis Kedokteran Gigi",
+"D4 Anestesi Regular",
+"D4 Anestesi RPL",
+"D3 Elektromedis",
+"D4 Elektromedis",
+"S1 Teknik Biomedis",
+"D3 Sanitiasi",
+"D4 Sanitasi",
+"S1 Kesehatan Lingkungan",
+"S1 Kesehatan Masyarakat",
+"D3 Gizi",
+"D4 Gizi",
+"S1 Gizi",
+"Profesi Dietisien",
+"D3 Analis Kesehatan",
+"D3 Teknologi Laboratorium Medis",
+"D4 Teknologi Laboratorium Medis",
+"S1 Biologi",
+"D3 Radiologi",
+"D4 Radiologi",
+"S1 Fisika",
+"SMK Farmasi",
+"D3 Farmasi",
+"S1 Farmasi",
+"Profesi Apoteker",
+"S2 Farmasi",
+"D3 Terapi Okupasi",
+"D4 Terapi Okupasi",
+"D3 Fisioterapi",
+"D4 Fisioterapi",
+"D3 Terapi Wicara",
+"S1 Psikologi",
+"D3 Rekam Medik Informasi Kesehatan",
+"D4 Manajemen Informasi Kesehatan",
+"Computer Science",
+"D3 Administrasi Bisnis",
+"D4 Promosi Kesehatan",
+"S1 Kesehatan Msyarakat"
+],
                 f: {
     unit_peminjam: 'Karyawan',
 
@@ -179,8 +419,9 @@
     jurusan_divisi: '',
 
     no_telepon: '',
-
+    ttd_digital: '',
     status: 'Request'
+    
 },
 
                 addDate(val) {
