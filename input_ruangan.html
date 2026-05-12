@@ -161,6 +161,7 @@
                 () => f.institusi,
                 value => f.institusi = value
             )"
+			x-init="init()"
             class="relative">
 
             <input
@@ -250,6 +251,7 @@
                 () => f.jurusan_divisi,
                 value => f.jurusan_divisi = value
             )"
+			x-init="init()"
             class="relative">
 
             <input
@@ -731,6 +733,53 @@
                         this.f.durasi = `${h} Jam ${m} Menit`;
                     }
                 },
+
+			
+function searchableSelect(options, getter, setter) {
+
+    return {
+
+        open: false,
+
+        search: getter() || '',
+
+        filtered: [...options],
+
+        init() {
+
+            this.filterOptions();
+
+            this.$watch('search', () => {
+
+                this.filterOptions();
+
+                setter(this.search);
+            });
+        },
+
+        filterOptions() {
+
+            const keyword =
+                this.search.toLowerCase();
+
+            this.filtered = options.filter(item =>
+                item.toLowerCase().includes(keyword)
+            );
+        },
+
+        select(item) {
+
+            this.search = item;
+
+            setter(item);
+
+            this.open = false;
+        }
+    }
+},
+
+
+				
 
                 async submit() {
 
