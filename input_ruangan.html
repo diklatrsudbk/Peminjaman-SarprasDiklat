@@ -190,7 +190,6 @@
 
     <!-- DROPDOWN -->
     <template x-if="f.unit_peminjam === 'Peserta Didik'">
-
         <select
             x-model="f.jurusan_divisi"
             class="w-full border rounded-xl p-3 outline-none bg-white">
@@ -216,19 +215,16 @@
 
     <!-- INPUT -->
     <template x-if="f.unit_peminjam !== 'Peserta Didik'">
-
         <input
             type="text"
             x-model="f.jurusan_divisi"
             class="w-full border rounded-xl p-3 outline-none bg-white">
-
     </template>
-
 </div>
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold mb-2 text-gray-600">No. Telepon (WhatsApp)</label>
-                    <input type="text" x-model="f.no_telepon" placeholder="08xxxx" class="w-full border rounded-xl p-3 outline-none bg-white">
+                    <input type="tel" pattern="[0-9]+" inputmode="numeric" x-model="f.no_telepon">
                 </div>
             </div>
 
@@ -242,7 +238,7 @@
                     <li>Apabila lepas dari tanggung jawab, maka akan dilaporkan kepada Pihak Institusi Pendidikan sebagai pihak yang bertanggung jawab atas penggantian terkait kehilangan/kelalaian yang disebabkan Peserta Didiknya.</li>
                 </ol>
                 <div class="flex items-center gap-2 pt-2 border-t border-amber-200">
-                    <input type="checkbox" id="agree" required class="w-4 h-4 accent-indigo-600">
+                    <input type="checkbox" id="agree" x-model="f.agree" required>
                     <label for="agree" class="text-[10px] font-black text-indigo-900 uppercase italic cursor-pointer">SAYA SETUJU PADA SYARAT DAN KETENTUAN DIATAS</label>
                 </div>
             </div>
@@ -271,7 +267,7 @@
 							style="touch-action:none;"
 							class="w-full bg-white rounded-xl border">
 						</canvas>
-                    <button type="button" @click="clearSignature" class="absolute top-2 right-2 bg-white/90 px-3 py-1 rounded-full text-[9px] font-bold text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm uppercase border border-rose-100">Hapus</button>
+                    <button type="button" @click="clearSignature()" class="absolute top-2 right-2 bg-white/90 px-3 py-1 rounded-full text-[9px] font-bold text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm uppercase border border-rose-100">Hapus</button>
                 </div>
                 <p class="text-[9px] text-slate-400 italic text-center uppercase">Silakan tanda tangan pada kotak di atas</p>
             </div>
@@ -296,6 +292,7 @@
 				canvas: null,
 				ctx: null,
 				drawing: false,
+				agree: false,
 				daftarInstitusi: [
 					"ATRO Persada Nusantara Bekasi",
 					"Binus University Bandung",
@@ -660,6 +657,8 @@
 
         alert("Error: " + response.error.message);
     }
+}
+}
 }
     </script>
 </body>
