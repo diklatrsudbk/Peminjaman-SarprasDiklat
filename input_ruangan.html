@@ -658,80 +658,84 @@ x-effect="search = f.jurusan_divisi"
 					signaturePad: null,
 					isDrawing: false,
 
-                    
-                async init() {
-					this.canvas = document.getElementById("signatureCanvas");
-					this.ctx = this.canvas.getContext("2d");
-					this.resizeCanvas();
+                   async init() {
+    // 1. Setup Signature Canvas
+    this.canvas = document.getElementById("signatureCanvas");
+    this.ctx = this.canvas.getContext("2d");
+    this.resizeCanvas();
 
-				const startDrawing = (e) => {this.drawing = true;
-				const rect = this.canvas.getBoundingClientRect();
-				const x = e.clientX - rect.left;
-				const y = e.clientY - rect.top;
-						this.ctx.beginPath();
-						this.ctx.moveTo(x, y);
-};
+    const startDrawing = (e) => {
+        this.drawing = true;
+        const rect = this.canvas.getBoundingClientRect();
+        // Mengambil koordinat baik dari Mouse maupun Touch
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, y);
+    };
 
-				const stopDrawing = () => {
-					this.drawing = false;
-					this.ctx.beginPath();
-				};
+    const stopDrawing = () => {
+        this.drawing = false;
+        this.ctx.beginPath();
+    };
 
-			this.canvas.addEventListener("mousedown",startDrawing);
-			this.canvas.addEventListener("mousemove",(e) => this.draw(e));
-			this.canvas.addEventListener("mouseup",stopDrawing);
-			this.canvas.addEventListener("touchstart",(e) => {e.preventDefault();
-			startDrawing(e.touches[0]);
-		},
-			{ passive: false });
-			this.canvas.addEventListener("touchmove",(e) => {e.preventDefault();
-            this.draw(e.touches[0]);
-        },
-			{ passive: false });
-			this.canvas.addEventListener("touchend",stopDrawing);
+    // Event Listeners (Mouse)
+    this.canvas.addEventListener("mousedown", startDrawing);
+    this.canvas.addEventListener("mousemove", (e) => this.draw(e));
+    this.canvas.addEventListener("mouseup", stopDrawing);
 
-    // =========================
-    // MODE EDIT
-    // =========================
+    // Event Listeners (Touch / HP)
+    this.canvas.addEventListener("touchstart", (e) => {
+        e.preventDefault(); // Mencegah scroll saat tanda tangan
+        startDrawing(e.touches[0]);
+    }, { passive: false });
 
-    const params =
-        new URLSearchParams(window.location.search);
-	const id = params.get('id');
-		if (id) {this.editId = id;
-			await this.loadEditData(id);
-		}
-					this.$watch('f.unit_peminjam', (val) => {
+    this.canvas.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        this.draw(e.touches[0]);
+    }, { passive: false });
 
-    if (val === 'Karyawan') {
+    this.canvas.addEventListener("touchend", stopDrawing);
 
-        this.f.institusi = 'RSUDBK';
-        this.f.identitas = '32730000000000001';
-        this.f.no_telepon = '081000000000';
-
+    // 2. Mode Edit (Identifikasi ID dari URL)
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (id) {
+        this.editId = id;
+        await this.loadEditData(id);
     }
 
-    if (val === 'Peserta Didik') {
+    // 3. Watcher: Otomatisasi Data Karyawan
+    // Memastikan NIM/NIP dan Telp masuk database meski kolom disembunyikan
+    this.$watch('f.unit_peminjam', (val) => {
+        // Setiap ganti kategori, reset jurusan agar bersih
+        this.f.jurusan_divisi = '';
 
-        this.f.institusi = '';
-        this.f.identitas = '';
-        this.f.no_telepon = '';
-    }
+        if (val === 'Karyawan') {
+            this.f.institusi = 'RSUDBK';
+            this.f.identitas = '32730000000000001'; // Data otomatis untuk DB
+            this.f.no_telepon = '081000000000';    // Data otomatis untuk DB
+        } else {
+            // Kosongkan jika Peserta Didik/Luar agar bisa diisi manual di kolom yang muncul
+            this.f.institusi = '';
+            this.f.identitas = '';
+            this.f.no_telepon = '';
+        }
+    });
 
-    if (val === 'Instansi Luar') {
-
-        this.f.institusi = '';
-        this.f.identitas = '';
-        this.f.no_telepon = '';
-    }
-
-    this.f.jurusan_divisi = '';
-});
-				window.onpageshow = function(event) {
-				if (event.persisted) {
-					window.location.reload();
-			}
-		};
-	},
+    // 4. Penanganan Browser Back Button (BFCache)
+    // Memastikan form refresh jika user menekan tombol 'Back'
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    };
+}, 
+                
 
                 resizeCanvas() {
                     this.canvas.width = this.canvas.offsetWidth;
