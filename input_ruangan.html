@@ -232,38 +232,49 @@
                 </div>
             </div>
 
-            <!-- TANDA TANGAN -->
-<div class="border-t pt-6">
+            <!-- SYARAT & KETENTUAN -->
+			<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100 space-y-3 shadow-inner">
+                <p class="text-[11px] text-amber-900 font-bold uppercase tracking-wider">Syarat & Ketentuan Peminjaman:</p>
+                <ol class="text-[10px] text-amber-800 space-y-2 list-decimal ml-4 font-medium leading-relaxed">
+                    <li>Menjaga kebersihan dan kondisi Ruang Loker dan Loker yang dipinjam, sebelum dan sesudahnya.</li>
+                    <li>Segera mengembalikan kembali lengkap sesuai jumlah yang di Pinjam ke Lantai 6 Ruang Diklat jika sudah Selesai / jika sudah jatuh tempo tanggal pengembalian.</li>
+                    <li>Bersedia mengganti jika terjadi kehilangan maupun rusak Seharga: <strong>Rp. 50,000/Kunci</strong>.</li>
+                    <li>Apabila lepas dari tanggung jawab, maka akan dilaporkan kepada Pihak Institusi Pendidikan sebagai pihak yang bertanggung jawab atas penggantian terkait kehilangan/kelalaian yang disebabkan Peserta Didiknya.</li>
+                </ol>
+                <div class="flex items-center gap-2 pt-2 border-t border-amber-200">
+                    <input type="checkbox" id="agree" required class="w-4 h-4 accent-indigo-600">
+                    <label for="agree" class="text-[10px] font-black text-indigo-900 uppercase italic cursor-pointer">SAYA SETUJU PADA SYARAT DAN KETENTUAN DIATAS</label>
+                </div>
+            </div>
+			
+			<!-- CATATAN -->
+				<div class="md:col-span-2">
+					<label class="block text-sm font-semibold mb-2">Catatan Tambahan</label>
 
-    <label class="block text-sm font-bold mb-3">
-        Tanda Tangan Digital
-    </label>
+					<textarea
+						x-model="f.catatan"
+						rows="4"
+						placeholder="Tambahkan informasi tambahan jika diperlukan..."
+						class="w-full border rounded-2xl p-3 outline-none focus:ring-2 focus:ring-blue-500 resize-none">
+					</textarea>
+				</div>
+				
+			<!-- TANDA TANGAN -->	
 
-    <div class="border-2 border-dashed rounded-2xl p-3 bg-slate-50">
-
-        <canvas
-            id="signatureCanvas"
-            width="600"
-            height="220"
-            class="w-full bg-white rounded-xl border touch-none">
-        </canvas>
-
-        <div class="flex justify-end mt-3">
-
-            <button
-                type="button"
-                @click="clearSignature()"
-                class="px-4 py-2 rounded-xl bg-rose-500 text-white text-sm font-bold">
-
-                Hapus TTD
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-slate-400 uppercase block">Tanda Tangan Digital Peminjam</label>
+                <div class="relative bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 overflow-hidden shadow-inner">
+						<canvas
+							id="signatureCanvas"
+							width="600"
+							height="220"
+							style="touch-action:none;"
+							class="w-full bg-white rounded-xl border">
+						</canvas>
+                    <button type="button" @click="clearSignature" class="absolute top-2 right-2 bg-white/90 px-3 py-1 rounded-full text-[9px] font-bold text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm uppercase border border-rose-100">Hapus</button>
+                </div>
+                <p class="text-[9px] text-slate-400 italic text-center uppercase">Silakan tanda tangan pada kotak di atas</p>
+            </div>
 
             <div class="pt-6">
                 <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-700 transition-all uppercase tracking-widest">
@@ -279,229 +290,278 @@
         const _sb = supabase.createClient(SB_URL, SB_KEY);
 
         function roomForm() {
-            return { daftarInstitusi: [
-"ATRO Persada Nusantara Bekasi",
-"Binus University Bandung",
-"Institut Teknologi Bandung (ITB)",
-"Politeknik PIKSI Ganesha",
-"Politkenik Al Islam Bandung",
-"Universitas Indonesia (UI)",
-"Sekolah Tinggi Farmasi Indonesia (STFI)",
-"Universitas Muhammadiyah Bandung (UMB)",
-"Universitas Wahid Hasyim Semarang (UNWAHAS)",
-"UIN Sunan Gunung Djati Bandung",
-"Poltekkes Semarang",
-"Poltekkes Tasikmalaya",
-"SMKN 7 Bandung",
-"SMK Nusa Bhakti Bandung",
-"Universitas Diponegoro (UNDIP)",
-"Universitas Islam Bandung (UNISBA)",
-"Universitas Maranatha",
-"Universitas Sriwijaya",
-"Universitas Siliwangi Tasikmalaya",
-"Universitas Telkom",
-"Stikes Karsa Husada Garut",
-"Universitas Logistik dan Bisnis Internasional (ULBI)",
-"Universitas Bandung",
-"Stikep PPNI Jabar",
-"Stikes Budi Luhur",
-"Stikes RS Dustira",
-"Stikes Dharma Husada Bandung (DHB)",
-"Inkes Rajawali",
-"Inkes Immanuel",
-"Inkes Pelamonia Makasar",
-"Poltekkes Palu",
-"Poltekkes Bandung",
-"Politeknik Cendrawasih Palu",
-"Universitas Padjajaran (UNPAD)",
-"Universitas Pasundan (UNPAS)",
-"Universitas Sali Al-Aitam",
-"UNISA Bandung",
-"Universitas Bhakti Kencana (UBK)",
-"Universitas Pendidikan Indonesia (UPI)",
-"Universitas Jenderal Achmad Yani (UNJANI)",
-"Universitas Borromeus",
-"Universitas Muhammadiyah Ahmad Dahlan (UM-AD) Palembang",
-"Universitas Dehasen (UNIVED) Bengkulu",
-"Stikes Marendeng Majene"
-],
+            return { 
+				editId: null,
+				loading: false,
+				canvas: null,
+				ctx: null,
+				drawing: false,
+				daftarInstitusi: [
+					"ATRO Persada Nusantara Bekasi",
+					"Binus University Bandung",
+					"Institut Teknologi Bandung (ITB)",
+					"Politeknik PIKSI Ganesha",
+					"Politkenik Al Islam Bandung",
+					"Universitas Indonesia (UI)",
+					"Sekolah Tinggi Farmasi Indonesia (STFI)",
+					"Universitas Muhammadiyah Bandung (UMB)",
+					"Universitas Wahid Hasyim Semarang (UNWAHAS)",
+					"UIN Sunan Gunung Djati Bandung",
+					"Poltekkes Semarang",
+					"Poltekkes Tasikmalaya",
+					"SMKN 7 Bandung",
+					"SMK Nusa Bhakti Bandung",
+					"Universitas Diponegoro (UNDIP)",
+					"Universitas Islam Bandung (UNISBA)",
+					"Universitas Maranatha",
+					"Universitas Sriwijaya",
+					"Universitas Siliwangi Tasikmalaya",
+					"Universitas Telkom",
+					"Stikes Karsa Husada Garut",
+					"Universitas Logistik dan Bisnis Internasional (ULBI)",
+					"Universitas Bandung",
+					"Stikep PPNI Jabar",
+					"Stikes Budi Luhur",
+					"Stikes RS Dustira",
+					"Stikes Dharma Husada Bandung (DHB)",
+					"Inkes Rajawali",
+					"Inkes Immanuel",
+					"Inkes Pelamonia Makasar",
+					"Poltekkes Palu",
+					"Poltekkes Bandung",
+					"Politeknik Cendrawasih Palu",
+					"Universitas Padjajaran (UNPAD)",
+					"Universitas Pasundan (UNPAS)",
+					"Universitas Sali Al-Aitam",
+					"UNISA Bandung",
+					"Universitas Bhakti Kencana (UBK)",
+					"Universitas Pendidikan Indonesia (UPI)",
+					"Universitas Jenderal Achmad Yani (UNJANI)",
+					"Universitas Borromeus",
+					"Universitas Muhammadiyah Ahmad Dahlan (UM-AD) Palembang",
+					"Universitas Dehasen (UNIVED) Bengkulu",
+					"Stikes Marendeng Majene"
+					],
 
-daftarJurusan: [
-"D3 Keperawatan",
-"D3 Keperawatan RPL",
-"D4 Keperawatan",
-"D4 Keperawatan RPL",
-"S1 Keperawatan Regular",
-"S1 Keperawatan Non-Regular",
-"Profesi Ners",
-"Profesi Ners Non-Reguler",
-"S2 Keperawatan",
-"S3 Keperawatan",
-"D3 Kebidanan",
-"D3 Kebidanan RPL",
-"D4 Kebidanan",
-"D4 Kebidanan RPL",
-"S1 Kebidanan Regular",
-"S1 Kebidanan Non-Regular",
-"Profesi Bidan Regular",
-"Profesi Bidan Non-Regular",
-"S2 Kebidanan",
-"S3 Kebidanan",
-"S1 Kedokteran / PSPD",
-"Profesi Kedokteran",
-"S2 Kedokteran",
-"S3 Kedokteran",
-"Specialis PPDS Anak",
-"Specialis PPDS Anestesi",
-"Specialis PPDS Bedah",
-"Specialis PPDS Obsgyn",
-"Specialis PPDS KFR",
-"Specialis PPDS THT-KL",
-"Specialis PPDS Neurologi",
-"Specialis PPDS IPD",
-"S1 Kedokteran Gigi",
-"Specialis Kedokteran Gigi",
-"D4 Anestesi Regular",
-"D4 Anestesi RPL",
-"D3 Elektromedis",
-"D4 Elektromedis",
-"S1 Teknik Biomedis",
-"D3 Sanitiasi",
-"D4 Sanitasi",
-"S1 Kesehatan Lingkungan",
-"S1 Kesehatan Masyarakat",
-"D3 Gizi",
-"D4 Gizi",
-"S1 Gizi",
-"Profesi Dietisien",
-"D3 Analis Kesehatan",
-"D3 Teknologi Laboratorium Medis",
-"D4 Teknologi Laboratorium Medis",
-"S1 Biologi",
-"D3 Radiologi",
-"D4 Radiologi",
-"S1 Fisika",
-"SMK Farmasi",
-"D3 Farmasi",
-"S1 Farmasi",
-"Profesi Apoteker",
-"S2 Farmasi",
-"D3 Terapi Okupasi",
-"D4 Terapi Okupasi",
-"D3 Fisioterapi",
-"D4 Fisioterapi",
-"D3 Terapi Wicara",
-"S1 Psikologi",
-"D3 Rekam Medik Informasi Kesehatan",
-"D4 Manajemen Informasi Kesehatan",
-"Computer Science",
-"D3 Administrasi Bisnis",
-"D4 Promosi Kesehatan",
-"S1 Kesehatan Msyarakat"
-],
+				daftarJurusan: [
+					"D3 Keperawatan",
+					"D3 Keperawatan RPL",
+					"D4 Keperawatan",
+					"D4 Keperawatan RPL",
+					"S1 Keperawatan Regular",
+					"S1 Keperawatan Non-Regular",
+					"Profesi Ners",
+					"Profesi Ners Non-Reguler",
+					"S2 Keperawatan",
+					"S3 Keperawatan",
+					"D3 Kebidanan",
+					"D3 Kebidanan RPL",
+					"D4 Kebidanan",
+					"D4 Kebidanan RPL",
+					"S1 Kebidanan Regular",
+					"S1 Kebidanan Non-Regular",
+					"Profesi Bidan Regular",
+					"Profesi Bidan Non-Regular",
+					"S2 Kebidanan",
+					"S3 Kebidanan",
+					"S1 Kedokteran / PSPD",
+					"Profesi Kedokteran",
+					"S2 Kedokteran",
+					"S3 Kedokteran",
+					"Specialis PPDS Anak",
+					"Specialis PPDS Anestesi",
+					"Specialis PPDS Bedah",
+					"Specialis PPDS Obsgyn",
+					"Specialis PPDS KFR",
+					"Specialis PPDS THT-KL",
+					"Specialis PPDS Neurologi",
+					"Specialis PPDS IPD",
+					"S1 Kedokteran Gigi",
+					"Specialis Kedokteran Gigi",
+					"D4 Anestesi Regular",
+					"D4 Anestesi RPL",
+					"D3 Elektromedis",
+					"D4 Elektromedis",
+					"S1 Teknik Biomedis",
+					"D3 Sanitiasi",
+					"D4 Sanitasi",
+					"S1 Kesehatan Lingkungan",
+					"S1 Kesehatan Masyarakat",
+					"D3 Gizi",
+					"D4 Gizi",
+					"S1 Gizi",
+					"Profesi Dietisien",
+					"D3 Analis Kesehatan",
+					"D3 Teknologi Laboratorium Medis",
+					"D4 Teknologi Laboratorium Medis",
+					"S1 Biologi",
+					"D3 Radiologi",
+					"D4 Radiologi",
+					"S1 Fisika",
+					"SMK Farmasi",
+					"D3 Farmasi",
+					"S1 Farmasi",
+					"Profesi Apoteker",
+					"S2 Farmasi",
+					"D3 Terapi Okupasi",
+					"D4 Terapi Okupasi",
+					"D3 Fisioterapi",
+					"D4 Fisioterapi",
+					"D3 Terapi Wicara",
+					"S1 Psikologi",
+					"D3 Rekam Medik Informasi Kesehatan",
+					"D4 Manajemen Informasi Kesehatan",
+					"Computer Science",
+					"D3 Administrasi Bisnis",
+					"D4 Promosi Kesehatan",
+					"S1 Kesehatan Msyarakat"],
 
-f: {
-    unit_peminjam: 'Karyawan',
-
-    nama_ruangan: '',
-    keperluan_ruangan: '',
-
-    judul_acara: '',
-    catatan: '',
-
-    jumlah_peserta: '',
-    tanggal: [],
-
-    jam_mulai: '',
-    jam_selesai: '',
-    durasi: '',
-
-    nama: '',
-    identitas: '',
-
-    institusi: 'RSUDBK',
-    jurusan_divisi: '',
-
-    no_telepon: '',
-    ttd_digital: '',
-
-    status: 'Request'
-},
-
-signaturePad: null,
-isDrawing: false,
+				f: {
+					unit_peminjam: 'Karyawan',
+					nama_ruangan: '',
+					keperluan_ruangan: '',
+					judul_acara: '',
+					catatan: '',
+					jumlah_peserta: '',
+					tanggal: [],
+					jam_mulai: '',
+					jam_selesai: '',
+					durasi: '',
+					nama: '',
+					identitas: '',
+					institusi: 'RSUDBK',
+					jurusan_divisi: '',
+					no_telepon: '',
+					ttd_digital: '',
+					status: 'Request'
+				},
+					signaturePad: null,
+					isDrawing: false,
 
                     
-                init() {
+                async init() {
+					this.canvas = document.getElementById("signatureCanvas");
+					this.ctx = this.canvas.getContext("2d");
+					this.resizeCanvas();
 
-    this.$nextTick(() => {
+				const startDrawing = (e) => {this.drawing = true;
+				const rect = this.canvas.getBoundingClientRect();
+				const x = e.clientX - rect.left;
+				const y = e.clientY - rect.top;
+						this.ctx.beginPath();
+						this.ctx.moveTo(x, y);
+};
 
-        const canvas =
-            document.getElementById('signatureCanvas');
+				const stopDrawing = () => {
+					this.drawing = false;
+					this.ctx.beginPath();
+				};
 
-        const ctx =
-            canvas.getContext('2d');
+			this.canvas.addEventListener("mousedown",startDrawing);
+			this.canvas.addEventListener("mousemove",(e) => this.draw(e));
+			this.canvas.addEventListener("mouseup",stopDrawing);
+			this.canvas.addEventListener("touchstart",(e) => {e.preventDefault();
+			startDrawing(e.touches[0]);
+		},
+			{ passive: false });
+			this.canvas.addEventListener("touchmove",(e) => {e.preventDefault();
+            this.draw(e.touches[0]);
+        },
+			{ passive: false });
+			this.canvas.addEventListener("touchend",stopDrawing);
 
-        ctx.lineWidth = 2.5;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = '#111827';
+    // =========================
+    // MODE EDIT
+    // =========================
 
-        const getPos = (e) => {
+    const params =
+        new URLSearchParams(window.location.search);
+	const id = params.get('id');
+		if (id) {this.editId = id;
+			await this.loadEditData(id);
+		}
+				window.onpageshow = function(event) {
+				if (event.persisted) {
+					window.location.reload();
+			}
+		};
+	},
 
-            const rect =
-                canvas.getBoundingClientRect();
+                resizeCanvas() {
+                    this.canvas.width = this.canvas.offsetWidth;
+                    this.canvas.height = this.canvas.offsetHeight;
+                    this.ctx.lineWidth = 3;
+                    this.ctx.lineCap = "round";
+                    this.ctx.strokeStyle = "#1e1b4b";
+                },
 
-            if (e.touches) {
+                draw(e) {
+                    if (!this.drawing) return;
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    this.ctx.lineTo(x, y);
+                    this.ctx.stroke();
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, y);
+                },
 
-                return {
-                    x: e.touches[0].clientX - rect.left,
-                    y: e.touches[0].clientY - rect.top
-                };
-            }
+                clearSignature() {
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.ctx.beginPath();
+                },
 
-            return {
-                x: e.offsetX,
-                y: e.offsetY
-            };
-        };
+				async loadEditData(id) {
+					const { data, error } = await _sb
+						.from('peminjaman_ruangan')
+						.select('*')
+						.eq('id', id)
+						.single();
+					if (error || !data) {
+						alert('Data tidak ditemukan');
+						return;
+						}
+						
+				// isi form
+				this.f = {
 
-        const start = (e) => {
+					...this.f,
 
-            this.isDrawing = true;
+					unit_peminjam: data.unit_peminjam || 'Karyawan',
+					nama_ruangan: data.nama_ruangan || '',
+					keperluan_ruangan: data.keperluan_ruangan || '',
+					judul_acara: data.judul_acara || '',
+					catatan: data.catatan || '',
+					jumlah_peserta: data.jumlah_peserta || '',
+					tanggal: data.tanggal || [],
+					jam_mulai: data.jam_mulai || '',
+					jam_selesai: data.jam_selesai || '',
+					durasi: data.durasi || '',
+					nama: data.nama || '',
+					identitas: data.identitas || '',
+					institusi: data.institusi || 'RSUDBK',
+					jurusan_divisi: data.jurusan_divisi || '',
+					no_telepon: data.no_telepon || '',
+					ttd_digital: data.ttd_digital || '',
+					status: data.status || 'Request'
+				};
 
-            const pos = getPos(e);
+				// tampilkan tanda tangan lama
+				if (data.ttd_digital) {
+					const img = new Image();
+					img.onload = () => {
+						this.ctx.drawImage(
+							img,
+							0,
+							0,
+							this.canvas.width,
+							this.canvas.height
+						);
+					};
+					img.src = data.ttd_digital;
+				}
+			},
 
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-        };
-
-        const draw = (e) => {
-
-            if (!this.isDrawing) return;
-
-            e.preventDefault();
-
-            const pos = getPos(e);
-
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-        };
-
-        const stop = () => {
-
-            this.isDrawing = false;
-        };
-
-        canvas.addEventListener('mousedown', start);
-        canvas.addEventListener('mousemove', draw);
-        window.addEventListener('mouseup', stop);
-
-        canvas.addEventListener('touchstart', start);
-        canvas.addEventListener('touchmove', draw);
-        window.addEventListener('touchend', stop);
-
-    });
-},
 
                 addDate(val) {
                     if (val && !this.f.tanggal.includes(val)) {
@@ -520,26 +580,12 @@ isDrawing: false,
                         this.f.durasi = `${h} Jam ${m} Menit`;
                     }
                 },
-            clearSignature() {
-
-    const canvas =
-        document.getElementById('signatureCanvas');
-
-    const ctx =
-        canvas.getContext('2d');
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-},
 
                 async submit() {
 
-    if (this.f.tanggal.length === 0)
+    if (this.f.tanggal.length === 0) {
         return alert("Pilih minimal satu tanggal!");
+    }
 
     const canvas =
         document.getElementById('signatureCanvas');
@@ -556,25 +602,65 @@ isDrawing: false,
     this.f.ttd_digital =
         canvas.toDataURL('image/png');
 
-    const { error } =
-        await _sb
-        .from('peminjaman_ruangan')
-        .insert([this.f]);
+    let response;
 
-    if (!error) {
+    // MODE EDIT
+    if (this.editId) {
 
-        alert("Data Berhasil Terkirim!");
+        response = await _sb
+            .from('peminjaman_ruangan')
+            .update(this.f)
+            .eq('id', this.editId);
+
+    } 
+    
+    // MODE TAMBAH
+    else {
+
+        response = await _sb
+            .from('peminjaman_ruangan')
+            .insert([this.f]);
+    }
+
+    if (!response.error) {
+
+        alert(
+            this.editId
+            ? "Data berhasil diperbarui!"
+            : "Data berhasil terkirim!"
+        );
+
+        // RESET FORM
+        this.f = {
+            unit_peminjam: 'Karyawan',
+            nama_ruangan: '',
+            keperluan_ruangan: '',
+            judul_acara: '',
+            catatan: '',
+            jumlah_peserta: '',
+            tanggal: [],
+            jam_mulai: '',
+            jam_selesai: '',
+            durasi: '',
+            nama: '',
+            identitas: '',
+            institusi: 'RSUDBK',
+            jurusan_divisi: '',
+            no_telepon: '',
+            ttd_digital: '',
+            status: 'Request'
+        };
+
+        this.clearSignature();
 
         window.location.href =
             'daftar_ruangan.html';
 
     } else {
 
-        alert("Error: " + error.message);
+        alert("Error: " + response.error.message);
     }
 }
-            }
-        }
     </script>
 </body>
 </html>
