@@ -700,23 +700,27 @@ x-effect="search = f.institusi"
 		if (id) {this.editId = id;
 			await this.loadEditData(id);
 		}
-
 					this.$watch('f.unit_peminjam', (val) => {
 
     if (val === 'Karyawan') {
 
         this.f.institusi = 'RSUDBK';
-
         this.f.identitas = '32730000000000001';
-
         this.f.no_telepon = '081000000000';
 
-    } else {
+    }
+
+    if (val === 'Peserta Didik') {
 
         this.f.institusi = '';
-
         this.f.identitas = '';
+        this.f.no_telepon = '';
+    }
 
+    if (val === 'Instansi Luar') {
+
+        this.f.institusi = '';
+        this.f.identitas = '';
         this.f.no_telepon = '';
     }
 
