@@ -123,12 +123,25 @@
                     <input type="text" x-model="f.nama" required class="w-full border rounded-xl p-3 outline-none bg-white">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold mb-2" x-text="f.unit_peminjam === 'Peserta Didik' ? 'NIM' : 'NIP / NIK'"></label>
-                    <input type="text" x-model="f.identitas" class="w-full border rounded-xl p-3 outline-none bg-white">
-                </div>
+				<!-- IDENTITAS -->
+<div>
+    <label
+        class="block text-sm font-semibold mb-2"
+        x-text="
+            f.unit_peminjam === 'Peserta Didik'
+            ? 'NIM'
+            : 'NIP / NIK'
+        ">
+    </label>
 
-                <div>
+    <input
+        type="text"
+        x-model="f.identitas"
+        class="w-full border rounded-xl p-3 outline-none bg-white">
+</div>
+
+<!-- INSTITUSI / PERUSAHAAN -->
+<div>
 
     <label
         class="block text-sm font-semibold mb-2"
@@ -139,149 +152,190 @@
         ">
     </label>
 
-    <!-- PESERTA DIDIK INSTANSI -->
-					<template x-if="f.unit_peminjam === 'Peserta Didik'">
-						<div
-							x-data="searchableSelect(
-            				daftarInstitusi,
-            				() => f.institusi,
-            				value => f.institusi = value
-        					)"
-        					class="relative">
-							<input
-					            type="text"
-					            x-model="search"
-					            @focus="open = true"
-					            @input="filterOptions()"
-					            @click.away="open = false"
-					            autocomplete="off"
-					            placeholder="Cari institusi..."
-					            class="w-full border rounded-xl p-3 outline-none bg-white">
-				        <div
-				            x-show="open"
-				            x-transition
-				            x-cloak
-				            class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
-				    <template
-				        x-for="item in filtered"
-				        :key="item">
-		                <div
-		                    @click="select(item)"
-		                    class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition"
-		                    x-text="item"
-		                ></div>
-            		</template>
-			            <div
-			                x-show="filtered.length === 0"
-			                class="px-4 py-3 text-gray-400 text-sm">Tidak ditemukan
-			            </div>
-					 </div>
-    			</div>
-			</template>
+    <!-- PESERTA DIDIK -->
+    <template x-if="f.unit_peminjam === 'Peserta Didik'">
 
-   <!-- KARYAWAN -->
-			<template x-if="f.unit_peminjam === 'Karyawan'">
-			    <input
-			        type="text"
-			        x-model="f.institusi"
-			        value="RSUDBK"
-			        readonly
-			        class="w-full border rounded-xl p-3 outline-none bg-gray-100 text-gray-600 cursor-not-allowed">			
-			</template>
+        <div
+            x-data="searchableSelect(
+                daftarInstitusi,
+                () => f.institusi,
+                value => f.institusi = value
+            )"
+            class="relative">
 
-<!-- INSTANSI LUAR -->
-			<template x-if="f.unit_peminjam === 'Instansi Luar'">
-			    <input
-			        type="text"
-			        x-model="f.institusi"
-			        placeholder="Masukkan nama instansi"
-			        class="w-full border rounded-xl p-3 outline-none bg-white">
-			</template>
-			</div> 
-				<div>
-					<label class="block text-sm font-semibold mb-2" x-text="
-		            f.unit_peminjam === 'Peserta Didik'
-		            ? 'Jurusan'
-		            : 'Divisi / Instalasi'"> </label>
+            <input
+                type="text"
+                x-model="search"
+                @focus="open = true"
+                @input="filterOptions()"
+                @click.away="open = false"
+                autocomplete="off"
+                placeholder="Cari institusi..."
+                class="w-full border rounded-xl p-3 outline-none bg-white">
 
-    <!-- PESERTA DIDIK JURUSAN -->
-				<template x-if="f.unit_peminjam === 'Peserta Didik'">
-					<div
-        				x-data="searchableSelect(
-            			daftarJurusan,
-            			() => f.jurusan_divisi,
-            			value => f.jurusan_divisi = value
-        				)"
-        				class="relative">
-				        <input
-				            type="text"
-				            x-model="search"
-				            @focus="open = true"
-				            @input="filterOptions()"
-				            @click.away="open = false"
-				            autocomplete="off"
-				            placeholder="Cari jurusan..."
-				            class="w-full border rounded-xl p-3 outline-none bg-white">
-					        <div
-					            x-show="open"
-					            x-transition
-					            x-cloak
-					            class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
-	            <template
-	                x-for="item in filtered"
-	                :key="item">
-	                <div
-	                    @click="select(item)"
-	                    class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition"
-	                    x-text="item"
-	                ></div>
-            </template>
             <div
-                x-show="filtered.length === 0"
-                class="px-4 py-3 text-gray-400 text-sm">Tidak ditemukan
-			</div>
-		</div>
-	</div>
-</template>
+                x-show="open"
+                x-transition
+                x-cloak
+                class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
 
-<!-- KARYAWAN -->
-<template x-if="f.unit_peminjam === 'Karyawan'">
+                <template
+                    x-for="item in filtered"
+                    :key="item">
 
-    <select
-        x-model="f.jurusan_divisi"
-        class="w-full border rounded-xl p-3 outline-none bg-white">
+                    <div
+                        @click="select(item)"
+                        class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition"
+                        x-text="item">
+                    </div>
 
-        <option value="">
-            -- Pilih Divisi --
-        </option>
+                </template>
 
-        <template
-            x-for="div in daftarDivisi"
-            :key="div">
+                <div
+                    x-show="filtered.length === 0"
+                    class="px-4 py-3 text-gray-400 text-sm">
 
-            <option
-                :value="div"
-                x-text="div">
-            </option>
+                    Tidak ditemukan
 
-        </template>
+                </div>
 
-    </select>
+            </div>
 
-</template>
+        </div>
 
-<!-- INSTANSI LUAR -->
-<template x-if="f.unit_peminjam === 'Instansi Luar'">
+    </template>
 
-    <input
-        type="text"
-        x-model="f.jurusan_divisi"
-        placeholder="Masukkan divisi / bagian"
-        class="w-full border rounded-xl p-3 outline-none bg-white">
+    <!-- KARYAWAN -->
+    <template x-if="f.unit_peminjam === 'Karyawan'">
 
-</template>
+        <input
+            type="text"
+            x-model="f.institusi"
+            readonly
+            class="w-full border rounded-xl p-3 outline-none bg-gray-100 text-gray-600 cursor-not-allowed">
+
+    </template>
+
+    <!-- INSTANSI LUAR -->
+    <template x-if="f.unit_peminjam === 'Instansi Luar'">
+
+        <input
+            type="text"
+            x-model="f.institusi"
+            placeholder="Masukkan nama instansi"
+            class="w-full border rounded-xl p-3 outline-none bg-white">
+
+    </template>
+
 </div>
 
+<!-- JURUSAN / DIVISI -->
+<div>
+
+    <label
+        class="block text-sm font-semibold mb-2"
+        x-text="
+            f.unit_peminjam === 'Peserta Didik'
+            ? 'Jurusan'
+            : 'Divisi / Instalasi'
+        ">
+    </label>
+
+    <!-- PESERTA DIDIK -->
+    <template x-if="f.unit_peminjam === 'Peserta Didik'">
+
+        <div
+            x-data="searchableSelect(
+                daftarJurusan,
+                () => f.jurusan_divisi,
+                value => f.jurusan_divisi = value
+            )"
+            class="relative">
+
+            <input
+                type="text"
+                x-model="search"
+                @focus="open = true"
+                @input="filterOptions()"
+                @click.away="open = false"
+                autocomplete="off"
+                placeholder="Cari jurusan..."
+                class="w-full border rounded-xl p-3 outline-none bg-white">
+
+            <div
+                x-show="open"
+                x-transition
+                x-cloak
+                class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
+
+                <template
+                    x-for="item in filtered"
+                    :key="item">
+
+                    <div
+                        @click="select(item)"
+                        class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition"
+                        x-text="item">
+                    </div>
+
+                </template>
+
+                <div
+                    x-show="filtered.length === 0"
+                    class="px-4 py-3 text-gray-400 text-sm">
+
+                    Tidak ditemukan
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </template>
+
+    <!-- KARYAWAN -->
+    <template x-if="f.unit_peminjam === 'Karyawan'">
+
+        <select
+            x-model="f.jurusan_divisi"
+            class="w-full border rounded-xl p-3 outline-none bg-white">
+
+            <option value="">
+                -- Pilih Divisi --
+            </option>
+
+            <template
+                x-for="div in daftarDivisi"
+                :key="div">
+
+                <option
+                    :value="div"
+                    x-text="div">
+                </option>
+
+            </template>
+
+        </select>
+
+    </template>
+
+    <!-- INSTANSI LUAR -->
+    <template x-if="f.unit_peminjam === 'Instansi Luar'">
+
+        <input
+            type="text"
+            x-model="f.jurusan_divisi"
+            placeholder="Masukkan divisi / bagian"
+            class="w-full border rounded-xl p-3 outline-none bg-white">
+
+    </template>
+
+</div>
+
+
+
+				
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold mb-2 text-gray-600">No. Telepon (WhatsApp)</label>
                     <input type="tel" pattern="[0-9]+" inputmode="numeric" x-model="f.no_telepon">
