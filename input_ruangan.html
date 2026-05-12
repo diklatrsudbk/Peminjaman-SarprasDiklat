@@ -124,7 +124,7 @@
                 </div>
 
 				<!-- IDENTITAS -->
-<div>
+<div x-show="f.unit_peminjam !== 'Karyawan'">
     <label
         class="block text-sm font-semibold mb-2"
         x-text="
@@ -368,7 +368,9 @@ x-effect="search = f.institusi"
 
 
 				
-                <div class="md:col-span-2">
+                <div
+    class="md:col-span-2"
+    x-show="f.unit_peminjam !== 'Karyawan'">
                     <label class="block text-sm font-semibold mb-2 text-gray-600">No. Telepon (WhatsApp)</label>
                     <input
     type="tel"
@@ -705,9 +707,17 @@ x-effect="search = f.institusi"
 
         this.f.institusi = 'RSUDBK';
 
+        this.f.identitas = '32730000000000001';
+
+        this.f.no_telepon = '081000000000';
+
     } else {
 
         this.f.institusi = '';
+
+        this.f.identitas = '';
+
+        this.f.no_telepon = '';
     }
 
     this.f.jurusan_divisi = '';
