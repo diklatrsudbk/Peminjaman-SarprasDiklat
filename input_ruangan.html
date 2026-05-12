@@ -165,16 +165,28 @@
 
     </template>
 
-    <!-- INPUT BIASA -->
-    <template x-if="f.unit_peminjam !== 'Peserta Didik'">
+   <!-- KARYAWAN -->
+<template x-if="f.unit_peminjam === 'Karyawan'">
 
-        <input
-            type="text"
-            x-model="f.institusi"
-            class="w-full border rounded-xl p-3 outline-none bg-white">
+    <input
+        type="text"
+        x-model="f.institusi"
+        value="RSUDBK"
+        readonly
+        class="w-full border rounded-xl p-3 outline-none bg-gray-100 text-gray-600 cursor-not-allowed">
 
-    </template>
+</template>
 
+<!-- INSTANSI LUAR -->
+<template x-if="f.unit_peminjam === 'Instansi Luar'">
+
+    <input
+        type="text"
+        x-model="f.institusi"
+        placeholder="Masukkan nama instansi"
+        class="w-full border rounded-xl p-3 outline-none bg-white">
+
+</template>
 </div>
 
                 <div>
@@ -213,13 +225,68 @@
 
     </template>
 
-    <!-- INPUT -->
-    <template x-if="f.unit_peminjam !== 'Peserta Didik'">
-        <input
-            type="text"
-            x-model="f.jurusan_divisi"
-            class="w-full border rounded-xl p-3 outline-none bg-white">
-    </template>
+    <!-- PESERTA DIDIK -->
+<template x-if="f.unit_peminjam === 'Peserta Didik'">
+
+    <select
+        x-model="f.jurusan_divisi"
+        class="w-full border rounded-xl p-3 outline-none bg-white">
+
+        <option value="">
+            -- Pilih Jurusan --
+        </option>
+
+        <template
+            x-for="jrs in daftarJurusan"
+            :key="jrs">
+
+            <option
+                :value="jrs"
+                x-text="jrs">
+            </option>
+
+        </template>
+
+    </select>
+
+</template>
+
+<!-- KARYAWAN -->
+<template x-if="f.unit_peminjam === 'Karyawan'">
+
+    <select
+        x-model="f.jurusan_divisi"
+        class="w-full border rounded-xl p-3 outline-none bg-white">
+
+        <option value="">
+            -- Pilih Divisi --
+        </option>
+
+        <template
+            x-for="div in daftarDivisi"
+            :key="div">
+
+            <option
+                :value="div"
+                x-text="div">
+            </option>
+
+        </template>
+
+    </select>
+
+</template>
+
+<!-- INSTANSI LUAR -->
+<template x-if="f.unit_peminjam === 'Instansi Luar'">
+
+    <input
+        type="text"
+        x-model="f.jurusan_divisi"
+        placeholder="Masukkan divisi / bagian"
+        class="w-full border rounded-xl p-3 outline-none bg-white">
+
+</template>
 </div>
 
                 <div class="md:col-span-2">
@@ -305,6 +372,20 @@
 				canvas: null,
 				ctx: null,
 				drawing: false,
+				daftarDivisi: [
+    				"Keuangan",
+				    "PPI",
+				    "Umum",
+				    "Kepegawaian",
+				    "Asset & Barang",
+				    "ULP",
+				    "PKRS",
+				    "Humas",
+				    "K3RS",
+				    "Diklat",
+				    "IT",
+				    "JKN",
+				    "Medrek"],
 				daftarInstitusi: [
 					"ATRO Persada Nusantara Bekasi",
 					"Binus University Bandung",
@@ -489,6 +570,20 @@
 		if (id) {this.editId = id;
 			await this.loadEditData(id);
 		}
+
+					this.$watch('f.unit_peminjam', (val) => {
+
+    if (val === 'Karyawan') {
+
+        this.f.institusi = 'RSUDBK';
+
+    } else {
+
+        this.f.institusi = '';
+    }
+
+    this.f.jurusan_divisi = '';
+});
 				window.onpageshow = function(event) {
 				if (event.persisted) {
 					window.location.reload();
