@@ -340,7 +340,13 @@
 				
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold mb-2 text-gray-600">No. Telepon (WhatsApp)</label>
-                    <input type="tel" pattern="[0-9]+" inputmode="numeric" x-model="f.no_telepon">
+                    <input
+    type="tel"
+    pattern="[0-9]+"
+    inputmode="numeric"
+    x-model="f.no_telepon"
+    placeholder="08xxxx"
+    class="w-full border rounded-xl p-3 outline-none bg-white">
                 </div>
             </div>
 
@@ -413,6 +419,49 @@
         const SB_URL = "https://gyiucoognxykakksrulo.supabase.co";
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aXVjb29nbnh5a2Fra3NydWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjQ0MDQsImV4cCI6MjA5Mjg0MDQwNH0.Ht_yQbty5AaWYZWPp7sLWwIRDrmNs-LPot0NnVi3VIU";
         const _sb = supabase.createClient(SB_URL, SB_KEY);
+
+		function searchableSelect(options, getter, setter) {
+
+    return {
+
+        open: false,
+
+        search: getter() || '',
+
+        filtered: [...options],
+
+        init() {
+
+            this.filterOptions();
+
+            this.$watch('search', () => {
+
+                this.filterOptions();
+
+                setter(this.search);
+            });
+        },
+
+        filterOptions() {
+
+            const keyword =
+                this.search.toLowerCase();
+
+            this.filtered = options.filter(item =>
+                item.toLowerCase().includes(keyword)
+            );
+        },
+
+        select(item) {
+
+            this.search = item;
+
+            setter(item);
+
+            this.open = false;
+        }
+    }
+},
 
         function roomForm() {
             return { 
@@ -734,53 +783,6 @@
                     }
                 },
 
-			
-function searchableSelect(options, getter, setter) {
-
-    return {
-
-        open: false,
-
-        search: getter() || '',
-
-        filtered: [...options],
-
-        init() {
-
-            this.filterOptions();
-
-            this.$watch('search', () => {
-
-                this.filterOptions();
-
-                setter(this.search);
-            });
-        },
-
-        filterOptions() {
-
-            const keyword =
-                this.search.toLowerCase();
-
-            this.filtered = options.filter(item =>
-                item.toLowerCase().includes(keyword)
-            );
-        },
-
-        select(item) {
-
-            this.search = item;
-
-            setter(item);
-
-            this.open = false;
-        }
-    }
-},
-
-
-				
-
                 async submit() {
 
     // CEGAH DOUBLE SUBMIT
@@ -916,7 +918,7 @@ function searchableSelect(options, getter, setter) {
         this.loading = false;
     }
 }
-}
+
 }
     </script>
 </body>
