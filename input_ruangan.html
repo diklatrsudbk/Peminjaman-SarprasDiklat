@@ -161,7 +161,7 @@
                 () => f.institusi,
                 value => f.institusi = value
             )"
-			
+x-effect="search = f.institusi"			
             class="relative">
 
             <input
@@ -251,7 +251,7 @@
                 () => f.jurusan_divisi,
                 value => f.jurusan_divisi = value
             )"
-			
+x-effect="search = f.institusi"			
             class="relative">
 
             <input
@@ -296,31 +296,61 @@
 
     </template>
 
-    <!-- KARYAWAN -->
-    <template x-if="f.unit_peminjam === 'Karyawan'">
+<!-- KARYAWAN -->
+<template x-if="f.unit_peminjam === 'Karyawan'">
 
-        <select
-            x-model="f.jurusan_divisi"
+    <div
+        x-data="searchableSelect(
+            daftarDivisi,
+            () => f.jurusan_divisi,
+            value => f.jurusan_divisi = value
+        )"
+
+        x-effect="search = f.jurusan_divisi"
+
+        class="relative">
+
+        <input
+            type="text"
+            x-model="search"
+            @focus="open = true"
+            @input="filterOptions()"
+            @click.away="open = false"
+            autocomplete="off"
+            placeholder="Cari divisi / instalasi..."
             class="w-full border rounded-xl p-3 outline-none bg-white">
 
-            <option value="">
-                -- Pilih Divisi --
-            </option>
+        <div
+            x-show="open"
+            x-transition
+            x-cloak
+            class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
 
             <template
-                x-for="div in daftarDivisi"
-                :key="div">
+                x-for="item in filtered"
+                :key="item">
 
-                <option
-                    :value="div"
-                    x-text="div">
-                </option>
+                <div
+                    @click="select(item)"
+                    class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition"
+                    x-text="item">
+                </div>
 
             </template>
 
-        </select>
+            <div
+                x-show="filtered.length === 0"
+                class="px-4 py-3 text-gray-400 text-sm">
 
-    </template>
+                Tidak ditemukan
+
+            </div>
+
+        </div>
+
+    </div>
+
+</template>
 
     <!-- INSTANSI LUAR -->
     <template x-if="f.unit_peminjam === 'Instansi Luar'">
