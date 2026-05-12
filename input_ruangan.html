@@ -200,31 +200,6 @@
         ">
     </label>
 
-    <!-- DROPDOWN -->
-    <template x-if="f.unit_peminjam === 'Peserta Didik'">
-        <select
-            x-model="f.jurusan_divisi"
-            class="w-full border rounded-xl p-3 outline-none bg-white">
-
-            <option value="">
-                -- Pilih Jurusan --
-            </option>
-
-            <template
-                x-for="jrs in daftarJurusan"
-                :key="jrs">
-
-                <option
-                    :value="jrs"
-                    x-text="jrs">
-                </option>
-
-            </template>
-
-        </select>
-
-    </template>
-
     <!-- PESERTA DIDIK -->
 <template x-if="f.unit_peminjam === 'Peserta Didik'">
 
