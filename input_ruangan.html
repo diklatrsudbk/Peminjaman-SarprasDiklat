@@ -580,82 +580,137 @@
 
                 async submit() {
 
-    if (this.f.tanggal.length === 0) {
-        return alert("Pilih minimal satu tanggal!");
+    // CEGAH DOUBLE SUBMIT
+    if (this.loading) return;
+
+    this.loading = true;
+
+    try {
+
+        // VALIDASI TANGGAL
+        if (this.f.tanggal.length === 0) {
+            alert("Pilih minimal satu tanggal!");
+            return;
+        }
+
+        // VALIDASI TTD
+        const canvas =
+            document.getElementById('signatureCanvas');
+
+        const ctx =
+            canvas.getContext('2d');
+
+        const isBlank = !ctx
+            .getImageData(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            )
+            .data.some(channel => channel !== 0);
+
+        if (isBlank) {
+            alert("Tanda tangan wajib diisi!");
+            return;
+        }
+
+        // SIMPAN TTD BASE64
+        this.f.ttd_digital =
+            canvas.toDataURL('image/png');
+
+        let response;
+
+        // =========================
+        // MODE EDIT
+        // =========================
+        if (this.editId) {
+
+            response = await _sb
+                .from('peminjaman_ruangan')
+                .update(this.f)
+                .eq('id', this.editId);
+
+        }
+
+        // =========================
+        // MODE TAMBAH
+        // =========================
+        else {
+
+            response = await _sb
+                .from('peminjaman_ruangan')
+                .insert([this.f]);
+        }
+
+        // =========================
+        // SUCCESS
+        // =========================
+        if (!response.error) {
+
+            alert(
+                this.editId
+                ? "Data berhasil diperbarui!"
+                : "Data berhasil terkirim!"
+            );
+
+            // RESET FORM
+            this.f = {
+                unit_peminjam: 'Karyawan',
+                nama_ruangan: '',
+                keperluan_ruangan: '',
+                judul_acara: '',
+                catatan: '',
+                jumlah_peserta: '',
+                tanggal: [],
+                jam_mulai: '',
+                jam_selesai: '',
+                durasi: '',
+                nama: '',
+                identitas: '',
+                institusi: 'RSUDBK',
+                jurusan_divisi: '',
+                no_telepon: '',
+                ttd_digital: '',
+                status: 'Request'
+            };
+
+            // HAPUS TTD
+            this.clearSignature();
+
+            // REDIRECT
+            window.location.replace(
+                'daftar_ruangan.html'
+            );
+
+        }
+
+        // =========================
+        // ERROR DATABASE
+        // =========================
+        else {
+
+            alert(
+                "Error: " +
+                response.error.message
+            );
+        }
+
     }
 
-    const canvas =
-        document.getElementById('signatureCanvas');
+    // ERROR UMUM
+    catch (err) {
 
-    const isBlank = !canvas
-        .getContext('2d')
-        .getImageData(0, 0, canvas.width, canvas.height)
-        .data.some(channel => channel !== 0);
-
-    if (isBlank) {
-        return alert("Tanda tangan wajib diisi!");
-    }
-
-    this.f.ttd_digital =
-        canvas.toDataURL('image/png');
-
-    let response;
-
-    // MODE EDIT
-    if (this.editId) {
-
-        response = await _sb
-            .from('peminjaman_ruangan')
-            .update(this.f)
-            .eq('id', this.editId);
-
-    } 
-    
-    // MODE TAMBAH
-    else {
-
-        response = await _sb
-            .from('peminjaman_ruangan')
-            .insert([this.f]);
-    }
-
-    if (!response.error) {
+        console.error(err);
 
         alert(
-            this.editId
-            ? "Data berhasil diperbarui!"
-            : "Data berhasil terkirim!"
+            "Terjadi kesalahan sistem!"
         );
+    }
 
-        // RESET FORM
-        this.f = {
-            unit_peminjam: 'Karyawan',
-            nama_ruangan: '',
-            keperluan_ruangan: '',
-            judul_acara: '',
-            catatan: '',
-            jumlah_peserta: '',
-            tanggal: [],
-            jam_mulai: '',
-            jam_selesai: '',
-            durasi: '',
-            nama: '',
-            identitas: '',
-            institusi: 'RSUDBK',
-            jurusan_divisi: '',
-            no_telepon: '',
-            ttd_digital: '',
-            status: 'Request'
-        };
+    // SELESAI
+    finally {
 
-        this.clearSignature();
-
-        window.location.href =
-            'daftar_ruangan.html';
-
-    } else {
-
-        alert("Error: " + response.error.message);
+        this.loading = false;
     }
 }
 }
