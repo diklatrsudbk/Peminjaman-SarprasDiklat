@@ -76,38 +76,41 @@
                     <input type="text" x-model="f.judul_acara" required placeholder="Contoh: Rapat Koordinasi Tahunan" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
-               <div class="space-y-3">
-    <label class="block text-sm font-bold text-gray-700">Pilih Tanggal Peminjaman</label>
+               <div class="md:col-span-2">
+    <label class="block text-sm font-bold mb-2 text-gray-700">Rentang Waktu Peminjaman</label>
     
-    <div class="flex gap-2">
-        <input type="date" 
-               @change="addDate($event.target.value)" 
-               class="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
-        
-        <button type="button" 
-                @click="addRange()" 
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
-            + Range
-        </button>
+    <!-- Input Kalender (Klik, bukan ketik) -->
+    <div class="relative">
+        <input id="rangeCalendar" 
+               type="text" 
+               readonly
+               placeholder="Klik untuk pilih rentang tanggal..."
+               class="w-full border rounded-xl p-3 bg-white shadow-sm outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="absolute right-3 top-3 text-gray-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        </div>
     </div>
 
-    <div class="flex flex-wrap gap-2 mt-2 p-3 border border-dashed border-gray-300 rounded-xl bg-gray-50 min-h-[50px]">
-        <template x-if="f.tanggal.length === 0">
-            <span class="text-gray-400 text-xs italic">Belum ada tanggal dipilih...</span>
-        </template>
-        
-        <template x-for="tgl in f.tanggal" :key="tgl">
-            <div class="flex items-center bg-blue-100 text-blue-700 border border-blue-200 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
-                <span x-text="tgl"></span>
-                <button type="button" 
-                        @click="removeDate(tgl)" 
-                        class="ml-2 text-red-500 hover:text-red-700 font-bold text-lg leading-none">
-                    &times;
-                </button>
+    <!-- TAMPILAN RINGKAS (Jika pilih banyak tanggal) -->
+    <template x-if="f.displayTanggal">
+        <div class="mt-3 flex items-center justify-between bg-blue-50 border border-blue-100 p-3 rounded-xl">
+            <div class="flex items-center">
+                <span class="bg-blue-600 text-white p-1 rounded-md mr-3">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"></path></svg>
+                </span>
+                <div>
+                    <p class="text-xs text-blue-500 font-semibold uppercase tracking-wider">Durasi Peminjaman</p>
+                    <p class="text-blue-800 font-bold" x-text="f.displayTanggal"></p>
+                </div>
             </div>
-        </template>
-    </div>
+            <!-- Tombol Reset jika salah pilih -->
+            <button type="button" @click="f.tanggal = []; f.displayTanggal = ''; document.getElementById('rangeCalendar')._flatpickr.clear()" class="text-blue-400 hover:text-red-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+        </div>
+    </template>
 </div>
+
  
 
                 
@@ -665,6 +668,7 @@ x-effect="search = f.jurusan_divisi"
 					catatan: '',
 					jumlah_peserta: '',
 					tanggal: [],
+    displayTanggal: '',
 					jam_mulai: '',
 					jam_selesai: '',
 					durasi: '',
@@ -747,6 +751,28 @@ x-effect="search = f.jurusan_divisi"
             this.f.no_telepon = '';
         }
     });
+
+// Masukkan ini di dalam async init()
+flatpickr("#rangeCalendar", {
+    mode: "range",
+    dateFormat: "Y-m-d",
+    onChange: (selectedDates) => {
+        if (selectedDates.length === 2) {
+            let start = new Date(selectedDates[0]);
+            let end = new Date(selectedDates[1]);
+            let dates = [];
+
+            while (start <= end) {
+                dates.push(start.toISOString().split('T')[0]);
+                start.setDate(start.getDate() + 1);
+            }
+            
+            this.f.tanggal = dates; // Data lengkap untuk Database
+            this.updateDisplayTanggal(selectedDates); // Tampilan ringkas untuk UI
+        }
+    }
+});
+
 
     // 4. Penanganan Browser Back Button (BFCache)
     // Memastikan form refresh jika user menekan tombol 'Back'
@@ -835,6 +861,27 @@ x-effect="search = f.jurusan_divisi"
 
 
                 // ... di dalam data Alpine.js Anda ...
+
+
+// Fungsi untuk meringkas tampilan tanggal
+updateDisplayTanggal(selectedDates) {
+    if (selectedDates.length === 0) {
+        this.f.displayTanggal = '';
+        return;
+    }
+    
+    // Urutkan tanggal
+    const sorted = [...selectedDates].sort((a, b) => a - b);
+    const formatDate = (date) => date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+
+    if (sorted.length > 1) {
+        this.f.displayTanggal = `${formatDate(sorted[0])} - ${formatDate(sorted[sorted.length - 1])} (${sorted.length} Hari)`;
+    } else {
+        this.f.displayTanggal = formatDate(sorted[0]);
+    }
+},
+
+
 
 addDate(val) {
     if (val && !this.f.tanggal.includes(val)) {
