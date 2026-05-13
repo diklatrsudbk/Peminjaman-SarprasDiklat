@@ -7,10 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-<!-- Tambahkan ini jika belum ada -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body
@@ -43,74 +41,56 @@
                     </select>
                 </div>
 
-                
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Keperluan Ruangan</label>
+                    <select x-model="f.keperluan_ruangan" required class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Pilih Keperluan --</option>
+                        <option>Rapat</option>
+                        <option>Bimbingan</option>
+                        <option>Sosialisasi</option>
+                        <option>Ruang Belajar</option>
+                        <option>Kunjungan</option>
+                        <option>Pelatihan</option>
+                        <option>Pertemuan</option>
+                        <option>Penutupan</option>
+                        <option>Penerimaan</option>
+                        <option>Seminar</option>
+                        <option>Workshop</option>
+                        <option>Ujian</option>
+                        <option>Lainnya</option>
+                    </select>
+                </div>
 
-<!-- KEPERLUAN -->
-<div>
-    <label class="block text-sm font-semibold mb-2">
-        Keperluan Ruangan
-    </label>
-
-    <select
-        x-model="f.keperluan_ruangan" required
-        class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500">
-
-        <option value="">-- Pilih Keperluan --</option>
-
-        <option>Rapat</option>
-        <option>Bimbingan</option>
-        <option>Sosialisasi</option>
-        <option>Ruang Belajar</option>
-        <option>Kunjungan</option>
-        <option>Pelatihan</option>
-        <option>Pertemuan</option>
-        <option>Penutupan</option>
-        <option>Penerimaan</option>
-        <option>Seminar</option>
-        <option>Workshop</option>
-        <option>Ujian</option>
-        <option>Lainnya</option>
-
-    </select>
-</div>
-
-                <!-- JUDUL ACARA -->
-<div class="md:col-span-2">
+                <div class="md:col-span-2">
                     <label class="block text-sm font-semibold mb-2">Judul Kegiatan / Acara</label>
                     <input type="text" x-model="f.judul_acara" required placeholder="Contoh: Rapat Koordinasi Tahunan" class="w-full border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
-               <div class="col-span-full">
-    <label class="block text-sm font-bold mb-2 text-gray-700">Tanggal Peminjaman</label>
-    
-    <div class="flex gap-2">
-        <!-- Input Utama untuk Kalender Multiple -->
-        <input id="multiPicker" type="text" readonly placeholder="Klik untuk pilih tanggal acak..."
-               class="w-full border rounded-xl p-3 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
-        
-        <!-- Tombol untuk memicu input Rentang (Range) -->
-        <button type="button" @click="addRange()" 
-                class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md transition">
-            + Rentang
-        </button>
-    </div>
+                <div class="col-span-full">
+                    <label class="block text-sm font-bold mb-2 text-gray-700">Tanggal Peminjaman</label>
+                    <div class="flex gap-2">
+                        <input id="multiPicker" type="text" readonly placeholder="Klik untuk pilih tanggal..."
+                               class="w-full border rounded-xl p-3 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <button type="button" @click="addRange()" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md transition">
+                            + Rentang
+                        </button>
+                    </div>
 
-    <!-- DAFTAR TANGGAL YANG DIPILIH (Chips) -->
-    <div class="mt-3 flex flex-wrap gap-2 p-3 border border-dashed border-gray-300 rounded-xl bg-gray-50 min-h-[50px]">
-        <template x-if="f.tanggal.length === 0">
-            <span class="text-gray-400 text-xs italic">Belum ada tanggal dipilih.</span>
-        </template>
-        
-        <template x-for="tgl in f.tanggal" :key="tgl">
-            <div class="flex items-center bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-semibold shadow-sm border border-blue-200">
-                <span x-text="tgl"></span>
-                <button type="button" @click="removeDate(tgl)" class="ml-2 text-red-500 hover:text-red-700 font-bold text-lg">
-                    &times;
-                </button>
-            </div>
-        </template>
-    </div>
-</div>            
+                    <div class="mt-3 flex flex-wrap gap-2 p-3 border border-dashed border-gray-300 rounded-xl bg-gray-50 min-h-[50px]">
+                        <template x-if="f.tanggal.length === 0">
+                            <span class="text-gray-400 text-xs italic">Belum ada tanggal dipilih.</span>
+                        </template>
+                        <template x-for="tgl in f.tanggal" :key="tgl">
+                            <div class="flex items-center bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-semibold shadow-sm border border-blue-200">
+                                <span x-text="tgl"></span>
+                                <button type="button" @click="removeDate(tgl)" class="ml-2 text-red-500 hover:text-red-700 font-bold text-lg">
+                                    &times;
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </div>            
 
                 <div>
                     <div class="grid grid-cols-2 gap-2">
@@ -144,327 +124,105 @@
                     <input type="text" x-model="f.nama" required class="w-full border rounded-xl p-3 outline-none bg-white">
                 </div>
 
-				<!-- IDENTITAS -->
-<div x-show="f.unit_peminjam !== 'Karyawan'">
-    <label
-        class="block text-sm font-semibold mb-2"
-        x-text="
-            f.unit_peminjam === 'Peserta Didik'
-            ? 'NIM'
-            : 'NIP / NIK'
-        ">
-    </label>
-
-    <input
-        type="text"
-        x-model="f.identitas"
-        class="w-full border rounded-xl p-3 outline-none bg-white">
-</div>
-
-<!-- INSTITUSI / PERUSAHAAN -->
-<div>
-
-    <label
-        class="block text-sm font-semibold mb-2"
-        x-text="
-            f.unit_peminjam === 'Karyawan'
-            ? 'Nama Perusahaan'
-            : 'Institusi'
-        ">
-    </label>
-
-    <!-- PESERTA DIDIK -->
-    <template x-if="f.unit_peminjam === 'Peserta Didik'">
-
-        <div
-            x-data="searchableSelect(
-                daftarInstitusi,
-                () => f.institusi,
-                value => f.institusi = value
-            )"
-x-effect="search = f.institusi"			
-            class="relative">
-
-            <input
-                type="text"
-                x-model="search"
-                @focus="open = true"
-                @input="filterOptions()"
-                @click.away="open = false"
-                autocomplete="off"
-                placeholder="Cari institusi..."
-                class="w-full border rounded-xl p-3 outline-none bg-white">
-
-            <div
-                x-show="open"
-                x-transition
-                x-cloak
-                class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
-
-                <template
-                    x-for="item in filtered"
-                    :key="item">
-
-                    <div
-                        @click="select(item)"
-                        class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition"
-                        x-text="item">
-                    </div>
-
-                </template>
-
-                <div
-                    x-show="filtered.length === 0"
-                    class="px-4 py-3 text-gray-400 text-sm">
-
-                    Tidak ditemukan
-
+                <div x-show="f.unit_peminjam !== 'Karyawan'">
+                    <label class="block text-sm font-semibold mb-2" x-text="f.unit_peminjam === 'Peserta Didik' ? 'NIM' : 'NIP / NIK'"></label>
+                    <input type="text" x-model="f.identitas" class="w-full border rounded-xl p-3 outline-none bg-white">
                 </div>
 
-            </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2" x-text="f.unit_peminjam === 'Karyawan' ? 'Nama Perusahaan' : 'Institusi'"></label>
+                    
+                    <template x-if="f.unit_peminjam === 'Peserta Didik'">
+                        <div x-data="searchableSelect(daftarInstitusi, () => f.institusi, value => f.institusi = value)" x-effect="search = f.institusi" class="relative">
+                            <input type="text" x-model="search" @focus="open = true" @input="filterOptions()" @click.away="open = false" autocomplete="off" placeholder="Cari institusi..." class="w-full border rounded-xl p-3 outline-none bg-white">
+                            <div x-show="open" x-transition x-cloak class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                                <template x-for="item in filtered" :key="item">
+                                    <div @click="select(item)" class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition" x-text="item"></div>
+                                </template>
+                                <div x-show="filtered.length === 0" class="px-4 py-3 text-gray-400 text-sm">Tidak ditemukan</div>
+                            </div>
+                        </div>
+                    </template>
 
-        </div>
+                    <template x-if="f.unit_peminjam === 'Karyawan'">
+                        <input type="text" x-model="f.institusi" readonly class="w-full border rounded-xl p-3 outline-none bg-gray-100 text-gray-600 cursor-not-allowed">
+                    </template>
 
-    </template>
-
-    <!-- KARYAWAN -->
-    <template x-if="f.unit_peminjam === 'Karyawan'">
-
-        <input
-            type="text"
-            x-model="f.institusi"
-            readonly
-            class="w-full border rounded-xl p-3 outline-none bg-gray-100 text-gray-600 cursor-not-allowed">
-
-    </template>
-
-    <!-- INSTANSI LUAR -->
-    <template x-if="f.unit_peminjam === 'Instansi Luar'">
-
-        <input
-            type="text"
-            x-model="f.institusi"
-            placeholder="Masukkan nama instansi"
-            class="w-full border rounded-xl p-3 outline-none bg-white">
-
-    </template>
-
-</div>
-
-<!-- JURUSAN / DIVISI -->
-<div>
-
-    <label
-        class="block text-sm font-semibold mb-2"
-        x-text="
-            f.unit_peminjam === 'Peserta Didik'
-            ? 'Jurusan'
-            : 'Divisi / Instalasi'
-        ">
-    </label>
-
-    <!-- PESERTA DIDIK -->
-    <template x-if="f.unit_peminjam === 'Peserta Didik'">
-
-        <div
-            x-data="searchableSelect(
-                daftarJurusan,
-                () => f.jurusan_divisi,
-                value => f.jurusan_divisi = value
-            )"
-x-effect="search = f.jurusan_divisi"			
-            class="relative">
-
-            <input
-                type="text"
-                x-model="search"
-                @focus="open = true"
-                @input="filterOptions()"
-                @click.away="open = false"
-                autocomplete="off"
-                placeholder="Cari jurusan..."
-                class="w-full border rounded-xl p-3 outline-none bg-white">
-
-            <div
-                x-show="open"
-                x-transition
-                x-cloak
-                class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
-
-                <template
-                    x-for="item in filtered"
-                    :key="item">
-
-                    <div
-                        @click="select(item)"
-                        class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition"
-                        x-text="item">
-                    </div>
-
-                </template>
-
-                <div
-                    x-show="filtered.length === 0"
-                    class="px-4 py-3 text-gray-400 text-sm">
-
-                    Tidak ditemukan
-
+                    <template x-if="f.unit_peminjam === 'Instansi Luar'">
+                        <input type="text" x-model="f.institusi" placeholder="Masukkan nama instansi" class="w-full border rounded-xl p-3 outline-none bg-white">
+                    </template>
                 </div>
 
-            </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2" x-text="f.unit_peminjam === 'Peserta Didik' ? 'Jurusan' : 'Divisi / Instalasi'"></label>
+                    
+                    <template x-if="f.unit_peminjam === 'Peserta Didik'">
+                        <div x-data="searchableSelect(daftarJurusan, () => f.jurusan_divisi, value => f.jurusan_divisi = value)" x-effect="search = f.jurusan_divisi" class="relative">
+                            <input type="text" x-model="search" @focus="open = true" @input="filterOptions()" @click.away="open = false" autocomplete="off" placeholder="Cari jurusan..." class="w-full border rounded-xl p-3 outline-none bg-white">
+                            <div x-show="open" x-transition x-cloak class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                                <template x-for="item in filtered" :key="item">
+                                    <div @click="select(item)" class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition" x-text="item"></div>
+                                </template>
+                                <div x-show="filtered.length === 0" class="px-4 py-3 text-gray-400 text-sm">Tidak ditemukan</div>
+                            </div>
+                        </div>
+                    </template>
 
-        </div>
+                    <template x-if="f.unit_peminjam === 'Karyawan'">
+                        <div x-data="searchableSelect(daftarDivisi, () => f.jurusan_divisi, value => f.jurusan_divisi = value)" x-effect="search = f.jurusan_divisi" class="relative">
+                            <input type="text" x-model="search" @focus="open = true" @input="filterOptions()" @click.away="open = false" autocomplete="off" placeholder="Cari divisi..." class="w-full border rounded-xl p-3 outline-none bg-white">
+                            <div x-show="open" x-transition x-cloak class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                                <template x-for="item in filtered" :key="item">
+                                    <div @click="select(item)" class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition" x-text="item"></div>
+                                </template>
+                                <div x-show="filtered.length === 0" class="px-4 py-3 text-gray-400 text-sm">Tidak ditemukan</div>
+                            </div>
+                        </div>
+                    </template>
 
-    </template>
-
-<!-- KARYAWAN -->
-<template x-if="f.unit_peminjam === 'Karyawan'">
-
-    <div
-        x-data="searchableSelect(
-            daftarDivisi,
-            () => f.jurusan_divisi,
-            value => f.jurusan_divisi = value
-        )"
-
-        x-effect="search = f.jurusan_divisi"
-
-        class="relative">
-
-        <input
-            type="text"
-            x-model="search"
-            @focus="open = true"
-            @input="filterOptions()"
-            @click.away="open = false"
-            autocomplete="off"
-            placeholder="Cari divisi / instalasi..."
-            class="w-full border rounded-xl p-3 outline-none bg-white">
-
-        <div
-            x-show="open"
-            x-transition
-            x-cloak
-            class="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-xl max-h-60 overflow-y-auto">
-
-            <template
-                x-for="item in filtered"
-                :key="item">
-
-                <div
-                    @click="select(item)"
-                    class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition"
-                    x-text="item">
+                    <template x-if="f.unit_peminjam === 'Instansi Luar'">
+                        <input type="text" x-model="f.jurusan_divisi" placeholder="Masukkan divisi / bagian" class="w-full border rounded-xl p-3 outline-none bg-white">
+                    </template>
                 </div>
 
-            </template>
-
-            <div
-                x-show="filtered.length === 0"
-                class="px-4 py-3 text-gray-400 text-sm">
-
-                Tidak ditemukan
-
-            </div>
-
-        </div>
-
-    </div>
-
-</template>
-
-    <!-- INSTANSI LUAR -->
-    <template x-if="f.unit_peminjam === 'Instansi Luar'">
-
-        <input
-            type="text"
-            x-model="f.jurusan_divisi"
-            placeholder="Masukkan divisi / bagian"
-            class="w-full border rounded-xl p-3 outline-none bg-white">
-
-    </template>
-
-</div>
-
-
-
-				
-                <div
-    class="md:col-span-2"
-    x-show="f.unit_peminjam !== 'Karyawan'">
+                <div class="md:col-span-2" x-show="f.unit_peminjam !== 'Karyawan'">
                     <label class="block text-sm font-semibold mb-2 text-gray-600">No. Telepon (WhatsApp)</label>
-                    <input
-    type="tel"
-    pattern="[0-9]+"
-    inputmode="numeric"
-    x-model="f.no_telepon"
-    placeholder="08xxxx"
-    class="w-full border rounded-xl p-3 outline-none bg-white">
+                    <input type="tel" pattern="[0-9]+" inputmode="numeric" x-model="f.no_telepon" placeholder="08xxxx" class="w-full border rounded-xl p-3 outline-none bg-white">
                 </div>
             </div>
 
-            <!-- SYARAT & KETENTUAN -->
-			<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100 space-y-3 shadow-inner">
+            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-100 space-y-3 shadow-inner">
                 <p class="text-[11px] text-amber-900 font-bold uppercase tracking-wider">Syarat & Ketentuan Peminjaman:</p>
                 <ol class="text-[10px] text-amber-800 space-y-2 list-decimal ml-4 font-medium leading-relaxed">
                     <li>Menjaga kebersihan dan kondisi Ruang Loker dan Loker yang dipinjam, sebelum dan sesudahnya.</li>
-                    <li>Segera mengembalikan kembali lengkap sesuai jumlah yang di Pinjam ke Lantai 6 Ruang Diklat jika sudah Selesai / jika sudah jatuh tempo tanggal pengembalian.</li>
+                    <li>Segera mengembalikan kembali lengkap sesuai jumlah yang di Pinjam ke Lantai 6 Ruang Diklat jika sudah Selesai.</li>
                     <li>Bersedia mengganti jika terjadi kehilangan maupun rusak Seharga: <strong>Rp. 50,000/Kunci</strong>.</li>
-                    <li>Apabila lepas dari tanggung jawab, maka akan dilaporkan kepada Pihak Institusi Pendidikan sebagai pihak yang bertanggung jawab atas penggantian terkait kehilangan/kelalaian yang disebabkan Peserta Didiknya.</li>
+                    <li>Apabila lepas dari tanggung jawab, maka akan dilaporkan kepada Pihak Institusi Pendidikan terkait.</li>
                 </ol>
                 <div class="flex items-center gap-2 pt-2 border-t border-amber-200">
-                    <input
-    type="checkbox"
-    id="agree"
-    required
-    class="w-4 h-4 accent-indigo-600">
+                    <input type="checkbox" id="agree" required class="w-4 h-4 accent-indigo-600">
                     <label for="agree" class="text-[10px] font-black text-indigo-900 uppercase italic cursor-pointer">SAYA SETUJU PADA SYARAT DAN KETENTUAN DIATAS</label>
                 </div>
             </div>
 			
-			<!-- CATATAN -->
-				<div class="md:col-span-2">
-					<label class="block text-sm font-semibold mb-2">Catatan Tambahan</label>
-
-					<textarea
-						x-model="f.catatan"
-						rows="4"
-						placeholder="Tambahkan informasi tambahan jika diperlukan..."
-						class="w-full border rounded-2xl p-3 outline-none focus:ring-2 focus:ring-blue-500 resize-none">
-					</textarea>
-				</div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-semibold mb-2">Catatan Tambahan</label>
+                <textarea x-model="f.catatan" rows="4" placeholder="Tambahkan informasi tambahan jika diperlukan..." class="w-full border rounded-2xl p-3 outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+            </div>
 				
-			<!-- TANDA TANGAN -->	
-
             <div class="space-y-2">
                 <label class="text-[10px] font-bold text-slate-400 uppercase block">Tanda Tangan Digital Peminjam</label>
                 <div class="relative bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 overflow-hidden shadow-inner">
-						<canvas
-							id="signatureCanvas"
-							width="600"
-							height="220"
-							style="touch-action:none;"
-							class="w-full bg-white rounded-xl border">
-						</canvas>
+                    <canvas id="signatureCanvas" width="600" height="220" style="touch-action:none;" class="w-full bg-white rounded-xl border"></canvas>
                     <button type="button" @click="clearSignature()" class="absolute top-2 right-2 bg-white/90 px-3 py-1 rounded-full text-[9px] font-bold text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm uppercase border border-rose-100">Hapus</button>
                 </div>
                 <p class="text-[9px] text-slate-400 italic text-center uppercase">Silakan tanda tangan pada kotak di atas</p>
             </div>
 
-            <button
-    type="submit"
-    :disabled="loading"
-    class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-700 transition-all uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed">
-
-    <span x-show="!loading">
-        Kirim Request Peminjaman
-    </span>
-
-    <span x-show="loading">
-        Mengirim...
-    </span>
-
-</button>
+            <button type="submit" :disabled="loading" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-700 transition-all uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed">
+                <span x-show="!loading">Kirim Request Peminjaman</span>
+                <span x-show="loading">Mengirim...</span>
+            </button>
         </form>
     </div>
 
@@ -473,305 +231,120 @@ x-effect="search = f.jurusan_divisi"
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5aXVjb29nbnh5a2Fra3NydWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNjQ0MDQsImV4cCI6MjA5Mjg0MDQwNH0.Ht_yQbty5AaWYZWPp7sLWwIRDrmNs-LPot0NnVi3VIU";
         const _sb = supabase.createClient(SB_URL, SB_KEY);
 
-		function searchableSelect(options, getter, setter) {
-
-    return {
-
-        open: false,
-
-        search: getter() || '',
-
-        filtered: [...options],
-
-        init() {
-
-            this.filterOptions();
-
-            this.$watch('search', () => {
-
-                this.filterOptions();
-
-                setter(this.search);
-            });
-        },
-
-        filterOptions() {
-
-            const keyword =
-                this.search.toLowerCase();
-
-            this.filtered = options.filter(item =>
-                item.toLowerCase().includes(keyword)
-            );
-        },
-
-        select(item) {
-
-            this.search = item;
-
-            setter(item);
-
-            this.open = false;
+        function searchableSelect(options, getter, setter) {
+            return {
+                open: false,
+                search: getter() || '',
+                filtered: [...options],
+                init() {
+                    this.filterOptions();
+                    this.$watch('search', () => {
+                        this.filterOptions();
+                        setter(this.search);
+                    });
+                },
+                filterOptions() {
+                    const keyword = this.search.toLowerCase();
+                    this.filtered = options.filter(item => item.toLowerCase().includes(keyword));
+                },
+                select(item) {
+                    this.search = item;
+                    setter(item);
+                    this.open = false;
+                }
+            }
         }
-    }
-}
 
         function roomForm() {
             return { 
-				editId: null,
-				loading: false,
-				canvas: null,
-				ctx: null,
-				drawing: false,
-				daftarDivisi: [
-    				"Keuangan",
-				    "PPI",
-				    "Umum",
-				    "Kepegawaian",
-				    "Asset & Barang",
-				    "ULP",
-				    "PKRS",
-				    "Humas",
-				    "K3RS",
-				    "Diklat",
-				    "IT",
-				    "JKN",
-				    "Medrek"],
-				daftarInstitusi: [
-					"ATRO Persada Nusantara Bekasi",
-					"Binus University Bandung",
-					"Institut Teknologi Bandung (ITB)",
-					"Politeknik PIKSI Ganesha",
-					"Politkenik Al Islam Bandung",
-					"Universitas Indonesia (UI)",
-					"Sekolah Tinggi Farmasi Indonesia (STFI)",
-					"Universitas Muhammadiyah Bandung (UMB)",
-					"Universitas Wahid Hasyim Semarang (UNWAHAS)",
-					"UIN Sunan Gunung Djati Bandung",
-					"Poltekkes Semarang",
-					"Poltekkes Tasikmalaya",
-					"SMKN 7 Bandung",
-					"SMK Nusa Bhakti Bandung",
-					"Universitas Diponegoro (UNDIP)",
-					"Universitas Islam Bandung (UNISBA)",
-					"Universitas Maranatha",
-					"Universitas Sriwijaya",
-					"Universitas Siliwangi Tasikmalaya",
-					"Universitas Telkom",
-					"Stikes Karsa Husada Garut",
-					"Universitas Logistik dan Bisnis Internasional (ULBI)",
-					"Universitas Bandung",
-					"Stikep PPNI Jabar",
-					"Stikes Budi Luhur",
-					"Stikes RS Dustira",
-					"Stikes Dharma Husada Bandung (DHB)",
-					"Inkes Rajawali",
-					"Inkes Immanuel",
-					"Inkes Pelamonia Makasar",
-					"Poltekkes Palu",
-					"Poltekkes Bandung",
-					"Politeknik Cendrawasih Palu",
-					"Universitas Padjajaran (UNPAD)",
-					"Universitas Pasundan (UNPAS)",
-					"Universitas Sali Al-Aitam",
-					"UNISA Bandung",
-					"Universitas Bhakti Kencana (UBK)",
-					"Universitas Pendidikan Indonesia (UPI)",
-					"Universitas Jenderal Achmad Yani (UNJANI)",
-					"Universitas Borromeus",
-					"Universitas Muhammadiyah Ahmad Dahlan (UM-AD) Palembang",
-					"Universitas Dehasen (UNIVED) Bengkulu",
-					"Stikes Marendeng Majene"
-					],
+                editId: null,
+                loading: false,
+                canvas: null,
+                ctx: null,
+                drawing: false,
+                daftarDivisi: ["Keuangan","PPI","Umum","Kepegawaian","Asset & Barang","ULP","PKRS","Humas","K3RS","Diklat","IT","JKN","Medrek"],
+                daftarInstitusi: ["ATRO Persada Nusantara Bekasi", "Binus University Bandung", "Institut Teknologi Bandung (ITB)", "Politeknik PIKSI Ganesha", "Politkenik Al Islam Bandung", "Universitas Indonesia (UI)", "Sekolah Tinggi Farmasi Indonesia (STFI)", "Universitas Muhammadiyah Bandung (UMB)", "Universitas Wahid Hasyim Semarang (UNWAHAS)", "UIN Sunan Gunung Djati Bandung", "Poltekkes Semarang", "Poltekkes Tasikmalaya", "SMKN 7 Bandung", "SMK Nusa Bhakti Bandung", "Universitas Diponegoro (UNDIP)", "Universitas Islam Bandung (UNISBA)", "Universitas Maranatha", "Universitas Sriwijaya", "Universitas Siliwangi Tasikmalaya", "Universitas Telkom", "Stikes Karsa Husada Garut", "Universitas Logistik dan Bisnis Internasional (ULBI)", "Universitas Bandung", "Stikep PPNI Jabar", "Stikes Budi Luhur", "Stikes RS Dustira", "Stikes Dharma Husada Bandung (DHB)", "Inkes Rajawali", "Inkes Immanuel", "Inkes Pelamonia Makasar", "Poltekkes Palu", "Poltekkes Bandung", "Politeknik Cendrawasih Palu", "Universitas Padjajaran (UNPAD)", "Universitas Pasundan (UNPAS)", "Universitas Sali Al-Aitam", "UNISA Bandung", "Universitas Bhakti Kencana (UBK)", "Universitas Pendidikan Indonesia (UPI)", "Universitas Jenderal Achmad Yani (UNJANI)", "Universitas Borromeus", "Universitas Muhammadiyah Ahmad Dahlan (UM-AD) Palembang", "Universitas Dehasen (UNIVED) Bengkulu", "Stikes Marendeng Majene"],
+                daftarJurusan: ["D3 Keperawatan", "D3 Keperawatan RPL", "D4 Keperawatan", "D4 Keperawatan RPL", "S1 Keperawatan Regular", "S1 Keperawatan Non-Regular", "Profesi Ners", "Profesi Ners Non-Reguler", "S2 Keperawatan", "S3 Keperawatan", "D3 Kebidanan", "D3 Kebidanan RPL", "D4 Kebidanan", "D4 Kebidanan RPL", "S1 Kebidanan Regular", "S1 Kebidanan Non-Regular", "Profesi Bidan Regular", "Profesi Bidan Non-Regular", "S2 Kebidanan", "S3 Kebidanan", "S1 Kedokteran / PSPD", "Profesi Kedokteran", "S2 Kedokteran", "S3 Kedokteran", "Specialis PPDS Anak", "Specialis PPDS Anestesi", "Specialis PPDS Bedah", "Specialis PPDS Obsgyn", "Specialis PPDS KFR", "Specialis PPDS THT-KL", "Specialis PPDS Neurologi", "Specialis PPDS IPD", "S1 Kedokteran Gigi", "Specialis Kedokteran Gigi", "D4 Anestesi Regular", "D4 Anestesi RPL", "D3 Elektromedis", "D4 Elektromedis", "S1 Teknik Biomedis", "D3 Sanitiasi", "D4 Sanitasi", "S1 Kesehatan Lingkungan", "S1 Kesehatan Masyarakat", "D3 Gizi", "D4 Gizi", "S1 Gizi", "Profesi Dietisien", "D3 Analis Kesehatan", "D3 Teknologi Laboratorium Medis", "D4 Teknologi Laboratorium Medis", "S1 Biologi", "D3 Radiologi", "D4 Radiologi", "S1 Fisika", "SMK Farmasi", "D3 Farmasi", "S1 Farmasi", "Profesi Apoteker", "S2 Farmasi", "D3 Terapi Okupasi", "D4 Terapi Okupasi", "D3 Fisioterapi", "D4 Fisioterapi", "D3 Terapi Wicara", "S1 Psikologi", "D3 Rekam Medik Informasi Kesehatan", "D4 Manajemen Informasi Kesehatan", "Computer Science", "D3 Administrasi Bisnis", "D4 Promosi Kesehatan", "S1 Kesehatan Msyarakat"],
+                f: {
+                    unit_peminjam: 'Karyawan',
+                    nama_ruangan: '',
+                    keperluan_ruangan: '',
+                    judul_acara: '',
+                    catatan: '',
+                    jumlah_peserta: '',
+                    tanggal: [],
+                    jam_mulai: '',
+                    jam_selesai: '',
+                    durasi: '',
+                    nama: '',
+                    identitas: '32730000000000001',
+                    institusi: 'RSUDBK',
+                    jurusan_divisi: '',
+                    no_telepon: '081000000000',
+                    ttd_digital: '',
+                    status: 'Request'
+                },
 
-				daftarJurusan: [
-					"D3 Keperawatan",
-					"D3 Keperawatan RPL",
-					"D4 Keperawatan",
-					"D4 Keperawatan RPL",
-					"S1 Keperawatan Regular",
-					"S1 Keperawatan Non-Regular",
-					"Profesi Ners",
-					"Profesi Ners Non-Reguler",
-					"S2 Keperawatan",
-					"S3 Keperawatan",
-					"D3 Kebidanan",
-					"D3 Kebidanan RPL",
-					"D4 Kebidanan",
-					"D4 Kebidanan RPL",
-					"S1 Kebidanan Regular",
-					"S1 Kebidanan Non-Regular",
-					"Profesi Bidan Regular",
-					"Profesi Bidan Non-Regular",
-					"S2 Kebidanan",
-					"S3 Kebidanan",
-					"S1 Kedokteran / PSPD",
-					"Profesi Kedokteran",
-					"S2 Kedokteran",
-					"S3 Kedokteran",
-					"Specialis PPDS Anak",
-					"Specialis PPDS Anestesi",
-					"Specialis PPDS Bedah",
-					"Specialis PPDS Obsgyn",
-					"Specialis PPDS KFR",
-					"Specialis PPDS THT-KL",
-					"Specialis PPDS Neurologi",
-					"Specialis PPDS IPD",
-					"S1 Kedokteran Gigi",
-					"Specialis Kedokteran Gigi",
-					"D4 Anestesi Regular",
-					"D4 Anestesi RPL",
-					"D3 Elektromedis",
-					"D4 Elektromedis",
-					"S1 Teknik Biomedis",
-					"D3 Sanitiasi",
-					"D4 Sanitasi",
-					"S1 Kesehatan Lingkungan",
-					"S1 Kesehatan Masyarakat",
-					"D3 Gizi",
-					"D4 Gizi",
-					"S1 Gizi",
-					"Profesi Dietisien",
-					"D3 Analis Kesehatan",
-					"D3 Teknologi Laboratorium Medis",
-					"D4 Teknologi Laboratorium Medis",
-					"S1 Biologi",
-					"D3 Radiologi",
-					"D4 Radiologi",
-					"S1 Fisika",
-					"SMK Farmasi",
-					"D3 Farmasi",
-					"S1 Farmasi",
-					"Profesi Apoteker",
-					"S2 Farmasi",
-					"D3 Terapi Okupasi",
-					"D4 Terapi Okupasi",
-					"D3 Fisioterapi",
-					"D4 Fisioterapi",
-					"D3 Terapi Wicara",
-					"S1 Psikologi",
-					"D3 Rekam Medik Informasi Kesehatan",
-					"D4 Manajemen Informasi Kesehatan",
-					"Computer Science",
-					"D3 Administrasi Bisnis",
-					"D4 Promosi Kesehatan",
-					"S1 Kesehatan Msyarakat"],
+                async init() {
+                    // Setup Canvas
+                    this.canvas = document.getElementById("signatureCanvas");
+                    this.ctx = this.canvas.getContext("2d");
+                    this.resizeCanvas();
 
-				f: {
-					unit_peminjam: 'Karyawan',
-					nama_ruangan: '',
-					keperluan_ruangan: '',
-					judul_acara: '',
-					catatan: '',
-					jumlah_peserta: '',
-					tanggal: [],
-    displayTanggal: '',
-					jam_mulai: '',
-					jam_selesai: '',
-					durasi: '',
-					nama: '',
-					identitas: '',
-					institusi: 'RSUDBK',
-					jurusan_divisi: '',
-					no_telepon: '',
-					ttd_digital: '',
-					status: 'Request'
-				},
-					signaturePad: null,
-					isDrawing: false,
+                    const startDrawing = (e) => {
+                        this.drawing = true;
+                        const rect = this.canvas.getBoundingClientRect();
+                        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                        const x = clientX - rect.left;
+                        const y = clientY - rect.top;
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(x, y);
+                    };
 
-                   async init() {
-    // 1. Setup Signature Canvas
-    this.canvas = document.getElementById("signatureCanvas");
-    this.ctx = this.canvas.getContext("2d");
-    this.resizeCanvas();
+                    const stopDrawing = () => { this.drawing = false; this.ctx.beginPath(); };
 
-    const startDrawing = (e) => {
-        this.drawing = true;
-        const rect = this.canvas.getBoundingClientRect();
-        // Mengambil koordinat baik dari Mouse maupun Touch
-        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-        
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
-        
-        this.ctx.beginPath();
-        this.ctx.moveTo(x, y);
-    };
+                    this.canvas.addEventListener("mousedown", startDrawing);
+                    this.canvas.addEventListener("mousemove", (e) => this.draw(e));
+                    this.canvas.addEventListener("mouseup", stopDrawing);
+                    this.canvas.addEventListener("touchstart", (e) => { e.preventDefault(); startDrawing(e.touches[0]); }, { passive: false });
+                    this.canvas.addEventListener("touchmove", (e) => { e.preventDefault(); this.draw(e.touches[0]); }, { passive: false });
+                    this.canvas.addEventListener("touchend", stopDrawing);
 
-    const stopDrawing = () => {
-        this.drawing = false;
-        this.ctx.beginPath();
-    };
+                    // Initialize Flatpickr
+                    flatpickr("#multiPicker", {
+                        mode: "multiple",
+                        dateFormat: "Y-m-d",
+                        onChange: (selectedDates) => {
+                            this.f.tanggal = selectedDates.map(d => d.toISOString().split('T')[0]);
+                            this.f.tanggal.sort();
+                        }
+                    });
 
-    // Event Listeners (Mouse)
-    this.canvas.addEventListener("mousedown", startDrawing);
-    this.canvas.addEventListener("mousemove", (e) => this.draw(e));
-    this.canvas.addEventListener("mouseup", stopDrawing);
+                    // Edit Mode
+                    const params = new URLSearchParams(window.location.search);
+                    const id = params.get('id');
+                    if (id) {
+                        this.editId = id;
+                        await this.loadEditData(id);
+                    }
 
-    // Event Listeners (Touch / HP)
-    this.canvas.addEventListener("touchstart", (e) => {
-        e.preventDefault(); // Mencegah scroll saat tanda tangan
-        startDrawing(e.touches[0]);
-    }, { passive: false });
+                    // Watchers
+                    this.$watch('f.unit_peminjam', (val) => {
+                        this.f.jurusan_divisi = '';
+                        if (val === 'Karyawan') {
+                            this.f.institusi = 'RSUDBK';
+                            this.f.identitas = '32730000000000001';
+                            this.f.no_telepon = '081000000000';
+                        } else {
+                            this.f.institusi = '';
+                            this.f.identitas = '';
+                            this.f.no_telepon = '';
+                        }
+                    });
 
-    this.canvas.addEventListener("touchmove", (e) => {
-        e.preventDefault();
-        this.draw(e.touches[0]);
-    }, { passive: false });
-
-    this.canvas.addEventListener("touchend", stopDrawing);
-
-    // 2. Mode Edit (Identifikasi ID dari URL)
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    if (id) {
-        this.editId = id;
-        await this.loadEditData(id);
-    }
-
-    // 3. Watcher: Otomatisasi Data Karyawan
-    // Memastikan NIM/NIP dan Telp masuk database meski kolom disembunyikan
-    this.$watch('f.unit_peminjam', (val) => {
-        // Setiap ganti kategori, reset jurusan agar bersih
-        this.f.jurusan_divisi = '';
-
-        if (val === 'Karyawan') {
-            this.f.institusi = 'RSUDBK';
-            this.f.identitas = '32730000000000001'; // Data otomatis untuk DB
-            this.f.no_telepon = '081000000000';    // Data otomatis untuk DB
-        } else {
-            // Kosongkan jika Peserta Didik/Luar agar bisa diisi manual di kolom yang muncul
-            this.f.institusi = '';
-            this.f.identitas = '';
-            this.f.no_telepon = '';
-        }
-    });
-
-// Masukkan ini di dalam async init()
-// Di dalam init()
-flatpickr("#multiPicker", {
-    mode: "multiple",
-    dateFormat: "Y-m-d",
-    onChange: (selectedDates) => {
-        // Otomatis update data f.tanggal saat kalender diklik
-        this.f.tanggal = selectedDates.map(d => d.toISOString().split('T')[0]);
-        this.f.tanggal.sort();
-    }
-});
-
-
-
-    // 4. Penanganan Browser Back Button (BFCache)
-    // Memastikan form refresh jika user menekan tombol 'Back'
-    window.onpageshow = function(event) {
-        if (event.persisted) {
-            window.location.reload();
-        }
-    };
-}, 
-                
+                    window.onpageshow = (event) => { if (event.persisted) window.location.reload(); };
+                }, 
 
                 resizeCanvas() {
                     this.canvas.width = this.canvas.offsetWidth;
@@ -784,8 +357,10 @@ flatpickr("#multiPicker", {
                 draw(e) {
                     if (!this.drawing) return;
                     const rect = this.canvas.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
+                    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                    const x = clientX - rect.left;
+                    const y = clientY - rect.top;
                     this.ctx.lineTo(x, y);
                     this.ctx.stroke();
                     this.ctx.beginPath();
@@ -797,278 +372,104 @@ flatpickr("#multiPicker", {
                     this.ctx.beginPath();
                 },
 
-				async loadEditData(id) {
-					const { data, error } = await _sb
-						.from('peminjaman_ruangan')
-						.select('*')
-						.eq('id', id)
-						.single();
-					if (error || !data) {
-						alert('Data tidak ditemukan');
-						return;
-						}
-						
-				// isi form
-				this.f = {
+                async loadEditData(id) {
+                    const { data, error } = await _sb.from('peminjaman_ruangan').select('*').eq('id', id).single();
+                    if (error || !data) return alert('Data tidak ditemukan');
+                    
+                    this.f = { ...this.f, ...data };
+                    if (data.ttd_digital) {
+                        const img = new Image();
+                        img.onload = () => this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+                        img.src = data.ttd_digital;
+                    }
+                    // Sync Flatpickr
+                    if (document.getElementById("multiPicker")._flatpickr) {
+                        document.getElementById("multiPicker")._flatpickr.setDate(this.f.tanggal);
+                    }
+                },
 
-					...this.f,
+                removeDate(tgl) {
+                    this.f.tanggal = this.f.tanggal.filter(item => item !== tgl);
+                    if (document.getElementById("multiPicker")._flatpickr) {
+                        document.getElementById("multiPicker")._flatpickr.setDate(this.f.tanggal);
+                    }
+                },
 
-					unit_peminjam: data.unit_peminjam || 'Karyawan',
-					nama_ruangan: data.nama_ruangan || '',
-					keperluan_ruangan: data.keperluan_ruangan || '',
-					judul_acara: data.judul_acara || '',
-					catatan: data.catatan || '',
-					jumlah_peserta: data.jumlah_peserta || '',
-					tanggal: data.tanggal || [],
-					jam_mulai: data.jam_mulai || '',
-					jam_selesai: data.jam_selesai || '',
-					durasi: data.durasi || '',
-					nama: data.nama || '',
-					identitas: data.identitas || '',
-					institusi: data.institusi || 'RSUDBK',
-					jurusan_divisi: data.jurusan_divisi || '',
-					no_telepon: data.no_telepon || '',
-					ttd_digital: data.ttd_digital || '',
-					status: data.status || 'Request'
-				};
+                addRange() {
+                    const startStr = prompt("Mulai Rentang (YYYY-MM-DD):", "2026-05-13");
+                    const endStr = prompt("Selesai Rentang (YYYY-MM-DD):", "2026-05-15");
+                    if (startStr && endStr) {
+                        let start = new Date(startStr);
+                        let end = new Date(endStr);
+                        if (isNaN(start) || isNaN(end)) return alert("Format tanggal salah!");
+                        
+                        let newDates = [...this.f.tanggal];
+                        while (start <= end) {
+                            let s = start.toISOString().split('T')[0];
+                            if (!newDates.includes(s)) newDates.push(s);
+                            start.setDate(start.getDate() + 1);
+                        }
+                        this.f.tanggal = newDates.sort();
+                        document.getElementById("multiPicker")._flatpickr.setDate(this.f.tanggal);
+                    }
+                },
 
-				// tampilkan tanda tangan lama
-				if (data.ttd_digital) {
-					const img = new Image();
-					img.onload = () => {
-						this.ctx.drawImage(
-							img,
-							0,
-							0,
-							this.canvas.width,
-							this.canvas.height
-						);
-					};
-					img.src = data.ttd_digital;
-				}
-			},
-
-
-                // ... di dalam data Alpine.js Anda ...
-
-
-// Fungsi untuk meringkas tampilan tanggal
-updateDisplayTanggal(selectedDates) {
-    if (selectedDates.length === 0) {
-        this.f.displayTanggal = '';
-        return;
-    }
-    
-    // Urutkan tanggal
-    const sorted = [...selectedDates].sort((a, b) => a - b);
-    const formatDate = (date) => date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-
-    if (sorted.length > 1) {
-        this.f.displayTanggal = `${formatDate(sorted[0])} - ${formatDate(sorted[sorted.length - 1])} (${sorted.length} Hari)`;
-    } else {
-        this.f.displayTanggal = formatDate(sorted[0]);
-    }
-},
-
-
-
-addDate(val) {
-    if (val && !this.f.tanggal.includes(val)) {
-        this.f.tanggal.push(val);
-        // Opsional: Urutkan tanggal agar daftar di bawah rapi
-        this.f.tanggal.sort();
-    }
-},
-
-// Fungsi untuk menghapus tanggal satu per satu
-removeDate(tgl) {
-    this.f.tanggal = this.f.tanggal.filter(item => item !== tgl);
-    // Sinkronkan ulang tampilan kalender agar centang hilang
-    if (document.getElementById("multiPicker")._flatpickr) {
-        document.getElementById("multiPicker")._flatpickr.setDate(this.f.tanggal);
-    }
-},
-
-// Fungsi untuk menambah banyak tanggal sekaligus melalui input prompt
-addRange() {
-    const startStr = prompt("Mulai Rentang (Format: YYYY-MM-DD):", "2026-05-05");
-    const endStr = prompt("Selesai Rentang (Format: YYYY-MM-DD):", "2026-05-30");
-
-    if (startStr && endStr) {
-        let start = new Date(startStr);
-        let end = new Date(endStr);
-        
-        if (isNaN(start) || isNaN(end)) return alert("Format tanggal salah!");
-
-        while (start <= end) {
-            let s = start.toISOString().split('T')[0];
-            if (!this.f.tanggal.includes(s)) {
-                this.f.tanggal.push(s);
-            }
-            start.setDate(start.getDate() + 1);
-        }
-        this.f.tanggal.sort();
-        // Update tampilan kalender agar semua tanggal di range tercentang biru
-        document.getElementById("multiPicker")._flatpickr.setDate(this.f.tanggal);
-    }
-}
-
-
-calcDuration() {
-    if (this.f.jam_mulai && this.f.jam_selesai) {
-        // Kita gunakan template literal agar lebih aman
-        const start = new Date(`2026-01-01T${this.f.jam_mulai}:00`);
-        const end = new Date(`2026-01-01T${this.f.jam_selesai}:00`);
-        
-        let diff = (end - start) / 1000 / 60; // selisih dalam menit
-        
-        if (diff < 0) diff += 1440; // Menangani jika lewat tengah malam
-        
-        const h = Math.floor(diff / 60);
-        const m = diff % 60;
-        
-        this.f.durasi = m > 0 ? `${h} Jam ${m} Menit` : `${h} Jam`;
-    }
-},
-
+                calcDuration() {
+                    if (this.f.jam_mulai && this.f.jam_selesai) {
+                        const start = new Date(`2026-01-01T${this.f.jam_mulai}:00`);
+                        const end = new Date(`2026-01-01T${this.f.jam_selesai}:00`);
+                        let diff = (end - start) / 1000 / 60;
+                        if (diff < 0) diff += 1440;
+                        const h = Math.floor(diff / 60);
+                        const m = diff % 60;
+                        this.f.durasi = m > 0 ? `${h} Jam ${m} Menit` : `${h} Jam`;
+                    }
+                },
 
                 async submit() {
+                    // 1. Validasi Awal (Harus SEBELUM loading = true)
+                    if (this.f.tanggal.length === 0) return alert("Pilih minimal satu tanggal!");
+                    
+                    const canvas = document.getElementById('signatureCanvas');
+                    const isBlank = !canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data.some(c => c !== 0);
+                    if (isBlank) return alert("Tanda tangan wajib diisi!");
 
-    // CEGAH DOUBLE SUBMIT
-    if (this.loading) return;
+                    // 2. Set Loading
+                    if (this.loading) return;
+                    this.loading = true;
 
-    this.loading = true;
+                    try {
+                        // Simpan TTD
+                        this.f.ttd_digital = canvas.toDataURL('image/png');
 
-    try {
+                        // PERSAPAN DATA (Konversi array tanggal ke string agar tidak error di database)
+                        const finalData = { 
+                            ...this.f, 
+                            tanggal: this.f.tanggal.join(', ') 
+                        };
 
-        // VALIDASI TANGGAL
-        if (this.f.tanggal.length === 0) {
-            alert("Pilih minimal satu tanggal!");
-            return;
+                        let response;
+                        if (this.editId) {
+                            response = await _sb.from('peminjaman_ruangan').update(finalData).eq('id', this.editId);
+                        } else {
+                            response = await _sb.from('peminjaman_ruangan').insert([finalData]);
+                        }
+
+                        if (!response.error) {
+                            alert(this.editId ? "Data berhasil diperbarui!" : "Data berhasil terkirim!");
+                            window.location.replace('daftar_ruangan.html');
+                        } else {
+                            alert("Error: " + response.error.message);
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Terjadi kesalahan sistem!");
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            }
         }
-
-        // VALIDASI TTD
-        const canvas =
-            document.getElementById('signatureCanvas');
-
-        const ctx =
-            canvas.getContext('2d');
-
-        const isBlank = !ctx
-            .getImageData(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            )
-            .data.some(channel => channel !== 0);
-
-        if (isBlank) {
-            alert("Tanda tangan wajib diisi!");
-            return;
-        }
-
-        // SIMPAN TTD BASE64
-        this.f.ttd_digital =
-            canvas.toDataURL('image/png');
-
-        let response;
-
-        // =========================
-        // MODE EDIT
-        // =========================
-        if (this.editId) {
-
-            response = await _sb
-                .from('peminjaman_ruangan')
-                .update(this.f)
-                .eq('id', this.editId);
-
-        }
-
-        // =========================
-        // MODE TAMBAH
-        // =========================
-        else {
-
-            response = await _sb
-                .from('peminjaman_ruangan')
-                .insert([this.f]);
-        }
-
-        // =========================
-        // SUCCESS
-        // =========================
-        if (!response.error) {
-
-            alert(
-                this.editId
-                ? "Data berhasil diperbarui!"
-                : "Data berhasil terkirim!"
-            );
-
-            // RESET FORM
-            this.f = {
-                unit_peminjam: 'Karyawan',
-                nama_ruangan: '',
-                keperluan_ruangan: '',
-                judul_acara: '',
-                catatan: '',
-                jumlah_peserta: '',
-                tanggal: [],
-                jam_mulai: '',
-                jam_selesai: '',
-                durasi: '',
-                nama: '',
-                identitas: '',
-                institusi: 'RSUDBK',
-                jurusan_divisi: '',
-                no_telepon: '',
-                ttd_digital: '',
-                status: 'Request'
-            };
-
-            // HAPUS TTD
-            this.clearSignature();
-
-            // REDIRECT
-            window.location.replace(
-                'daftar_ruangan.html'
-            );
-
-        }
-
-        // =========================
-        // ERROR DATABASE
-        // =========================
-        else {
-
-            alert(
-                "Error: " +
-                response.error.message
-            );
-        }
-
-    }
-
-    // ERROR UMUM
-    catch (err) {
-
-        console.error(err);
-
-        alert(
-            "Terjadi kesalahan sistem!"
-        );
-    }
-
-    // SELESAI
-    finally {
-
-        this.loading = false;
-    }
-}
-			}
-}
     </script>
 </body>
 </html>
