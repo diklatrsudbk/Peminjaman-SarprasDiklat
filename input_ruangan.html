@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>[x-cloak] { display: none !important; }</style>
 </head>
 <body
     class="bg-gray-100 p-4 md:p-8"
@@ -68,23 +69,44 @@
 
                 <div class="col-span-full">
                     <label class="block text-sm font-bold mb-2 text-gray-700">Tanggal Peminjaman</label>
+                    
+                    <!-- INFO RINGKAS TANGGAL -->
+                    <div class="mb-2 p-3 bg-blue-50 rounded-xl border border-blue-100 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-calendar-alt text-blue-600"></i>
+                            <span class="text-sm font-bold text-blue-800" x-text="formatTanggalRingkas()"></span>
+                        </div>
+                        <span class="text-[10px] bg-blue-600 text-white px-2 py-1 rounded-full font-bold" x-show="f.tanggal.length > 0">
+                            <span x-text="f.tanggal.length"></span> Hari
+                        </span>
+                    </div>
+
                     <div class="flex gap-2">
-                        <input id="multiPicker" type="text" readonly placeholder="Klik untuk pilih tanggal..."
-                               class="w-full border rounded-xl p-3 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                        <button type="button" @click="addRange()" 
-                                class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md transition">
-                            + Rentang
+                        <!-- Input Multiple -->
+                        <div class="relative flex-1">
+                            <input id="multiPicker" type="text" readonly placeholder="Pilih tanggal acak..."
+                               class="w-full border rounded-xl p-3 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none pr-10">
+                            <i class="fa fa-calendar absolute right-4 top-4 text-gray-400"></i>
+                        </div>
+                        
+                        <!-- Input Hidden untuk Range Picker -->
+                        <input id="rangePicker" type="text" class="hidden">
+                        
+                        <button type="button" @click="openRangePicker()" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md transition flex items-center gap-2">
+                            <i class="fa fa-arrows-left-right"></i> + Rentang
                         </button>
                     </div>
 
+                    <!-- DAFTAR CHIPS TANGGAL -->
                     <div class="mt-3 flex flex-wrap gap-2 p-3 border border-dashed border-gray-300 rounded-xl bg-gray-50 min-h-[50px]">
                         <template x-if="f.tanggal.length === 0">
                             <span class="text-gray-400 text-xs italic">Belum ada tanggal dipilih.</span>
                         </template>
                         <template x-for="tgl in f.tanggal" :key="tgl">
-                            <div class="flex items-center bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-semibold shadow-sm border border-blue-200">
-                                <span x-text="tgl"></span>
-                                <button type="button" @click="removeDate(tgl)" class="ml-2 text-red-500 hover:text-red-700 font-bold text-lg">
+                            <div class="flex items-center bg-white text-gray-700 px-3 py-1 rounded-lg text-xs font-semibold shadow-sm border border-gray-200 group hover:border-red-300 transition">
+                                <span x-text="formatIndo(tgl)"></span>
+                                <button type="button" @click="removeDate(tgl)" class="ml-2 text-gray-400 hover:text-red-500 font-bold text-lg">
                                     &times;
                                 </button>
                             </div>
@@ -139,7 +161,6 @@
                                 <template x-for="item in filtered" :key="item">
                                     <div @click="select(item)" class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition" x-text="item"></div>
                                 </template>
-                                <div x-show="filtered.length === 0" class="px-4 py-3 text-gray-400 text-sm">Tidak ditemukan</div>
                             </div>
                         </div>
                     </template>
@@ -163,7 +184,6 @@
                                 <template x-for="item in filtered" :key="item">
                                     <div @click="select(item)" class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition" x-text="item"></div>
                                 </template>
-                                <div x-show="filtered.length === 0" class="px-4 py-3 text-gray-400 text-sm">Tidak ditemukan</div>
                             </div>
                         </div>
                     </template>
@@ -175,7 +195,6 @@
                                 <template x-for="item in filtered" :key="item">
                                     <div @click="select(item)" class="px-4 py-3 hover:bg-blue-600 hover:text-white cursor-pointer text-sm transition" x-text="item"></div>
                                 </template>
-                                <div x-show="filtered.length === 0" class="px-4 py-3 text-gray-400 text-sm">Tidak ditemukan</div>
                             </div>
                         </div>
                     </template>
@@ -191,37 +210,35 @@
                 </div>
             </div>
 
-            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-100 space-y-3 shadow-inner">
-                <p class="text-[11px] text-amber-900 font-bold uppercase tracking-wider">Syarat & Ketentuan Peminjaman:</p>
-                <ol class="text-[10px] text-amber-800 space-y-2 list-decimal ml-4 font-medium leading-relaxed">
-                    <li>Menjaga kebersihan dan kondisi Ruang Loker dan Loker yang dipinjam, sebelum dan sesudahnya.</li>
-                    <li>Segera mengembalikan kembali lengkap sesuai jumlah yang di Pinjam ke Lantai 6 Ruang Diklat jika sudah Selesai.</li>
-                    <li>Bersedia mengganti jika terjadi kehilangan maupun rusak Seharga: <strong>Rp. 50,000/Kunci</strong>.</li>
-                    <li>Apabila lepas dari tanggung jawab, maka akan dilaporkan kepada Pihak Institusi Pendidikan terkait.</li>
+            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-100 space-y-3 shadow-inner text-[10px]">
+                <p class="font-bold text-amber-900 uppercase">Syarat & Ketentuan Peminjaman:</p>
+                <ol class="text-amber-800 space-y-1 list-decimal ml-4">
+                    <li>Menjaga kebersihan dan kondisi Ruang Loker yang dipinjam.</li>
+                    <li>Segera mengembalikan kunci setelah selesai.</li>
+                    <li>Bersedia mengganti biaya kehilangan Rp. 50,000/Kunci.</li>
                 </ol>
                 <div class="flex items-center gap-2 pt-2 border-t border-amber-200">
                     <input type="checkbox" id="agree" required class="w-4 h-4 accent-indigo-600">
-                    <label for="agree" class="text-[10px] font-black text-indigo-900 uppercase italic cursor-pointer">SAYA SETUJU PADA SYARAT DAN KETENTUAN DIATAS</label>
+                    <label for="agree" class="font-black text-indigo-900 uppercase italic cursor-pointer">SAYA SETUJU PADA SYARAT DAN KETENTUAN DIATAS</label>
                 </div>
             </div>
 			
             <div class="md:col-span-2">
                 <label class="block text-sm font-semibold mb-2">Catatan Tambahan</label>
-                <textarea x-model="f.catatan" rows="4" placeholder="Tambahkan informasi tambahan jika diperlukan..." class="w-full border rounded-2xl p-3 outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                <textarea x-model="f.catatan" rows="3" placeholder="Informasi tambahan..." class="w-full border rounded-2xl p-3 outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
             </div>
 				
             <div class="space-y-2">
-                <label class="text-[10px] font-bold text-slate-400 uppercase block">Tanda Tangan Digital Peminjam</label>
-                <div class="relative bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 overflow-hidden shadow-inner">
-                    <canvas id="signatureCanvas" width="600" height="220" style="touch-action:none;" class="w-full bg-white rounded-xl border"></canvas>
-                    <button type="button" @click="clearSignature()" class="absolute top-2 right-2 bg-white/90 px-3 py-1 rounded-full text-[9px] font-bold text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm uppercase border border-rose-100">Hapus</button>
+                <label class="text-[10px] font-bold text-slate-400 uppercase block text-center">Tanda Tangan Digital</label>
+                <div class="relative bg-white rounded-2xl border-2 border-dashed border-slate-200 overflow-hidden">
+                    <canvas id="signatureCanvas" width="600" height="200" style="touch-action:none;" class="w-full cursor-crosshair"></canvas>
+                    <button type="button" @click="clearSignature()" class="absolute top-2 right-2 bg-rose-50 px-3 py-1 rounded-full text-[10px] font-bold text-rose-500 border border-rose-200">Hapus</button>
                 </div>
-                <p class="text-[9px] text-slate-400 italic text-center uppercase">Silakan tanda tangan pada kotak di atas</p>
             </div>
 
-            <button type="submit" :disabled="loading" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-700 transition-all uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed">
+            <button type="submit" :disabled="loading" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-700 transition-all uppercase tracking-widest disabled:opacity-50">
                 <span x-show="!loading">Kirim Request Peminjaman</span>
-                <span x-show="loading">Mengirim...</span>
+                <span x-show="loading">Sedang Mengirim...</span>
             </button>
         </form>
     </div>
@@ -238,20 +255,13 @@
                 filtered: [...options],
                 init() {
                     this.filterOptions();
-                    this.$watch('search', () => {
-                        this.filterOptions();
-                        setter(this.search);
-                    });
+                    this.$watch('search', () => { this.filterOptions(); setter(this.search); });
                 },
                 filterOptions() {
                     const keyword = this.search.toLowerCase();
                     this.filtered = options.filter(item => item.toLowerCase().includes(keyword));
                 },
-                select(item) {
-                    this.search = item;
-                    setter(item);
-                    this.open = false;
-                }
+                select(item) { this.search = item; setter(item); this.open = false; }
             }
         }
 
@@ -262,9 +272,13 @@
                 canvas: null,
                 ctx: null,
                 drawing: false,
+                multiPicker: null,
+                rangePicker: null,
+                
                 daftarDivisi: ["Keuangan","PPI","Umum","Kepegawaian","Asset & Barang","ULP","PKRS","Humas","K3RS","Diklat","IT","JKN","Medrek"],
                 daftarInstitusi: ["ATRO Persada Nusantara Bekasi", "Binus University Bandung", "Institut Teknologi Bandung (ITB)", "Politeknik PIKSI Ganesha", "Politkenik Al Islam Bandung", "Universitas Indonesia (UI)", "Sekolah Tinggi Farmasi Indonesia (STFI)", "Universitas Muhammadiyah Bandung (UMB)", "Universitas Wahid Hasyim Semarang (UNWAHAS)", "UIN Sunan Gunung Djati Bandung", "Poltekkes Semarang", "Poltekkes Tasikmalaya", "SMKN 7 Bandung", "SMK Nusa Bhakti Bandung", "Universitas Diponegoro (UNDIP)", "Universitas Islam Bandung (UNISBA)", "Universitas Maranatha", "Universitas Sriwijaya", "Universitas Siliwangi Tasikmalaya", "Universitas Telkom", "Stikes Karsa Husada Garut", "Universitas Logistik dan Bisnis Internasional (ULBI)", "Universitas Bandung", "Stikep PPNI Jabar", "Stikes Budi Luhur", "Stikes RS Dustira", "Stikes Dharma Husada Bandung (DHB)", "Inkes Rajawali", "Inkes Immanuel", "Inkes Pelamonia Makasar", "Poltekkes Palu", "Poltekkes Bandung", "Politeknik Cendrawasih Palu", "Universitas Padjajaran (UNPAD)", "Universitas Pasundan (UNPAS)", "Universitas Sali Al-Aitam", "UNISA Bandung", "Universitas Bhakti Kencana (UBK)", "Universitas Pendidikan Indonesia (UPI)", "Universitas Jenderal Achmad Yani (UNJANI)", "Universitas Borromeus", "Universitas Muhammadiyah Ahmad Dahlan (UM-AD) Palembang", "Universitas Dehasen (UNIVED) Bengkulu", "Stikes Marendeng Majene"],
                 daftarJurusan: ["D3 Keperawatan", "D3 Keperawatan RPL", "D4 Keperawatan", "D4 Keperawatan RPL", "S1 Keperawatan Regular", "S1 Keperawatan Non-Regular", "Profesi Ners", "Profesi Ners Non-Reguler", "S2 Keperawatan", "S3 Keperawatan", "D3 Kebidanan", "D3 Kebidanan RPL", "D4 Kebidanan", "D4 Kebidanan RPL", "S1 Kebidanan Regular", "S1 Kebidanan Non-Regular", "Profesi Bidan Regular", "Profesi Bidan Non-Regular", "S2 Kebidanan", "S3 Kebidanan", "S1 Kedokteran / PSPD", "Profesi Kedokteran", "S2 Kedokteran", "S3 Kedokteran", "Specialis PPDS Anak", "Specialis PPDS Anestesi", "Specialis PPDS Bedah", "Specialis PPDS Obsgyn", "Specialis PPDS KFR", "Specialis PPDS THT-KL", "Specialis PPDS Neurologi", "Specialis PPDS IPD", "S1 Kedokteran Gigi", "Specialis Kedokteran Gigi", "D4 Anestesi Regular", "D4 Anestesi RPL", "D3 Elektromedis", "D4 Elektromedis", "S1 Teknik Biomedis", "D3 Sanitiasi", "D4 Sanitasi", "S1 Kesehatan Lingkungan", "S1 Kesehatan Masyarakat", "D3 Gizi", "D4 Gizi", "S1 Gizi", "Profesi Dietisien", "D3 Analis Kesehatan", "D3 Teknologi Laboratorium Medis", "D4 Teknologi Laboratorium Medis", "S1 Biologi", "D3 Radiologi", "D4 Radiologi", "S1 Fisika", "SMK Farmasi", "D3 Farmasi", "S1 Farmasi", "Profesi Apoteker", "S2 Farmasi", "D3 Terapi Okupasi", "D4 Terapi Okupasi", "D3 Fisioterapi", "D4 Fisioterapi", "D3 Terapi Wicara", "S1 Psikologi", "D3 Rekam Medik Informasi Kesehatan", "D4 Manajemen Informasi Kesehatan", "Computer Science", "D3 Administrasi Bisnis", "D4 Promosi Kesehatan", "S1 Kesehatan Msyarakat"],
+                
                 f: {
                     unit_peminjam: 'Karyawan',
                     nama_ruangan: '',
@@ -285,82 +299,118 @@
                     status: 'Request'
                 },
 
-                async init() {
-                    // Setup Canvas
+                init() {
+                    // Setup Signature
                     this.canvas = document.getElementById("signatureCanvas");
                     this.ctx = this.canvas.getContext("2d");
                     this.resizeCanvas();
-
-                    const startDrawing = (e) => {
+                    
+                    const startDraw = (e) => {
                         this.drawing = true;
                         const rect = this.canvas.getBoundingClientRect();
-                        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-                        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                        const x = clientX - rect.left;
-                        const y = clientY - rect.top;
+                        const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                        const y = (e.clientY || e.touches[0].clientY) - rect.top;
                         this.ctx.beginPath();
                         this.ctx.moveTo(x, y);
                     };
+                    const stopDraw = () => this.drawing = false;
 
-                    const stopDrawing = () => { this.drawing = false; this.ctx.beginPath(); };
-
-                    this.canvas.addEventListener("mousedown", startDrawing);
+                    this.canvas.addEventListener("mousedown", startDraw);
                     this.canvas.addEventListener("mousemove", (e) => this.draw(e));
-                    this.canvas.addEventListener("mouseup", stopDrawing);
-                    this.canvas.addEventListener("touchstart", (e) => { e.preventDefault(); startDrawing(e.touches[0]); }, { passive: false });
-                    this.canvas.addEventListener("touchmove", (e) => { e.preventDefault(); this.draw(e.touches[0]); }, { passive: false });
-                    this.canvas.addEventListener("touchend", stopDrawing);
+                    this.canvas.addEventListener("mouseup", stopDraw);
+                    this.canvas.addEventListener("touchstart", (e) => { e.preventDefault(); startDraw(e); }, {passive:false});
+                    this.canvas.addEventListener("touchmove", (e) => { e.preventDefault(); this.draw(e.touches[0]); }, {passive:false});
+                    this.canvas.addEventListener("touchend", stopDraw);
 
-                    // Initialize Flatpickr
-                    flatpickr("#multiPicker", {
+                    // Setup Flatpickr Multiple
+                    this.multiPicker = flatpickr("#multiPicker", {
                         mode: "multiple",
                         dateFormat: "Y-m-d",
-                        onChange: (selectedDates) => {
-                            this.f.tanggal = selectedDates.map(d => d.toISOString().split('T')[0]);
-                            this.f.tanggal.sort();
+                        onChange: (dates) => {
+                            this.f.tanggal = dates.map(d => d.toISOString().split('T')[0]).sort();
+                        }
+                    });
+
+                    // Setup Flatpickr Range (Hidden)
+                    this.rangePicker = flatpickr("#rangePicker", {
+                        mode: "range",
+                        dateFormat: "Y-m-d",
+                        onClose: (dates) => {
+                            if (dates.length === 2) {
+                                let start = new Date(dates[0]);
+                                let end = new Date(dates[1]);
+                                let temp = [...this.f.tanggal];
+                                while (start <= end) {
+                                    let s = start.toISOString().split('T')[0];
+                                    if (!temp.includes(s)) temp.push(s);
+                                    start.setDate(start.getDate() + 1);
+                                }
+                                this.f.tanggal = temp.sort();
+                                this.multiPicker.setDate(this.f.tanggal);
+                            }
                         }
                     });
 
                     // Edit Mode
-                    const params = new URLSearchParams(window.location.search);
-                    const id = params.get('id');
-                    if (id) {
-                        this.editId = id;
-                        await this.loadEditData(id);
-                    }
+                    const id = new URLSearchParams(window.location.search).get('id');
+                    if (id) { this.editId = id; this.loadEditData(id); }
 
-                    // Watchers
+                    // Watcher Unit
                     this.$watch('f.unit_peminjam', (val) => {
                         this.f.jurusan_divisi = '';
                         if (val === 'Karyawan') {
-                            this.f.institusi = 'RSUDBK';
-                            this.f.identitas = '32730000000000001';
-                            this.f.no_telepon = '081000000000';
+                            this.f.institusi = 'RSUDBK'; this.f.identitas = '32730000000000001'; this.f.no_telepon = '081000000000';
                         } else {
-                            this.f.institusi = '';
-                            this.f.identitas = '';
-                            this.f.no_telepon = '';
+                            this.f.institusi = ''; this.f.identitas = ''; this.f.no_telepon = '';
                         }
                     });
+                },
 
-                    window.onpageshow = (event) => { if (event.persisted) window.location.reload(); };
-                }, 
+                openRangePicker() { this.rangePicker.open(); },
+
+                formatIndo(dateStr) {
+                    if(!dateStr) return '';
+                    const d = new Date(dateStr);
+                    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                },
+
+                formatTanggalRingkas() {
+                    if (this.f.tanggal.length === 0) return "Belum ada tanggal dipilih";
+                    if (this.f.tanggal.length === 1) return this.formatIndo(this.f.tanggal[0]) + " " + new Date(this.f.tanggal[0]).getFullYear();
+                    
+                    const sorted = [...this.f.tanggal].sort();
+                    const start = new Date(sorted[0]);
+                    const end = new Date(sorted[sorted.length - 1]);
+                    
+                    const mNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
+                    
+                    // Jika bulan dan tahun sama: "2 - 25 Mei 2026"
+                    if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
+                        return `${start.getDate()} - ${end.getDate()} ${mNames[start.getMonth()]} ${start.getFullYear()}`;
+                    }
+                    
+                    // Jika bulan beda tapi tahun sama: "28 Mei - 2 Juni 2026"
+                    return `${start.getDate()} ${mNames[start.getMonth()]} - ${end.getDate()} ${mNames[end.getMonth()]} ${end.getFullYear()}`;
+                },
+
+                removeDate(tgl) {
+                    this.f.tanggal = this.f.tanggal.filter(item => item !== tgl);
+                    this.multiPicker.setDate(this.f.tanggal);
+                },
 
                 resizeCanvas() {
                     this.canvas.width = this.canvas.offsetWidth;
-                    this.canvas.height = this.canvas.offsetHeight;
+                    this.canvas.height = 200;
                     this.ctx.lineWidth = 3;
                     this.ctx.lineCap = "round";
-                    this.ctx.strokeStyle = "#1e1b4b";
+                    this.ctx.strokeStyle = "#1e3a8a";
                 },
 
                 draw(e) {
                     if (!this.drawing) return;
                     const rect = this.canvas.getBoundingClientRect();
-                    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-                    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                    const x = clientX - rect.left;
-                    const y = clientY - rect.top;
+                    const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                    const y = (e.clientY || e.touches[0].clientY) - rect.top;
                     this.ctx.lineTo(x, y);
                     this.ctx.stroke();
                     this.ctx.beginPath();
@@ -369,56 +419,13 @@
 
                 clearSignature() {
                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                    this.ctx.beginPath();
-                },
-
-                async loadEditData(id) {
-                    const { data, error } = await _sb.from('peminjaman_ruangan').select('*').eq('id', id).single();
-                    if (error || !data) return alert('Data tidak ditemukan');
-                    
-                    this.f = { ...this.f, ...data };
-                    if (data.ttd_digital) {
-                        const img = new Image();
-                        img.onload = () => this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
-                        img.src = data.ttd_digital;
-                    }
-                    // Sync Flatpickr
-                    if (document.getElementById("multiPicker")._flatpickr) {
-                        document.getElementById("multiPicker")._flatpickr.setDate(this.f.tanggal);
-                    }
-                },
-
-                removeDate(tgl) {
-                    this.f.tanggal = this.f.tanggal.filter(item => item !== tgl);
-                    if (document.getElementById("multiPicker")._flatpickr) {
-                        document.getElementById("multiPicker")._flatpickr.setDate(this.f.tanggal);
-                    }
-                },
-
-                addRange() {
-                    const startStr = prompt("Mulai Rentang (YYYY-MM-DD):", "2026-05-13");
-                    const endStr = prompt("Selesai Rentang (YYYY-MM-DD):", "2026-05-15");
-                    if (startStr && endStr) {
-                        let start = new Date(startStr);
-                        let end = new Date(endStr);
-                        if (isNaN(start) || isNaN(end)) return alert("Format tanggal salah!");
-                        
-                        let newDates = [...this.f.tanggal];
-                        while (start <= end) {
-                            let s = start.toISOString().split('T')[0];
-                            if (!newDates.includes(s)) newDates.push(s);
-                            start.setDate(start.getDate() + 1);
-                        }
-                        this.f.tanggal = newDates.sort();
-                        document.getElementById("multiPicker")._flatpickr.setDate(this.f.tanggal);
-                    }
                 },
 
                 calcDuration() {
                     if (this.f.jam_mulai && this.f.jam_selesai) {
-                        const start = new Date(`2026-01-01T${this.f.jam_mulai}:00`);
-                        const end = new Date(`2026-01-01T${this.f.jam_selesai}:00`);
-                        let diff = (end - start) / 1000 / 60;
+                        const s = new Date(`2026-01-01T${this.f.jam_mulai}:00`);
+                        const e = new Date(`2026-01-01T${this.f.jam_selesai}:00`);
+                        let diff = (e - s) / 60000;
                         if (diff < 0) diff += 1440;
                         const h = Math.floor(diff / 60);
                         const m = diff % 60;
@@ -426,47 +433,42 @@
                     }
                 },
 
-                async submit() {
-                    // 1. Validasi Awal (Harus SEBELUM loading = true)
-                    if (this.f.tanggal.length === 0) return alert("Pilih minimal satu tanggal!");
-                    
-                    const canvas = document.getElementById('signatureCanvas');
-                    const isBlank = !canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data.some(c => c !== 0);
-                    if (isBlank) return alert("Tanda tangan wajib diisi!");
-
-                    // 2. Set Loading
-                    if (this.loading) return;
-                    this.loading = true;
-
-                    try {
-                        // Simpan TTD
-                        this.f.ttd_digital = canvas.toDataURL('image/png');
-
-                        // PERSAPAN DATA (Konversi array tanggal ke string agar tidak error di database)
-                        const finalData = { 
-                            ...this.f, 
-                            tanggal: this.f.tanggal.join(', ') 
-                        };
-
-                        let response;
-                        if (this.editId) {
-                            response = await _sb.from('peminjaman_ruangan').update(finalData).eq('id', this.editId);
-                        } else {
-                            response = await _sb.from('peminjaman_ruangan').insert([finalData]);
+                async loadEditData(id) {
+                    const { data, error } = await _sb.from('peminjaman_ruangan').select('*').eq('id', id).single();
+                    if (!error && data) {
+                        this.f = { ...this.f, ...data };
+                        if (typeof data.tanggal === 'string') this.f.tanggal = data.tanggal.split(', ');
+                        this.multiPicker.setDate(this.f.tanggal);
+                        if (data.ttd_digital) {
+                            const img = new Image();
+                            img.onload = () => this.ctx.drawImage(img, 0, 0);
+                            img.src = data.ttd_digital;
                         }
+                    }
+                },
 
-                        if (!response.error) {
-                            alert(this.editId ? "Data berhasil diperbarui!" : "Data berhasil terkirim!");
+                async submit() {
+                    if (this.f.tanggal.length === 0) return alert("Pilih tanggal!");
+                    const isBlank = !this.ctx.getImageData(0,0,this.canvas.width,this.canvas.height).data.some(c => c !== 0);
+                    if (isBlank) return alert("Tanda tangan wajib!");
+
+                    this.loading = true;
+                    try {
+                        this.f.ttd_digital = this.canvas.toDataURL('image/png');
+                        const finalData = { ...this.f, tanggal: this.f.tanggal.join(', ') };
+
+                        let res = this.editId 
+                            ? await _sb.from('peminjaman_ruangan').update(finalData).eq('id', this.editId)
+                            : await _sb.from('peminjaman_ruangan').insert([finalData]);
+
+                        if (!res.error) {
+                            alert("Berhasil!");
                             window.location.replace('daftar_ruangan.html');
                         } else {
-                            alert("Error: " + response.error.message);
+                            alert("Gagal: " + res.error.message);
                         }
-                    } catch (err) {
-                        console.error(err);
-                        alert("Terjadi kesalahan sistem!");
-                    } finally {
-                        this.loading = false;
-                    }
+                    } catch (err) { alert("Kesalahan sistem!"); }
+                    finally { this.loading = false; }
                 }
             }
         }
