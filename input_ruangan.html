@@ -417,7 +417,7 @@
                     const { data, error } = await _sb.from('peminjaman_ruangan').select('*').eq('id', id).single();
                     if (!error && data) {
                         this.f = { ...this.f, ...data };
-                        if (typeof data.tanggal === 'string') this.f.tanggal = data.tanggal.split(', ');
+                        this.f.tanggal = data.tanggal || [];
                         this.multiPicker.setDate(this.f.tanggal);
                         if (data.ttd_digital) {
                             const img = new Image();
@@ -435,7 +435,10 @@
                     this.loading = true;
                     try {
                         this.f.ttd_digital = this.canvas.toDataURL('image/png');
-                        const finalData = { ...this.f, tanggal: this.f.tanggal.join(', ') };
+                        const finalData = {
+    ...this.f,
+    tanggal: this.f.tanggal
+};
 
                         let res = this.editId 
                             ? await _sb.from('peminjaman_ruangan').update(finalData).eq('id', this.editId)
