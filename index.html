@@ -1,72 +1,270 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Manajemen Sarpras</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Portal Sarpras Digital</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+
+    :root {
+      --primary: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      font-family:'Inter', sans-serif;
+      background:
+      linear-gradient(to bottom right,#eff6ff,#f8fafc);
+
+      color:var(--text);
+
+      min-height:100vh;
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+
+      padding:20px;
+    }
+
+    .portal-container{
+      width:100%;
+      max-width:1000px;
+    }
+
+    .header{
+      text-align:center;
+      margin-bottom:50px;
+    }
+
+    .logo{
+      width:90px;
+      height:90px;
+
+      background:var(--primary);
+
+      margin:auto;
+      margin-bottom:20px;
+
+      border-radius:25px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      color:white;
+      font-size:40px;
+
+      box-shadow:
+      0 20px 40px rgba(37,99,235,0.3);
+    }
+
+    .header h1{
+      font-size:2.5rem;
+      font-weight:700;
+      margin-bottom:10px;
+      color:#0f172a;
+    }
+
+    .header p{
+      color:#64748b;
+      font-size:1.05rem;
+    }
+
+    .menu-grid{
+      display:grid;
+      grid-template-columns:
+      repeat(auto-fit,minmax(220px,1fr));
+
+      gap:24px;
+    }
+
+    .menu-card{
+      background:rgba(255,255,255,0.8);
+
+      backdrop-filter: blur(10px);
+
+      border:1px solid #e2e8f0;
+
+      border-radius:24px;
+
+      padding:35px 20px;
+
+      text-decoration:none;
+
+      color:var(--text);
+
+      display:flex;
+      flex-direction:column;
+
+      align-items:center;
+
+      gap:18px;
+
+      transition:0.3s;
+
+      box-shadow:
+      0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .menu-card i{
+      width:85px;
+      height:85px;
+
+      border-radius:50%;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      font-size:34px;
+
+      color:var(--primary);
+
+      background:#dbeafe;
+
+      transition:0.3s;
+    }
+
+    .menu-card h3{
+      font-size:1.1rem;
+      font-weight:600;
+      text-align:center;
+    }
+
+    .menu-card:hover{
+      transform:translateY(-10px);
+
+      border-color:var(--primary);
+
+      box-shadow:
+      0 25px 50px rgba(37,99,235,0.15);
+    }
+
+    .menu-card:hover i{
+      background:var(--primary);
+      color:white;
+
+      transform:scale(1.1);
+    }
+
+    .footer{
+      text-align:center;
+      margin-top:50px;
+
+      color:#94a3b8;
+      font-size:14px;
+    }
+
+    @media(max-width:480px){
+
+      .header h1{
+        font-size:1.8rem;
+      }
+
+      .menu-grid{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .menu-card{
+        padding:20px 10px;
+      }
+
+      .menu-card i{
+        width:65px;
+        height:65px;
+        font-size:25px;
+      }
+
+    }
+
+  </style>
+
 </head>
-<body class="bg-slate-50">
 
-    <div class="min-h-screen flex flex-col items-center justify-center p-6">
-        
-        <div class="text-center mb-12">
-            <div class="w-20 h-20 bg-blue-600 rounded-3xl shadow-xl shadow-blue-200 flex items-center justify-center mx-auto mb-4 rotate-3 hover:rotate-0 transition-transform duration-500">
-                <i class="fa fa-boxes-stacked text-white text-3xl"></i>
-            </div>
-            <h1 class="text-3xl font-black text-slate-800 tracking-tighter uppercase">E-SARPRAS SYSTEM</h1>
-            <p class="text-slate-400 font-medium text-sm mt-1">Sistem Informasi Peminjaman Aset & Fasilitas</p>
-        </div>
+<body>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
-            
-            <a href="daftar_ruangan.html" class="group bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-2xl hover:shadow-blue-100 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-                <div class="relative">
-                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-200">
-                        <i class="fa fa-door-open text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-extrabold text-slate-800 mb-2">Peminjaman Ruangan</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed">Manajemen pemakaian aula, kelas, dan fasilitas gedung lainnya.</p>
-                    <div class="mt-6 flex items-center text-blue-600 text-xs font-bold gap-2">
-                        BUKA MODUL <i class="fa fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
-                    </div>
-                </div>
-            </a>
+  <div class="portal-container">
 
-            <a href="daftar_loker.html" class="group bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-2xl hover:shadow-indigo-100 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-                <div class="relative">
-                    <div class="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-indigo-200">
-                        <i class="fa fa-key text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-extrabold text-slate-800 mb-2">Kunci Loker</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed">Pantau peminjaman kunci loker laki-laki dan perempuan secara real-time.</p>
-                    <div class="mt-6 flex items-center text-indigo-600 text-xs font-bold gap-2">
-                        BUKA MODUL <i class="fa fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
-                    </div>
-                </div>
-            </a>
+    <!-- HEADER -->
+    <div class="header">
 
-            <a href="#" class="group bg-slate-100 p-8 rounded-[2rem] border border-slate-200 opacity-80 cursor-not-allowed relative overflow-hidden">
-                <div class="relative">
-                    <div class="w-14 h-14 bg-slate-400 text-white rounded-2xl flex items-center justify-center mb-6">
-                        <i class="fa fa-box-open text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-extrabold text-slate-400 mb-2">Data Sarpras</h3>
-                    <p class="text-[10px] bg-slate-200 text-slate-500 px-2 py-1 rounded inline-block font-bold mb-3 italic">SEDANG DIKEMBANGKAN</p>
-                    <p class="text-xs text-slate-400 leading-relaxed text-balance">Modul untuk manajemen inventaris barang dan peralatan kantor.</p>
-                </div>
-            </a>
+      <div class="logo">
+        <i class="fa-solid fa-building"></i>
+      </div>
 
-        </div>
+      <h1>Sistem Layanan Sarpras</h1>
 
-        <div class="mt-16 text-slate-400 text-[10px] font-bold tracking-[0.2em] uppercase">
-            &copy; 2026 Admin Sarpras Diklat
-        </div>
+      <p>
+        Portal Digital Peminjaman Sarana & Prasarana Diklat
+      </p>
 
     </div>
+
+    <!-- MENU -->
+    <div class="menu-grid">
+
+      <a href="daftar_ruangan.html"
+         class="menu-card">
+
+        <i class="fa-solid fa-door-open"></i>
+
+        <h3>Peminjaman Ruangan</h3>
+
+      </a>
+
+      <a href="PeminjamanKunci.html"
+         class="menu-card">
+
+        <i class="fa-solid fa-key"></i>
+
+        <h3>Kunci Loker</h3>
+
+      </a>
+
+      <a href="PeminjamanBarang.html"
+         class="menu-card">
+
+        <i class="fa-solid fa-laptop-code"></i>
+
+        <h3>Barang / Aset</h3>
+
+      </a>
+
+      <a href="DataSarpras.html"
+         class="menu-card">
+
+        <i class="fa-solid fa-chart-pie"></i>
+
+        <h3>Data Sarpras</h3>
+
+      </a>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+
+      © 2026 Sarpras Diklat
+
+    </div>
+
+  </div>
 
 </body>
 </html>
