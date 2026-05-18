@@ -11,40 +11,41 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        [x-cloak] { display: none !important; }
-        body { font-family: 'Poppins', sans-serif; }
-        .custom-scroll::-webkit-scrollbar { height: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        .bg-custom-purple { background-color: #5850ec; }
-        .text-custom-purple { color: #5850ec; }
-        .border-custom-purple { border-color: #5850ec; }
+    [x-cloak] {
+        display: none !important;
+    }
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
     </style>
 </head>
 
 <body class="bg-[#f8faff] min-h-screen p-4 md:p-6 antialiased text-slate-700" x-data="roomList()">
 
-<div class="max-w-[1500px] mx-auto" x-cloak>
+ <div class="max-w-7xl mx-auto">
 
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-        
-        <div class="flex items-center gap-4">
-            <div class="bg-custom-purple w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-100">
+        <!-- HEADER -->
+        <div class="flex flex-col lg:flex-row justify-between gap-4 mb-6">
+
+            <div class="flex items-center gap-4">
+                <div class="bg-indigo-600 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg">
                 <i class="fa fa-door-open text-white text-xl"></i>
             </div>
             <div>
-                <h1 class="text-2xl font-bold tracking-tight text-[#1e293b]">Management Ruangan</h1>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                    DIKLAT • RSUD BANDUNG KIWARI
-                </p>
+                    <h1 class="text-2xl font-bold text-slate-800">
+                        Management Ruangan
+                    </h1>
+
+                    <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">
+                        DIKLAT • RSUD Bandung Kiwari
+                    </p>
             </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 w-full lg:w-auto">
             <a href="input_loker.html"
                     class="h-12 bg-indigo-600 hover:bg-indigo-700 text-white px-5 rounded-2xl text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition-all uppercase">
                     <i class="fa fa-plus-circle"></i>
@@ -395,3 +396,5 @@ function roomList() {
 
 </body>
 </html>
+
+
